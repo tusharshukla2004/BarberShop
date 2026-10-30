@@ -1,5 +1,6 @@
 @import '@fontsource/bebas-neue';
 @import '@fontsource/inter';
+@import 'leaflet/dist/leaflet.css';
 @import './tokens.css';
 
 @tailwind base;
@@ -34,6 +35,11 @@
   *:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+
+  /* Muted vintage brown tile filter for MapView */
+  .vintage-map-tiles .leaflet-tile-pane {
+    filter: sepia(0.65) hue-rotate(330deg) saturate(0.65) contrast(0.95);
   }
 }
 

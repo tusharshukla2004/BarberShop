@@ -43,6 +43,11 @@ export const siteConfig = {
   description:
     'Experience high-precision haircuts, classic hot towel straight razor shaves, and bespoke beard trims in a vintage lounge atmosphere.',
   address: '42 Heritage Lane, Near Clock Tower, Bandra West, Mumbai 400050',
+  location: {
+    lat: 19.0596,
+    lng: 72.8295,
+    zoom: 15,
+  },
   phone: '+91 98765 43210',
   email: 'hello@vintageblade.in',
   hours: [
