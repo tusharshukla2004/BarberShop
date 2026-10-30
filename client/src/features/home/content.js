@@ -30,10 +30,10 @@ export const homeContent = {
     },
   },
   teamSection: {
-    eyebrow: 'Master Artisans',
+    eyebrow: '',
     title: 'MEET OUR EXPERTS',
     description:
-      'Our collective of certified master barbers combines generational grooming heritage with sharp modern aesthetics to craft your signature look.',
+      'Each member of our team is committed to providing an exceptional grooming experience, ensuring you leave our shop looking and feeling your best.',
     viewAllCta: {
       label: 'View all barbers',
       href: '/barbers',

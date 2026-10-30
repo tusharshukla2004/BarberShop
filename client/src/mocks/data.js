@@ -1,3 +1,5 @@
+import { assets } from '@/assets';
+
 /**
  * Mock data fixtures conforming strictly to src/types/index.js shapes
  */
@@ -64,42 +66,43 @@ export const mockServices = [
 export const mockBarbers = [
   {
     id: 'barb-1',
-    name: 'Devraj Saxena',
-    role: 'Master Craftsman & Founder',
-    photoUrl:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-    experienceYears: 14,
+    name: 'John Smith',
+    role: 'Master Barber',
+    photoUrl: assets.barbers.barber1,
+    imageUrl: assets.barbers.barber1,
+    experienceYears: 12,
     specialties: ['Classic Scissor Fades', 'Hot Lather Shaves'],
     socials: {
-      instagram: 'https://instagram.com/devraj.cuts',
-      twitter: 'https://twitter.com/devrajcuts',
+      linkedin: 'https://linkedin.com',
+      instagram: 'https://instagram.com/johnsmith.cuts',
     },
     isActive: true,
   },
   {
     id: 'barb-2',
-    name: 'Arbaaz Khan',
-    role: 'Senior Stylist & Beard Artisan',
-    photoUrl:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
+    name: 'Sarah Johnson',
+    role: 'Senior Stylist',
+    photoUrl: assets.barbers.barber2,
+    imageUrl: assets.barbers.barber2,
     experienceYears: 9,
     specialties: ['Beard Sculpting', 'Skin Tapers'],
     socials: {
-      instagram: 'https://instagram.com/arbaazbarber',
+      linkedin: 'https://linkedin.com',
+      instagram: 'https://instagram.com/sarah.cuts',
     },
     isActive: true,
   },
   {
     id: 'barb-3',
-    name: 'Neil Fernandes',
-    role: 'Traditional Barber',
-    photoUrl:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+    name: 'Mike Davis',
+    role: 'Barber',
+    photoUrl: assets.barbers.barber3,
+    imageUrl: assets.barbers.barber3,
     experienceYears: 7,
     specialties: ['Textured Crops', 'Head Shaves'],
     socials: {
-      instagram: 'https://instagram.com/neil.barber',
-      twitter: 'https://twitter.com/neilbarber',
+      linkedin: 'https://linkedin.com',
+      instagram: 'https://instagram.com/mikedavis.barber',
     },
     isActive: true,
   },

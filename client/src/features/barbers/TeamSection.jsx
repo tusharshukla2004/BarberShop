@@ -37,15 +37,21 @@ export function TeamSection({ showAll = false, className = '' }) {
     <Section tone="white" py="lg" id="team" className={className}>
       <Container>
         {/* Header Block: Centered Heading & Short Paragraph */}
-        <div className="flex flex-col items-center text-center max-w-xl mx-auto mb-12 sm:mb-16">
-          <SectionHeading
-            subtitle={teamSection.eyebrow}
-            title={teamSection.title}
-            align="center"
-            tone="light"
-            className="mb-4"
-          />
-          <p className="text-sm sm:text-base text-muted font-body leading-relaxed max-w-[560px]">
+        <div className="flex flex-col items-center text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          {teamSection.eyebrow ? (
+            <SectionHeading
+              subtitle={teamSection.eyebrow}
+              title={teamSection.title}
+              align="center"
+              tone="light"
+              className="mb-4"
+            />
+          ) : (
+            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-ink font-bold uppercase tracking-tight mb-4">
+              {teamSection.title}
+            </h2>
+          )}
+          <p className="text-sm sm:text-base text-ink/75 font-body leading-relaxed max-w-[560px]">
             {teamSection.description}
           </p>
         </div>

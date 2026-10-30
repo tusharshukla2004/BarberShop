@@ -1,100 +1,86 @@
 import { Link } from 'react-router-dom';
-import { IconButton } from '@/components/ui';
-import { Instagram, Twitter } from 'lucide-react';
+import { Instagram, Linkedin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Single Barber Profile Card
- * Features a 3:4 portrait image, floating pill tag with name and role, and social icon buttons
+ * Single Barber Profile Card matching the reference design.
+ * Features a 3:4 portrait image, floating white tag with name and role, and minimal social icons.
  *
  * @param {Object} props
  * @param {Object} props.barber
  * @param {string} props.barber.id
  * @param {string} props.barber.name
  * @param {string} props.barber.role
- * @param {string} props.barber.imageUrl
+ * @param {string} [props.barber.imageUrl]
+ * @param {string} [props.barber.photoUrl]
  * @param {Object} [props.barber.socials]
  * @param {string} [props.className]
  * @returns {JSX.Element}
  */
 export function BarberCard({ barber, className = '' }) {
-  const { name, role, imageUrl, socials = {} } = barber;
+  const { name, role, socials = {} } = barber;
+  const imageSrc = barber.imageUrl || barber.photoUrl;
 
   return (
     <div
       className={cn(
-        'group relative rounded-lg overflow-hidden bg-card border border-card-border shadow-sm transition-all duration-base hover:-translate-y-1.5 hover:shadow-xl flex flex-col',
+        'group relative rounded-3xl overflow-hidden bg-[#f4efe8] shadow-sm transition-all duration-base hover:-translate-y-1.5 hover:shadow-xl flex flex-col',
+        'aspect-[3/4] w-full',
         className
       )}
     >
       {/* 3:4 Aspect Ratio Portrait Container */}
-      <div className="relative w-full aspect-[3/4] overflow-hidden bg-ink/10">
-        <img
-          src={imageUrl}
-          alt={`Portrait of ${name}, ${role}`}
-          loading="lazy"
-          className="h-full w-full object-cover object-center transition-transform duration-slow group-hover:scale-105"
-        />
+      <div className="relative w-full h-full overflow-hidden">
+        {imageSrc ? (
+          <img
+            src={imageSrc}
+            alt={`Portrait of ${name}, ${role}`}
+            loading="lazy"
+            className="h-full w-full object-cover object-center transition-transform duration-slow group-hover:scale-105"
+          />
+        ) : (
+          <div className="h-full w-full bg-card flex items-center justify-center text-muted text-xs">
+            {name}
+          </div>
+        )}
 
-        {/* Subtle Dark Gradient Overlay for pill readability */}
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-ink/40 pointer-events-none"
-          aria-hidden="true"
-        />
-
-        {/* Top-Left: Floating White Rounded-Pill Tag with Name & Role */}
-        <div className="absolute top-4 left-4 z-10 max-w-[calc(100%-80px)]">
-          <div className="inline-flex flex-col px-3.5 py-1.5 rounded-pill bg-white/95 text-ink shadow-md backdrop-blur-sm border border-white/40">
+        {/* Top-Left: Floating White Rounded Tag with Name & Role */}
+        <div className="absolute top-4 left-4 z-10 max-w-[calc(100%-70px)]">
+          <div className="inline-flex flex-col px-4 py-2.5 rounded-2xl bg-white text-ink shadow-sm border border-black/5 text-left">
             <Link
               to="/barbers"
               className="font-semibold text-xs sm:text-sm text-ink hover:text-accent transition-colors truncate focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded-sm"
             >
               {name}
             </Link>
-            <span className="text-[11px] text-muted truncate">{role}</span>
+            <span className="text-[11px] text-muted truncate mt-0.5">{role}</span>
           </div>
         </div>
 
-        {/* Top-Right: Social Icons (only rendered when URL exists) */}
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
+        {/* Top-Right: Minimalist Social Icons stacked vertically */}
+        <div className="absolute top-4 right-4 z-10 flex flex-col items-center gap-2">
+          {socials.linkedin && (
+            <button
+              type="button"
+              aria-label={`Visit ${name}'s LinkedIn profile`}
+              onClick={() => window.open(socials.linkedin, '_blank', 'noopener,noreferrer')}
+              className="text-ink/60 hover:text-ink transition-colors p-1"
+            >
+              <Linkedin className="h-4 w-4" />
+            </button>
+          )}
+
           {socials.instagram && (
-            <IconButton
+            <button
+              type="button"
               aria-label={`Visit ${name}'s Instagram profile`}
-              variant="outline"
-              size="sm"
               onClick={() => window.open(socials.instagram, '_blank', 'noopener,noreferrer')}
-              className="h-8 w-8 rounded-pill bg-white/90 text-ink hover:bg-white hover:text-accent shadow-md border-transparent"
+              className="text-ink/60 hover:text-ink transition-colors p-1"
             >
-              <Instagram className="h-3.5 w-3.5" />
-            </IconButton>
-          )}
-
-          {socials.twitter && (
-            <IconButton
-              aria-label={`Visit ${name}'s Twitter profile`}
-              variant="outline"
-              size="sm"
-              onClick={() => window.open(socials.twitter, '_blank', 'noopener,noreferrer')}
-              className="h-8 w-8 rounded-pill bg-white/90 text-ink hover:bg-white hover:text-accent shadow-md border-transparent"
-            >
-              <Twitter className="h-3.5 w-3.5" />
-            </IconButton>
+              <Instagram className="h-4 w-4" />
+            </button>
           )}
         </div>
-
-        {/* Bottom subtle specialties bar */}
-        {barber.specialties && barber.specialties.length > 0 && (
-          <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap gap-1.5 pointer-events-none">
-            {barber.specialties.map((spec) => (
-              <span
-                key={spec}
-                className="px-2 py-0.5 rounded-sm bg-ink/75 text-[10px] font-medium uppercase tracking-wider text-white backdrop-blur-sm border border-border-dark"
-              >
-                {spec}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
