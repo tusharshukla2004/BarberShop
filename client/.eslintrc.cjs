@@ -13,7 +13,7 @@ module.exports = {
     'plugin:jsx-a11y/recommended',
     'prettier',
   ],
-  ignorePatterns: ['dist', 'coverage', 'node_modules', '*.min.js'],
+  ignorePatterns: ['dist', 'coverage', 'node_modules', '*.min.js', 'public/**'],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',

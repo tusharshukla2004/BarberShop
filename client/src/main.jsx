@@ -1,17 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from '@/app/store';
+import { Providers } from '@/app/providers';
 import App from '@/App';
 import '@/styles/globals.css';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
+/**
+ * Initialize mock service worker in development mode
+ */
+async function enableMocking() {
+  if (import.meta.env.DEV) {
+    const { worker } = await import('@/mocks/browser');
+    return worker.start({
+      onUnhandledRequest: 'bypass',
+    });
+  }
+}
+
+enableMocking().finally(() => {
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <Providers>
         <App />
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
-);
+      </Providers>
+    </React.StrictMode>
+  );
+});
