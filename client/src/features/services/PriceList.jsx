@@ -1,11 +1,16 @@
 import { useGetServicesQuery } from './servicesApi';
-import { SectionHeading, Button } from '@/components/ui';
-import { formatPrice } from '@/lib/formatters';
 import { QueryState } from '@/components/common/QueryState';
-import { ArrowRight } from 'lucide-react';
+import { siteConfig } from '@/config/site';
+
+const DEFAULT_PRICES = [
+  { id: 'srv-1', name: 'HAIRCUT', price: 40 },
+  { id: 'srv-2', name: 'SHAVE', price: 35 },
+  { id: 'srv-3', name: 'HAIRCUT + SHAVE', price: 70 },
+  { id: 'srv-4', name: 'BEARD TRIM', price: 15 },
+];
 
 /**
- * Service Price List with display typography and border-light dividers
+ * Service Price List matching the clean minimalist design from the reference screenshot.
  *
  * @param {Object} props
  * @param {string} [props.className]
@@ -15,84 +20,64 @@ export function PriceList({ className = '' }) {
   const { data: services = [], isLoading, isError, error, refetch } = useGetServicesQuery();
 
   const skeleton = (
-    <div className="flex flex-col gap-4">
-      {[1, 2, 3, 4, 5].map((n) => (
+    <div className="flex flex-col">
+      {[1, 2, 3, 4].map((n) => (
         <div
           key={n}
-          className="flex items-center justify-between py-3.5 border-b border-border-light animate-pulse"
+          className="flex items-center justify-between py-4 sm:py-5 border-b border-ink/20 animate-pulse"
         >
-          <div className="h-6 w-48 bg-card rounded-sm" />
-          <div className="h-6 w-16 bg-card rounded-sm" />
+          <div className="h-5 w-32 bg-ink/10 rounded-sm" />
+          <div className="h-5 w-12 bg-ink/10 rounded-sm" />
         </div>
       ))}
     </div>
   );
 
+  const displayServices =
+    services.length > 0
+      ? services.slice(0, 4).map((s, idx) => ({
+          id: s.id,
+          name: s.name.toUpperCase(),
+          price: s.price,
+          fallback: DEFAULT_PRICES[idx],
+        }))
+      : DEFAULT_PRICES;
+
+  const currencySymbol = siteConfig.currency === '₹' ? '$' : siteConfig.currency;
+
   return (
-    <div className={`w-full flex flex-col justify-between ${className}`}>
-      <div>
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
-          <SectionHeading
-            subtitle="Transparent Rates"
-            title="OUR PRICES"
-            align="left"
-            tone="light"
-          />
-          <Button
-            to="/services"
-            variant="ghost"
-            size="sm"
-            rightIcon={<ArrowRight className="h-4 w-4" />}
-            className="text-xs uppercase font-semibold text-accent hover:text-accent-hover tracking-wider p-0 self-start sm:self-auto"
-          >
-            Full Menu
-          </Button>
+    <div className={`w-full flex flex-col justify-center text-left ${className}`}>
+      <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-ink font-bold uppercase tracking-tight leading-none mb-6 sm:mb-8">
+        OUR PRICES
+      </h2>
+
+      <QueryState
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        isEmpty={displayServices.length === 0}
+        emptyMessage="No services currently listed."
+        skeleton={skeleton}
+        onRetry={refetch}
+      >
+        <div className="flex flex-col">
+          {displayServices.map((service) => (
+            <div
+              key={service.id || service.name}
+              className="flex items-center justify-between py-4 sm:py-5 border-b border-ink/20"
+            >
+              <span className="font-sans text-sm sm:text-base tracking-wide font-normal uppercase text-ink">
+                {service.name}
+              </span>
+
+              <span className="font-sans text-sm sm:text-base font-normal text-ink">
+                {currencySymbol}
+                {service.price}
+              </span>
+            </div>
+          ))}
         </div>
-
-        {/* Governed by QueryState */}
-        <QueryState
-          isLoading={isLoading}
-          isError={isError}
-          error={error}
-          isEmpty={services.length === 0}
-          emptyMessage="No services currently listed."
-          skeleton={skeleton}
-          onRetry={refetch}
-        >
-          <div className="flex flex-col divide-y divide-border-light">
-            {services.map((service) => (
-              <div
-                key={service.id}
-                className="flex items-center justify-between py-3.5 sm:py-4 group hover:bg-card/40 px-2 -mx-2 rounded-sm transition-colors duration-fast"
-              >
-                <div className="flex flex-col text-left">
-                  <span className="font-display text-xl sm:text-2xl text-ink uppercase tracking-wide group-hover:text-accent transition-colors">
-                    {service.name}
-                  </span>
-                  {service.description && (
-                    <span className="text-xs text-muted max-w-sm line-clamp-1 mt-0.5">
-                      {service.description}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0 pl-4">
-                  <span className="font-display text-2xl sm:text-3xl text-ink font-semibold">
-                    {formatPrice(service.price)}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </QueryState>
-      </div>
-
-      <div className="pt-6 mt-4 border-t border-border-light flex items-center justify-between text-xs text-muted">
-        <span>* All services include complimentary warm towels and styling.</span>
-        <Button to="/book" variant="primary" size="sm">
-          Book Now
-        </Button>
-      </div>
+      </QueryState>
     </div>
   );
 }

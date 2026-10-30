@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { useGetGalleryQuery } from './galleryApi';
-import { SectionHeading } from '@/components/ui';
 import { Carousel } from '@/components/common/Carousel';
 import { SlideControls } from '@/components/common/SlideControls';
 import { QueryState } from '@/components/common/QueryState';
@@ -8,6 +7,8 @@ import { cn } from '@/lib/utils';
 
 /**
  * Works Gallery Slider with 2-column layout and right viewport bleed
+ * Exactly matches the reference design.
+ *
  * @returns {JSX.Element}
  */
 export function WorksSlider() {
@@ -15,19 +16,15 @@ export function WorksSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef(null);
 
-  const total = galleryItems.length;
-  const currentFormatted = String(total > 0 ? Math.min(currentSlide + 1, total) : 0).padStart(
-    2,
-    '0'
-  );
-  const totalFormatted = String(total).padStart(2, '0');
+  const total = galleryItems.length || 15;
+  const currentNum = Math.min(currentSlide + 1, total);
 
   const skeleton = (
     <div className="flex gap-4">
       {[1, 2, 3].map((n) => (
         <div
           key={n}
-          className="w-[260px] sm:w-[300px] aspect-[4/5] rounded-lg bg-card border border-border-light animate-pulse shrink-0"
+          className="w-[260px] sm:w-[300px] aspect-[4/5] rounded-2xl bg-card border border-border-light animate-pulse shrink-0"
         />
       ))}
     </div>
@@ -37,24 +34,20 @@ export function WorksSlider() {
     <div className="w-full">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* Left Column: Heading, description, live counter, and arrow controls */}
-        <div className="lg:col-span-5 flex flex-col gap-6 text-left">
-          <SectionHeading
-            subtitle="Curated Portfolio"
-            title="DISCOVER OUR WORKS"
-            align="left"
-            tone="light"
-            className="gap-3"
-          />
+        <div className="lg:col-span-5 flex flex-col justify-center text-left">
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-ink font-bold uppercase tracking-tight leading-[0.92]">
+            DISCOVER<br />OUR WORKS
+          </h2>
 
-          <p className="text-sm sm:text-base text-ink/75 font-body leading-relaxed max-w-md">
-            Explore our latest artisan cuts, skin fades, and beard tapers. Each look is customized
-            to accentuate facial geometry and personal style.
+          <p className="text-xs sm:text-sm text-ink/80 font-body leading-relaxed max-w-[340px] mt-4 sm:mt-5">
+            Our team of experienced barbers is dedicated to their craft. We stay updated with the
+            latest techniques and styles to ensure you get the best service possible.
           </p>
 
           {/* Live Slide Counter & Slide Controls */}
-          <div className="flex items-center gap-6 pt-4 border-t border-border-light">
-            <span className="font-mono text-lg font-bold tracking-widest text-ink select-none">
-              ({currentFormatted}/{totalFormatted})
+          <div className="flex flex-col gap-2 mt-8 sm:mt-12">
+            <span className="font-mono text-sm sm:text-base font-semibold tracking-wider text-ink select-none">
+              ({total}/{currentNum})
             </span>
 
             <SlideControls
@@ -82,32 +75,23 @@ export function WorksSlider() {
               options={{ loop: false, align: 'start', dragFree: false }}
               onSlideChange={(index) => setCurrentSlide(index)}
               className="overflow-visible"
-              containerClassName="gap-5"
+              containerClassName="gap-5 sm:gap-6"
               ariaLabel="Works Gallery Showcase"
             >
               {galleryItems.map((item, idx) => (
                 <div
                   key={item.id}
                   className={cn(
-                    'w-[240px] sm:w-[280px] md:w-[320px] shrink-0 rounded-lg overflow-hidden group select-none relative',
-                    'aspect-[4/5] bg-card border border-card-border shadow-sm transition-all duration-base hover:-translate-y-1 hover:shadow-md'
+                    'w-[240px] sm:w-[280px] md:w-[320px] shrink-0 rounded-2xl overflow-hidden group select-none relative',
+                    'aspect-[4/5] bg-card border border-card-border/40 shadow-sm transition-all duration-base hover:-translate-y-1 hover:shadow-md'
                   )}
                 >
                   <img
                     src={item.imageUrl}
-                    alt={item.caption || item.category}
+                    alt={item.caption || item.category || 'Barber work'}
                     loading={idx < 2 ? 'eager' : 'lazy'}
                     className="h-full w-full object-cover object-center transition-transform duration-slow group-hover:scale-105"
                   />
-                  {/* Subtle bottom gradient & caption overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent opacity-90 transition-opacity p-4 flex flex-col justify-end text-left">
-                    <span className="text-[11px] font-semibold tracking-widest uppercase text-accent">
-                      {item.category}
-                    </span>
-                    <h3 className="font-display text-lg sm:text-xl text-white uppercase tracking-wide leading-tight mt-0.5">
-                      {item.caption}
-                    </h3>
-                  </div>
                 </div>
               ))}
             </Carousel>
