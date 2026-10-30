@@ -113,7 +113,7 @@ export function MobileMenu() {
         <nav className="flex flex-col gap-4" aria-label="Mobile Navigation">
           {siteConfig.navLinks.map((link) => (
             <NavLink
-              key={link.href}
+              key={link.label}
               to={link.href}
               onClick={() => dispatch(closeMobileMenu())}
               className={({ isActive }) =>

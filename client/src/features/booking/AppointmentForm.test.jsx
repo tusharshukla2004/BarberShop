@@ -30,8 +30,8 @@ function renderForm() {
 describe('AppointmentForm validation', () => {
   it('renders all form fields with accessible labels and placeholders', () => {
     renderForm();
-    expect(screen.getByPlaceholderText(/john lennon/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/phone/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/full name/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/phone number/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/preferred date and time/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /submit request/i })).toBeInTheDocument();
   });

@@ -39,10 +39,10 @@
  */
 export const siteConfig = {
   name: 'Modern Mane',
-  url: 'https://modernmane.com',
+  url: 'https://vintageblade.in',
   tagline: 'Where Tradition Meets Modern Style',
   description:
-    'Experience high-precision haircuts, classic hot towel straight razor shaves, and bespoke beard trims in a vintage lounge atmosphere.',
+    "Our mission is to provide exceptional grooming services in a relaxed and friendly environment. Whether you're here for a classic haircut, a modern fade, or a clean shave, our skilled barbers are dedicated to ensuring you leave looking and feeling your best.",
   address: '42 Heritage Lane, Near Clock Tower, Bandra West, Mumbai 400050',
   location: {
     lat: 19.0596,
@@ -50,7 +50,7 @@ export const siteConfig = {
     zoom: 15,
   },
   phone: '+91 98765 43210',
-  email: 'hello@vintageblade.in',
+  email: 'hello@modernmane.in',
   hours: [
     { days: 'Monday – Friday', time: '9:00 AM – 8:30 PM' },
     { days: 'Saturday', time: '8:30 AM – 9:00 PM' },
@@ -58,21 +58,21 @@ export const siteConfig = {
   ],
   currency: '₹',
   social: {
-    instagram: 'https://instagram.com/vintageblade',
-    facebook: 'https://facebook.com/vintageblade',
-    twitter: 'https://twitter.com/vintageblade',
-    youtube: 'https://youtube.com/@vintageblade',
+    instagram: 'https://instagram.com/modernmane',
+    facebook: 'https://facebook.com/modernmane',
+    twitter: 'https://twitter.com/modernmane',
+    youtube: 'https://youtube.com/@modernmane',
   },
   navLinks: [
     { label: 'Home', href: '/' },
     { label: 'Services', href: '/services' },
-    { label: 'Gallery', href: '/gallery' },
-    { label: 'Barbers', href: '/barbers' },
-    { label: 'About', href: '/about' },
+    { label: 'About us', href: '/about' },
+    { label: 'News', href: '/gallery' },
+    { label: 'Shop', href: '/services' },
   ],
   cta: {
-    label: 'Book Appointment',
-    href: '/book',
+    label: 'Contact us',
+    href: '/contact',
   },
   careers: {
     title: 'Would you like to join our team?',

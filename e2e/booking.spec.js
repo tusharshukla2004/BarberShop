@@ -4,7 +4,7 @@ test.describe('Customer Booking Flow E2E', () => {
   test('completes full appointment flow from Hero request form to confirmation', async ({ page }) => {
     // 1. Visit Home Page
     await page.goto('/');
-    await expect(page).toHaveTitle(/The Vintage Blade/i);
+    await expect(page).toHaveTitle(/Modern Mane|The Vintage Blade/i);
 
     // 2. Fill quick appointment form in Hero
     await page.fill('#hero-name', 'Rohan Sharma');

@@ -7,17 +7,26 @@ import { addToast } from '@/features/ui/uiSlice';
 import { saveBookingDraft, selectBookingDraft } from './bookingDraftSlice';
 import { useCreateBookingRequestMutation } from './bookingApi';
 import { appointmentRequestSchema } from './schema';
-import { DateTimeField } from '@/components/ui';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
+ * Calculates current local date-time string for min attribute in input[type="datetime-local"]
+ * @returns {string} e.g. "2026-10-30T15:30"
+ */
+function getMinDateTimeString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+/**
  * Quick appointment request form embedded inside Hero glass card
- * Matches reference screenshot exactly:
- * - John Lennon
- * - Email
- * - Phone
- * - [ Date & Time ] [ Submit request ]
+ * Matching the exact reference layout with side-by-side date & submit button
  *
  * @param {Object} props
  * @param {string} [props.className]
@@ -79,13 +88,11 @@ export function AppointmentForm({ className = '' }) {
     }
   };
 
-  // Sleek dark glass input matching reference screenshot
   const glassInputClass = cn(
-    'w-full px-4 py-2.5 rounded-lg text-sm transition-all duration-fast outline-none',
+    'w-full px-3.5 py-2.5 sm:py-3 rounded-md text-sm transition-all duration-fast outline-none',
     'bg-black/35 text-white placeholder:text-white/45 border border-white/20',
     '[color-scheme:dark] focus:[color-scheme:light]',
-    // High-contrast focus state matching reference (white fill, black text)
-    'focus:bg-white focus:text-black focus:border-white focus:placeholder:text-gray-400 focus:ring-1 focus:ring-accent'
+    'focus:bg-white focus:text-ink focus:border-white focus:placeholder:text-muted focus:ring-2 focus:ring-accent'
   );
 
   return (
@@ -94,7 +101,7 @@ export function AppointmentForm({ className = '' }) {
       noValidate
       className={cn('flex flex-col gap-3 text-left w-full', className)}
     >
-      {/* Full Name (John Lennon) */}
+      {/* Full Name */}
       <div className="flex flex-col gap-1 w-full">
         <label htmlFor="hero-name" className="sr-only">
           Full Name
@@ -102,12 +109,12 @@ export function AppointmentForm({ className = '' }) {
         <input
           id="hero-name"
           type="text"
-          placeholder="John Lennon"
+          placeholder="Full Name (e.g. John Lennon) *"
           autoComplete="name"
           aria-invalid={Boolean(errors.name)}
           aria-describedby={errors.name ? 'hero-name-error' : undefined}
           disabled={isLoading || isSubmitting}
-          className={cn(glassInputClass, errors.name && 'border-red-500 focus:border-red-500')}
+          className={cn(glassInputClass, errors.name && 'border-red-500')}
           {...register('name')}
         />
         {errors.name && (
@@ -121,10 +128,10 @@ export function AppointmentForm({ className = '' }) {
         )}
       </div>
 
-      {/* Email */}
+      {/* Email (Optional) */}
       <div className="flex flex-col gap-1 w-full">
         <label htmlFor="hero-email" className="sr-only">
-          Email
+          Email Address (Optional)
         </label>
         <input
           id="hero-email"
@@ -134,7 +141,7 @@ export function AppointmentForm({ className = '' }) {
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? 'hero-email-error' : undefined}
           disabled={isLoading || isSubmitting}
-          className={cn(glassInputClass, errors.email && 'border-red-500 focus:border-red-500')}
+          className={cn(glassInputClass, errors.email && 'border-red-500')}
           {...register('email')}
         />
         {errors.email && (
@@ -151,17 +158,17 @@ export function AppointmentForm({ className = '' }) {
       {/* Phone Number */}
       <div className="flex flex-col gap-1 w-full">
         <label htmlFor="hero-phone" className="sr-only">
-          Phone
+          Phone Number
         </label>
         <input
           id="hero-phone"
           type="tel"
-          placeholder="Phone"
+          placeholder="Phone Number *"
           autoComplete="tel"
           aria-invalid={Boolean(errors.phone)}
           aria-describedby={errors.phone ? 'hero-phone-error' : undefined}
           disabled={isLoading || isSubmitting}
-          className={cn(glassInputClass, errors.phone && 'border-red-500 focus:border-red-500')}
+          className={cn(glassInputClass, errors.phone && 'border-red-500')}
           {...register('phone')}
         />
         {errors.phone && (
@@ -175,32 +182,54 @@ export function AppointmentForm({ className = '' }) {
         )}
       </div>
 
-      {/* Date & Time + Submit Button Row (Matching reference screenshot exactly) */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2.5 pt-1">
-        <div className="flex-1">
-          <DateTimeField
-            id="hero-datetime"
-            label="Preferred Date and Time"
-            hideLabel
-            required
-            disabled={isLoading || isSubmitting}
-            error={errors.dateTime?.message}
-            {...register('dateTime')}
-          />
+      {/* Row 4: Date & Time + Submit Button side-by-side matching screenshot */}
+      <div className="flex flex-col gap-1 w-full pt-1">
+        <label htmlFor="hero-datetime" className="sr-only">
+          Preferred Date and Time
+        </label>
+        <div className="grid grid-cols-12 gap-2 sm:gap-2.5 items-center">
+          <div className="col-span-7">
+            <input
+              id="hero-datetime"
+              type="datetime-local"
+              min={getMinDateTimeString()}
+              required
+              disabled={isLoading || isSubmitting}
+              aria-invalid={Boolean(errors.dateTime)}
+              aria-describedby={errors.dateTime ? 'hero-datetime-error' : undefined}
+              className={cn(
+                'w-full px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm transition-all duration-fast outline-none',
+                'bg-black/35 text-white placeholder:text-white/45 border border-white/20 [color-scheme:dark]',
+                'focus:bg-white focus:text-ink focus:border-white focus:ring-2 focus:ring-accent focus:[color-scheme:light]',
+                errors.dateTime && 'border-red-500'
+              )}
+              {...register('dateTime')}
+            />
+          </div>
+          <div className="col-span-5">
+            <button
+              type="submit"
+              disabled={isLoading || isSubmitting}
+              className="w-full py-2.5 sm:py-3 px-2 sm:px-3 rounded-md bg-[#f9a55a] hover:bg-[#e89243] text-ink font-semibold text-xs sm:text-sm tracking-wide transition-colors text-center whitespace-nowrap shadow-sm disabled:opacity-50"
+            >
+              {isLoading || isSubmitting ? 'Submitting...' : 'Submit request'}
+            </button>
+          </div>
         </div>
-
-        <button
-          type="submit"
-          disabled={isLoading || isSubmitting}
-          className="bg-accent hover:bg-accent-hover text-ink font-semibold text-xs sm:text-sm px-4 sm:px-5 rounded-lg whitespace-nowrap transition-colors shadow-md hover:shadow-lg disabled:opacity-50 shrink-0 h-[42px] flex items-center justify-center cursor-pointer select-none"
-        >
-          {isLoading || isSubmitting ? 'Requesting...' : 'Submit request'}
-        </button>
+        {errors.dateTime && (
+          <span
+            id="hero-datetime-error"
+            role="alert"
+            className="text-[11px] font-medium text-red-400 tracking-wide"
+          >
+            {errors.dateTime.message}
+          </span>
+        )}
       </div>
 
       {/* Post-submit Callout */}
       {isSuccess && (
-        <div className="p-3 rounded-lg bg-accent/20 border border-accent/40 text-xs text-white flex items-center justify-between gap-2 mt-2">
+        <div className="p-3 rounded-md bg-accent/15 border border-accent/40 text-xs text-white flex items-center justify-between gap-2 mt-2">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-accent shrink-0" />
             <span>Draft saved! Continue to slot booking?</span>
