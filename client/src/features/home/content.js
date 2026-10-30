@@ -31,6 +31,16 @@ export const homeContent = {
       contactTitle: 'Phone & Hours',
     },
   },
+  teamSection: {
+    eyebrow: 'Master Artisans',
+    title: 'MEET OUR EXPERTS',
+    description:
+      'Our collective of certified master barbers combines generational grooming heritage with sharp modern aesthetics to craft your signature look.',
+    viewAllCta: {
+      label: 'View all barbers',
+      href: '/barbers',
+    },
+  },
 };
 
 export default homeContent;

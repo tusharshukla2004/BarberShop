@@ -1,5 +1,5 @@
 import { http, HttpResponse, delay } from 'msw';
-import { mockGalleryItems, mockServices, mockTestimonials } from './data';
+import { mockGalleryItems, mockServices, mockTestimonials, mockBarbers } from './data';
 
 /**
  * Mock Service Worker request handlers
@@ -58,6 +58,15 @@ export const handlers = [
     return HttpResponse.json({
       success: true,
       data: mockTestimonials,
+    });
+  }),
+
+  // Barbers Team Endpoint
+  http.get('/api/barbers', async () => {
+    await delay(200);
+    return HttpResponse.json({
+      success: true,
+      data: mockBarbers,
     });
   }),
 ];

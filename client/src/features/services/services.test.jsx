@@ -22,9 +22,7 @@ function renderWithStore(ui) {
 
   return render(
     <Provider store={store}>
-      <MemoryRouter>
-        {ui}
-      </MemoryRouter>
+      <MemoryRouter>{ui}</MemoryRouter>
     </Provider>
   );
 }

@@ -73,6 +73,11 @@ export const siteConfig = {
     label: 'Book Appointment',
     href: '/book',
   },
+  careers: {
+    title: 'Would you like to join our team?',
+    label: 'Send a resume',
+    href: 'mailto:careers@vintageblade.in?subject=Master%20Barber%20Application',
+  },
 };
 
 export default siteConfig;

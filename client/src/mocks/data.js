@@ -1,5 +1,5 @@
 /**
- * Mock data fixtures for Services, Gallery, and Customer Reviews
+ * Mock data fixtures for Services, Gallery, Customer Reviews, and Barbers
  */
 
 export const mockGalleryItems = [
@@ -146,3 +146,63 @@ export const mockServices = [
     category: 'Treatment',
   },
 ];
+
+export const mockBarbers = [
+  {
+    id: 'barb-1',
+    name: 'Devraj Saxena',
+    role: 'Master Craftsman & Founder',
+    imageUrl:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+    specialties: ['Classic Scissor Fades', 'Hot Lather Shaves'],
+    experience: '14 Years Exp.',
+    isActive: true,
+    socials: {
+      instagram: 'https://instagram.com/devraj.cuts',
+      twitter: 'https://twitter.com/devrajcuts',
+    },
+  },
+  {
+    id: 'barb-2',
+    name: 'Arbaaz Khan',
+    role: 'Senior Stylist & Beard Artisan',
+    imageUrl:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
+    specialties: ['Beard Sculpting', 'Skin Tapers'],
+    experience: '9 Years Exp.',
+    isActive: true,
+    socials: {
+      instagram: 'https://instagram.com/arbaazbarber',
+    },
+  },
+  {
+    id: 'barb-3',
+    name: 'Neil Fernandes',
+    role: 'Traditional Barber',
+    imageUrl:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+    specialties: ['Textured Crops', 'Head Shaves'],
+    experience: '7 Years Exp.',
+    isActive: true,
+    socials: {
+      instagram: 'https://instagram.com/neil.barber',
+      twitter: 'https://twitter.com/neilbarber',
+    },
+  },
+  {
+    id: 'barb-4',
+    name: 'Sameer Sheikh',
+    role: 'Grooming Specialist',
+    imageUrl:
+      'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=80',
+    specialties: ['Executive Styling', 'Scalp Care'],
+    experience: '6 Years Exp.',
+    isActive: true,
+    socials: {
+      instagram: 'https://instagram.com/sameer.grooming',
+    },
+  },
+];
+
+export const joinTeamBgImage =
+  'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';

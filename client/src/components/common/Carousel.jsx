@@ -94,10 +94,7 @@ export const Carousel = forwardRef(function Carousel(
       role="region"
       aria-roledescription="carousel"
       aria-label={ariaLabel}
-      className={cn(
-        'overflow-hidden select-none outline-none rounded-lg',
-        className
-      )}
+      className={cn('overflow-hidden select-none outline-none rounded-lg', className)}
     >
       <div className={cn('flex', containerClassName)}>{children}</div>
     </div>
