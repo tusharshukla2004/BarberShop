@@ -1,5 +1,5 @@
 import { siteConfig } from '@/config/site';
-import { joinTeamBgImage } from '@/mocks/data';
+import { assets } from '@/assets';
 import { ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +24,7 @@ export function JoinTeamCard({ className = '' }) {
     >
       {/* Full-bleed Background Image with Dark Gradients */}
       <img
-        src={joinTeamBgImage}
+        src={assets.joinTeamBg}
         alt="Barbershop workstation with vintage shears and leather chairs"
         loading="lazy"
         className="h-full w-full object-cover object-center opacity-45 scale-100 transition-transform duration-slow group-hover:scale-105"

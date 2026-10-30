@@ -1,206 +1,250 @@
 /**
- * Mock data fixtures for Services, Gallery, Customer Reviews, and Barbers
+ * Mock data fixtures conforming strictly to src/types/index.js shapes
  */
 
-export const mockGalleryItems = [
-  {
-    id: 'gal-1',
-    title: 'Textured Crop & Low Razor Fade',
-    category: 'Haircut',
-    imageUrl:
-      'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-  {
-    id: 'gal-2',
-    title: 'Classic Side Part & Taper',
-    category: 'Haircut',
-    imageUrl:
-      'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-  {
-    id: 'gal-3',
-    title: 'Hot Towel Straight Razor Shave',
-    category: 'Shave',
-    imageUrl:
-      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-  {
-    id: 'gal-4',
-    title: 'Sharp Beard Sculpt & Lineup',
-    category: 'Beard',
-    imageUrl:
-      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-  {
-    id: 'gal-5',
-    title: 'Modern Pompadour with Mid Fade',
-    category: 'Haircut',
-    imageUrl:
-      'https://images.unsplash.com/photo-1517832606589-7629c3397143?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-  {
-    id: 'gal-6',
-    title: 'Traditional Scissor Cut & Styling',
-    category: 'Haircut',
-    imageUrl:
-      'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-  {
-    id: 'gal-7',
-    title: 'Luxury Facial & Steam Massage',
-    category: 'Treatment',
-    imageUrl:
-      'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-  {
-    id: 'gal-8',
-    title: 'Executive Haircut & Beard Duo',
-    category: 'Combo',
-    imageUrl:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-    aspectRatio: '4/5',
-  },
-];
-
-export const mockTestimonials = [
-  {
-    id: 'rev-1',
-    author: 'Vikram Malhotra',
-    role: 'Loyal Client of 3 Years',
-    rating: 5,
-    quote:
-      'The attention to detail here is genuinely unparalleled. From the eucalyptus hot towel to the flawless razor taper, this is the only barbershop I trust in Mumbai.',
-  },
-  {
-    id: 'rev-2',
-    author: 'Kabir Sen',
-    role: 'Creative Director',
-    rating: 5,
-    quote:
-      'Stepping into this lounge feels like a private sanctuary. The master barbers treat their craft with surgical precision and the hospitality is top-tier.',
-  },
-  {
-    id: 'rev-3',
-    author: 'Aditya Singhania',
-    role: 'Entrepreneur',
-    rating: 5,
-    quote:
-      'Bespoke beard trimming done right. Sharp clean lines, soothing organic balms, and an ambiance where you can genuinely unwind after a grueling week.',
-  },
-];
-
+/** @type {import('@/types').Service[]} */
 export const mockServices = [
   {
     id: 'srv-1',
     name: 'CLASSIC HAIRCUT & STYLING',
+    category: 'Hair',
     description: 'Precision consultation, razor neckline finish, tonic & hot towel.',
     price: 850,
     durationMinutes: 45,
-    category: 'Hair',
+    isActive: true,
   },
   {
     id: 'srv-2',
     name: 'TRADITIONAL HOT TOWEL SHAVE',
+    category: 'Shave',
     description: 'Pre-shave essential oils, dual hot lather wraps, straight razor glide.',
     price: 650,
     durationMinutes: 35,
-    category: 'Shave',
+    isActive: true,
   },
   {
     id: 'srv-3',
     name: 'BEARD SCULPT & LINEUP',
+    category: 'Beard',
     description: 'Artisanal beard shaping, foil razor detailing, and organic beard butter.',
     price: 550,
     durationMinutes: 30,
-    category: 'Beard',
+    isActive: true,
   },
   {
     id: 'srv-4',
     name: 'THE EXECUTIVE COMBO',
+    category: 'Combo',
     description: 'Haircut, straight razor shave, scalp massage & revitalizing facial towel.',
     price: 1350,
     durationMinutes: 75,
-    category: 'Combo',
+    isActive: true,
   },
   {
     id: 'srv-5',
     name: 'HEAD SHAVE WITH HOT LATHER',
+    category: 'Shave',
     description: 'Full head shave with calming herbal balms and cool moisturizing compress.',
     price: 700,
     durationMinutes: 40,
-    category: 'Shave',
+    isActive: true,
   },
   {
     id: 'srv-6',
     name: 'DETOX SCALP & CHARCOAL FACIAL',
+    category: 'Treatment',
     description: 'Deep cleansing steam treatment, clay mask, and pressure-point massage.',
     price: 950,
     durationMinutes: 45,
-    category: 'Treatment',
+    isActive: true,
   },
 ];
 
+/** @type {import('@/types').Barber[]} */
 export const mockBarbers = [
   {
     id: 'barb-1',
     name: 'Devraj Saxena',
     role: 'Master Craftsman & Founder',
-    imageUrl:
+    photoUrl:
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+    experienceYears: 14,
     specialties: ['Classic Scissor Fades', 'Hot Lather Shaves'],
-    experience: '14 Years Exp.',
-    isActive: true,
     socials: {
       instagram: 'https://instagram.com/devraj.cuts',
       twitter: 'https://twitter.com/devrajcuts',
     },
+    isActive: true,
   },
   {
     id: 'barb-2',
     name: 'Arbaaz Khan',
     role: 'Senior Stylist & Beard Artisan',
-    imageUrl:
+    photoUrl:
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
+    experienceYears: 9,
     specialties: ['Beard Sculpting', 'Skin Tapers'],
-    experience: '9 Years Exp.',
-    isActive: true,
     socials: {
       instagram: 'https://instagram.com/arbaazbarber',
     },
+    isActive: true,
   },
   {
     id: 'barb-3',
     name: 'Neil Fernandes',
     role: 'Traditional Barber',
-    imageUrl:
+    photoUrl:
       'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+    experienceYears: 7,
     specialties: ['Textured Crops', 'Head Shaves'],
-    experience: '7 Years Exp.',
-    isActive: true,
     socials: {
       instagram: 'https://instagram.com/neil.barber',
       twitter: 'https://twitter.com/neilbarber',
     },
+    isActive: true,
+  },
+];
+
+/** @type {import('@/types').GalleryItem[]} */
+export const mockGalleryItems = [
+  {
+    id: 'gal-1',
+    imageUrl:
+      'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=800&q=80',
+    category: 'Haircut',
+    caption: 'Textured Crop & Low Razor Fade',
   },
   {
-    id: 'barb-4',
-    name: 'Sameer Sheikh',
-    role: 'Grooming Specialist',
+    id: 'gal-2',
     imageUrl:
-      'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=80',
-    specialties: ['Executive Styling', 'Scalp Care'],
-    experience: '6 Years Exp.',
-    isActive: true,
-    socials: {
-      instagram: 'https://instagram.com/sameer.grooming',
-    },
+      'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=800&q=80',
+    category: 'Haircut',
+    caption: 'Classic Side Part & Taper',
+  },
+  {
+    id: 'gal-3',
+    imageUrl:
+      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+    category: 'Shave',
+    caption: 'Hot Towel Straight Razor Shave',
+  },
+  {
+    id: 'gal-4',
+    imageUrl:
+      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80',
+    category: 'Beard',
+    caption: 'Sharp Beard Sculpt & Lineup',
+  },
+  {
+    id: 'gal-5',
+    imageUrl:
+      'https://images.unsplash.com/photo-1517832606589-7629c3397143?auto=format&fit=crop&w=800&q=80',
+    category: 'Haircut',
+    caption: 'Modern Pompadour with Mid Fade',
+  },
+  {
+    id: 'gal-6',
+    imageUrl:
+      'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80',
+    category: 'Haircut',
+    caption: 'Traditional Scissor Cut & Styling',
+  },
+  {
+    id: 'gal-7',
+    imageUrl:
+      'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80',
+    category: 'Treatment',
+    caption: 'Luxury Facial & Steam Massage',
+  },
+  {
+    id: 'gal-8',
+    imageUrl:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+    category: 'Combo',
+    caption: 'Executive Haircut & Beard Duo',
+  },
+];
+
+/** @type {import('@/types').Review[]} */
+export const mockTestimonials = [
+  {
+    id: 'rev-1',
+    customerName: 'Vikram Malhotra',
+    role: 'Loyal Client of 3 Years',
+    rating: 5,
+    text: 'The attention to detail here is genuinely unparalleled. From the eucalyptus hot towel to the flawless razor taper, this is the only barbershop I trust in Mumbai.',
+  },
+  {
+    id: 'rev-2',
+    customerName: 'Kabir Sen',
+    role: 'Creative Director',
+    rating: 5,
+    text: 'Stepping into this lounge feels like a private sanctuary. The master barbers treat their craft with surgical precision and the hospitality is top-tier.',
+  },
+  {
+    id: 'rev-3',
+    customerName: 'Aditya Singhania',
+    role: 'Entrepreneur',
+    rating: 5,
+    text: 'Bespoke beard trimming done right. Sharp clean lines, soothing organic balms, and an ambiance where you can genuinely unwind after a grueling week.',
+  },
+  {
+    id: 'rev-4',
+    customerName: 'Rohan Mehra',
+    role: 'Architect',
+    rating: 5,
+    text: 'The best scissor haircut in the city. No rushing, flawless fades, and a cup of warm artisanal coffee while you wait. Pure gentleman experience.',
+  },
+  {
+    id: 'rev-5',
+    customerName: 'Siddharth Roy',
+    role: 'Film Producer',
+    rating: 5,
+    text: 'The hot lather straight razor shave is transformative. You leave feeling rejuvenated, sharp, and confident. Highest recommendation.',
+  },
+];
+
+/** @type {import('@/types').Settings} */
+export const mockSettings = {
+  shopHours: [
+    { days: 'Monday – Friday', time: '9:00 AM – 8:30 PM' },
+    { days: 'Saturday', time: '8:30 AM – 9:00 PM' },
+    { days: 'Sunday', time: '9:30 AM – 7:00 PM' },
+  ],
+  holidays: ['2026-12-25', '2026-01-01'],
+  slotLengthMinutes: 30,
+  policies: {
+    cancelWindowHours: 2,
+    depositRequired: false,
+    gracePeriodMinutes: 10,
+  },
+};
+
+/** @type {import('@/types').Booking[]} */
+export const mockBookings = [
+  {
+    id: 'bk-101',
+    customerName: 'Arjun Verma',
+    phone: '9876543210',
+    email: 'arjun@example.com',
+    serviceId: 'srv-1',
+    barberId: 'barb-1',
+    date: '2026-11-01',
+    startTime: '10:00 AM',
+    endTime: '10:45 AM',
+    status: 'confirmed',
+    notes: 'Low fade on sides',
+  },
+  {
+    id: 'bk-102',
+    customerName: 'Karan Joshi',
+    phone: '9876543211',
+    serviceId: 'srv-3',
+    barberId: 'barb-2',
+    date: '2026-11-01',
+    startTime: '11:30 AM',
+    endTime: '12:00 PM',
+    status: 'confirmed',
   },
 ];
 

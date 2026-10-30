@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { appointmentRequestSchema } from './schema';
-import bookingDraftReducer, { saveBookingDraft, clearBookingDraft } from './bookingDraftSlice';
+import { store } from '@/app/store';
+import bookingDraftReducer, {
+  saveBookingDraft,
+  clearBookingDraft,
+  selectIsDraftReady,
+  selectDraftSummary,
+} from './bookingDraftSlice';
 
 describe('Booking Feature', () => {
   describe('appointmentRequestSchema validation', () => {
@@ -48,12 +54,8 @@ describe('Booking Feature', () => {
     });
   });
 
-  describe('bookingDraftSlice', () => {
-    beforeEach(() => {
-      sessionStorage.clear();
-    });
-
-    it('saves draft data to state and sessionStorage', () => {
+  describe('bookingDraftSlice pure reducer & selectors', () => {
+    it('updates state via pure reducer', () => {
       const initial = {
         name: '',
         phone: '',
@@ -70,12 +72,11 @@ describe('Booking Feature', () => {
 
       expect(updated.name).toBe('Rohan Sharma');
       expect(updated.phone).toBe('9876543210');
-      expect(sessionStorage.getItem('barbershop_booking_draft')).toContain('Rohan Sharma');
+      expect(selectIsDraftReady({ bookingDraft: updated })).toBe(false);
+      expect(selectDraftSummary({ bookingDraft: updated }).hasContactInfo).toBe(true);
     });
 
-    it('clears draft and removes from sessionStorage', () => {
-      sessionStorage.setItem('barbershop_booking_draft', JSON.stringify({ name: 'Temp' }));
-
+    it('clears draft state via clearBookingDraft', () => {
       const stateWithDraft = {
         name: 'Temp',
         phone: '9876543210',
@@ -87,7 +88,35 @@ describe('Booking Feature', () => {
 
       const cleared = bookingDraftReducer(stateWithDraft, clearBookingDraft());
       expect(cleared.name).toBe('');
-      expect(sessionStorage.getItem('barbershop_booking_draft')).toBeNull();
+    });
+  });
+
+  describe('bookingDraft listenerMiddleware persistence', () => {
+    beforeEach(() => {
+      sessionStorage.clear();
+      store.dispatch(clearBookingDraft());
+    });
+
+    it('persists draft to sessionStorage on store dispatch', () => {
+      store.dispatch(
+        saveBookingDraft({
+          name: 'Vikram Singh',
+          phone: '9876543210',
+          dateTime: '2026-11-01T10:00',
+        })
+      );
+
+      const raw = sessionStorage.getItem('barbershop_booking_draft');
+      expect(raw).toBeDefined();
+      expect(raw).toContain('Vikram Singh');
+    });
+
+    it('cleans up sessionStorage on clearBookingDraft dispatch', () => {
+      store.dispatch(saveBookingDraft({ name: 'To be removed' }));
+      store.dispatch(clearBookingDraft());
+
+      const raw = sessionStorage.getItem('barbershop_booking_draft');
+      expect(raw).toBeNull();
     });
   });
 });

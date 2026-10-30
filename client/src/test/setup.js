@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Polyfill AbortSignal and fetch compatibility between Node 24 and jsdom
-if (typeof globalThis.AbortSignal !== 'undefined') {
-  window.AbortSignal = globalThis.AbortSignal;
-}
-
-// Mock window APIs for jsdom environment
+// Fix AbortController / AbortSignal in browser/jsdom environment
 if (typeof window !== 'undefined') {
+  if (typeof globalThis.AbortController !== 'undefined') {
+    window.AbortController = globalThis.AbortController;
+    window.AbortSignal = globalThis.AbortSignal;
+  }
+
   window.scrollTo = vi.fn();
 
   window.matchMedia =

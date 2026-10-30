@@ -1,7 +1,8 @@
 import { useGetServicesQuery } from './servicesApi';
 import { SectionHeading, Button } from '@/components/ui';
 import { formatPrice } from '@/lib/formatters';
-import { ArrowRight, AlertCircle } from 'lucide-react';
+import { QueryState } from '@/components/common/QueryState';
+import { ArrowRight } from 'lucide-react';
 
 /**
  * Service Price List with display typography and border-light dividers
@@ -11,7 +12,21 @@ import { ArrowRight, AlertCircle } from 'lucide-react';
  * @returns {JSX.Element}
  */
 export function PriceList({ className = '' }) {
-  const { data: services = [], isLoading, isError, refetch } = useGetServicesQuery();
+  const { data: services = [], isLoading, isError, error, refetch } = useGetServicesQuery();
+
+  const skeleton = (
+    <div className="flex flex-col gap-4">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <div
+          key={n}
+          className="flex items-center justify-between py-3.5 border-b border-border-light animate-pulse"
+        >
+          <div className="h-6 w-48 bg-card rounded-sm" />
+          <div className="h-6 w-16 bg-card rounded-sm" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className={`w-full flex flex-col justify-between ${className}`}>
@@ -34,34 +49,16 @@ export function PriceList({ className = '' }) {
           </Button>
         </div>
 
-        {/* Loading Skeletons */}
-        {isLoading && (
-          <div className="flex flex-col gap-4">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <div
-                key={n}
-                className="flex items-center justify-between py-3.5 border-b border-border-light animate-pulse"
-              >
-                <div className="h-6 w-48 bg-card rounded-sm" />
-                <div className="h-6 w-16 bg-card rounded-sm" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Error State */}
-        {isError && (
-          <div className="p-6 rounded-md bg-card border border-border-light text-center">
-            <AlertCircle className="h-6 w-6 text-red-500 mx-auto mb-2" />
-            <p className="text-sm text-muted mb-3">Unable to fetch current price menu.</p>
-            <Button variant="secondary" size="sm" onClick={() => refetch()}>
-              Retry
-            </Button>
-          </div>
-        )}
-
-        {/* Services List Rows */}
-        {!isLoading && !isError && (
+        {/* Governed by QueryState */}
+        <QueryState
+          isLoading={isLoading}
+          isError={isError}
+          error={error}
+          isEmpty={services.length === 0}
+          emptyMessage="No services currently listed."
+          skeleton={skeleton}
+          onRetry={refetch}
+        >
           <div className="flex flex-col divide-y divide-border-light">
             {services.map((service) => (
               <div
@@ -87,7 +84,7 @@ export function PriceList({ className = '' }) {
               </div>
             ))}
           </div>
-        )}
+        </QueryState>
       </div>
 
       <div className="pt-6 mt-4 border-t border-border-light flex items-center justify-between text-xs text-muted">

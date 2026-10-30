@@ -1,12 +1,17 @@
 import { AppRouter } from '@/app/router';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 /**
  * Root Application Component
- * Mounted inside Providers
+ * Protected by global ErrorBoundary
  * @returns {JSX.Element}
  */
 export function App() {
-  return <AppRouter />;
+  return (
+    <ErrorBoundary>
+      <AppRouter />
+    </ErrorBoundary>
+  );
 }
 
 export default App;

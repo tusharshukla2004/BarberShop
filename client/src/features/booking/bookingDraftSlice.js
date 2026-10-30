@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const STORAGE_KEY = 'barbershop_booking_draft';
 
 /**
- * Safely reads the draft from sessionStorage
+ * Loads persisted initial draft from sessionStorage if available
  * @returns {Object}
  */
 const loadInitialDraft = () => {
@@ -58,15 +58,7 @@ export const bookingDraftSlice = createSlice({
   initialState,
   reducers: {
     saveBookingDraft: (state, action) => {
-      const updated = { ...state, ...action.payload };
-      Object.assign(state, updated);
-      if (typeof window !== 'undefined') {
-        try {
-          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        } catch {
-          // sessionStorage may fail in private mode or full quota
-        }
-      }
+      Object.assign(state, action.payload);
     },
     clearBookingDraft: (state) => {
       state.name = '';
@@ -75,19 +67,25 @@ export const bookingDraftSlice = createSlice({
       state.dateTime = '';
       state.serviceId = '';
       state.barberId = '';
-      if (typeof window !== 'undefined') {
-        try {
-          sessionStorage.removeItem(STORAGE_KEY);
-        } catch {
-          // Ignore removal error
-        }
-      }
     },
   },
 });
 
 export const { saveBookingDraft, clearBookingDraft } = bookingDraftSlice.actions;
 
+// Base Selector
 export const selectBookingDraft = (state) => state.bookingDraft;
+
+// Derived Selectors using createSelector
+export const selectIsDraftReady = createSelector([selectBookingDraft], (draft) =>
+  Boolean(draft.name && draft.phone && draft.dateTime)
+);
+
+export const selectDraftSummary = createSelector([selectBookingDraft], (draft) => ({
+  name: draft.name,
+  phone: draft.phone,
+  dateTime: draft.dateTime,
+  hasContactInfo: Boolean(draft.name && draft.phone),
+}));
 
 export default bookingDraftSlice.reducer;

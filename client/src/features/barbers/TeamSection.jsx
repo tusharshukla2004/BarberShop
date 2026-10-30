@@ -2,8 +2,9 @@ import { useGetBarbersQuery } from './barbersApi';
 import { Container, Section, SectionHeading, Button } from '@/components/ui';
 import { BarberCard } from './BarberCard';
 import { JoinTeamCard } from './JoinTeamCard';
+import { QueryState } from '@/components/common/QueryState';
 import { homeContent } from '@/features/home/content';
-import { ArrowRight, AlertCircle, Users } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 /**
  * "Meet Our Experts" Team Section
@@ -16,10 +17,21 @@ import { ArrowRight, AlertCircle, Users } from 'lucide-react';
  */
 export function TeamSection({ showAll = false, className = '' }) {
   const { teamSection } = homeContent;
-  const { data: barbers = [], isLoading, isError, refetch } = useGetBarbersQuery();
+  const { data: barbers = [], isLoading, isError, error, refetch } = useGetBarbersQuery();
 
   // Show first 3 on home section, or all if showAll is true
   const displayedBarbers = showAll ? barbers : barbers.slice(0, 3);
+
+  const skeleton = (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8 items-stretch">
+      {[1, 2, 3, 4].map((n) => (
+        <div
+          key={n}
+          className="w-full aspect-[3/4] rounded-lg bg-card border border-border-light animate-pulse"
+        />
+      ))}
+    </div>
+  );
 
   return (
     <Section tone="white" py="lg" id="team" className={className}>
@@ -38,42 +50,16 @@ export function TeamSection({ showAll = false, className = '' }) {
           </p>
         </div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8 items-stretch">
-            {[1, 2, 3, 4].map((n) => (
-              <div
-                key={n}
-                className="w-full aspect-[3/4] rounded-lg bg-card border border-border-light animate-pulse"
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Error State */}
-        {isError && (
-          <div className="p-8 rounded-lg bg-card border border-border-light text-center max-w-md mx-auto">
-            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-3" />
-            <h4 className="font-display text-xl text-ink">Unable to load barbers</h4>
-            <p className="text-xs text-muted mt-1 mb-4">
-              Please check your network connection and retry.
-            </p>
-            <Button variant="secondary" size="sm" onClick={() => refetch()}>
-              Retry
-            </Button>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && !isError && displayedBarbers.length === 0 && (
-          <div className="p-8 rounded-lg bg-card border border-border-light text-center max-w-md mx-auto">
-            <Users className="h-8 w-8 text-muted mx-auto mb-3" />
-            <p className="text-sm text-muted">No barber profiles currently available.</p>
-          </div>
-        )}
-
-        {/* 4-Column Grid: 3 BarberCards + 1 JoinTeamCard */}
-        {!isLoading && !isError && displayedBarbers.length > 0 && (
+        {/* Governed by QueryState */}
+        <QueryState
+          isLoading={isLoading}
+          isError={isError}
+          error={error}
+          isEmpty={displayedBarbers.length === 0}
+          emptyMessage="No barber profiles available."
+          skeleton={skeleton}
+          onRetry={refetch}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8 items-stretch">
             {displayedBarbers.map((barber) => (
               <BarberCard key={barber.id} barber={barber} />
@@ -82,7 +68,7 @@ export function TeamSection({ showAll = false, className = '' }) {
             {/* Equal Height Recruitment Card */}
             <JoinTeamCard />
           </div>
-        )}
+        </QueryState>
 
         {/* Bottom "View All Barbers" CTA on Home */}
         {!showAll && (

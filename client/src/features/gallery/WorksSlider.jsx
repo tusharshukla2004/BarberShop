@@ -3,21 +3,35 @@ import { useGetGalleryQuery } from './galleryApi';
 import { SectionHeading } from '@/components/ui';
 import { Carousel } from '@/components/common/Carousel';
 import { SlideControls } from '@/components/common/SlideControls';
+import { QueryState } from '@/components/common/QueryState';
 import { cn } from '@/lib/utils';
-import { ImageOff } from 'lucide-react';
 
 /**
  * Works Gallery Slider with 2-column layout and right viewport bleed
  * @returns {JSX.Element}
  */
 export function WorksSlider() {
-  const { data: galleryItems = [], isLoading, isError } = useGetGalleryQuery();
+  const { data: galleryItems = [], isLoading, isError, error, refetch } = useGetGalleryQuery();
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef(null);
 
   const total = galleryItems.length;
-  const currentFormatted = String(Math.min(currentSlide + 1, total)).padStart(2, '0');
+  const currentFormatted = String(total > 0 ? Math.min(currentSlide + 1, total) : 0).padStart(
+    2,
+    '0'
+  );
   const totalFormatted = String(total).padStart(2, '0');
+
+  const skeleton = (
+    <div className="flex gap-4">
+      {[1, 2, 3].map((n) => (
+        <div
+          key={n}
+          className="w-[260px] sm:w-[300px] aspect-[4/5] rounded-lg bg-card border border-border-light animate-pulse shrink-0"
+        />
+      ))}
+    </div>
+  );
 
   return (
     <div className="w-full">
@@ -52,23 +66,17 @@ export function WorksSlider() {
           </div>
         </div>
 
-        {/* Right Column: Embla Carousel with partial 3rd card cut off */}
+        {/* Right Column: Embla Carousel governed by QueryState */}
         <div className="lg:col-span-7 relative w-full overflow-hidden">
-          {isLoading ? (
-            <div className="flex gap-4">
-              {[1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className="w-[260px] sm:w-[300px] aspect-[4/5] rounded-lg bg-card border border-border-light animate-pulse shrink-0"
-                />
-              ))}
-            </div>
-          ) : isError || galleryItems.length === 0 ? (
-            <div className="aspect-[16/9] rounded-lg border border-border-light bg-card flex flex-col items-center justify-center p-8 text-center">
-              <ImageOff className="h-8 w-8 text-muted mb-2" />
-              <p className="text-sm text-muted">Unable to load gallery portfolio.</p>
-            </div>
-          ) : (
+          <QueryState
+            isLoading={isLoading}
+            isError={isError}
+            error={error}
+            isEmpty={galleryItems.length === 0}
+            emptyMessage="No gallery items found."
+            skeleton={skeleton}
+            onRetry={refetch}
+          >
             <Carousel
               ref={carouselRef}
               options={{ loop: false, align: 'start', dragFree: false }}
@@ -87,7 +95,7 @@ export function WorksSlider() {
                 >
                   <img
                     src={item.imageUrl}
-                    alt={item.title}
+                    alt={item.caption || item.category}
                     loading={idx < 2 ? 'eager' : 'lazy'}
                     className="h-full w-full object-cover object-center transition-transform duration-slow group-hover:scale-105"
                   />
@@ -97,13 +105,13 @@ export function WorksSlider() {
                       {item.category}
                     </span>
                     <h3 className="font-display text-lg sm:text-xl text-white uppercase tracking-wide leading-tight mt-0.5">
-                      {item.title}
+                      {item.caption}
                     </h3>
                   </div>
                 </div>
               ))}
             </Carousel>
-          )}
+          </QueryState>
         </div>
       </div>
     </div>

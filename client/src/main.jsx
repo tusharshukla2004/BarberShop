@@ -5,10 +5,14 @@ import App from '@/App';
 import '@/styles/globals.css';
 
 /**
- * Initialize mock service worker in development mode
+ * Initialize mock service worker in development mode or when VITE_USE_MOCKS=true
  */
 async function enableMocking() {
-  if (import.meta.env.DEV) {
+  const useMocks =
+    import.meta.env.VITE_USE_MOCKS === 'true' ||
+    (import.meta.env.DEV && import.meta.env.VITE_USE_MOCKS !== 'false');
+
+  if (useMocks) {
     const { worker } = await import('@/mocks/browser');
     return worker.start({
       onUnhandledRequest: 'bypass',
