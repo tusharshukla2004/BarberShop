@@ -4,6 +4,7 @@ import { getBarbers } from '../controllers/barberController.js';
 import { getGallery } from '../controllers/galleryController.js';
 import { getReviews, createReview } from '../controllers/reviewController.js';
 import { getSettings } from '../controllers/settingsController.js';
+import { createContactMessage } from '../controllers/contactController.js';
 import {
   getSlots,
   createBooking,
@@ -16,6 +17,7 @@ import {
   getSlotsQuerySchema,
 } from '../schemas/booking.schema.js';
 import { reviewSchema } from '../schemas/content.schema.js';
+import { contactSchema } from '../schemas/contact.schema.js';
 import { bookingLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
@@ -32,6 +34,9 @@ router.get('/gallery', getGallery);
 // Reviews
 router.get('/reviews', getReviews);
 router.post('/reviews', validate(reviewSchema), createReview);
+
+// Contact messages
+router.post('/contact', validate(contactSchema), createContactMessage);
 
 // Settings
 router.get('/settings', getSettings);

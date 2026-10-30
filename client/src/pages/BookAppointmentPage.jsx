@@ -1,107 +1,149 @@
-import { useAppSelector } from '@/app/hooks';
-import { selectBookingDraft } from '@/features/booking/bookingDraftSlice';
-import { Container, Section, SectionHeading, Card, Button } from '@/components/ui';
-import { Seo } from '@/components/common/Seo';
-import { Calendar, User, Phone, Clock, ArrowRight } from 'lucide-react';
+import Seo from '@/components/common/Seo';
+import PageBanner from '@/components/common/PageBanner';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
+import Stepper from '@/features/booking/wizard/Stepper';
+import StepService from '@/features/booking/wizard/StepService';
+import StepBarber from '@/features/booking/wizard/StepBarber';
+import StepDateTime from '@/features/booking/wizard/StepDateTime';
+import StepDetails from '@/features/booking/wizard/StepDetails';
+import StepConfirmation from '@/features/booking/wizard/StepConfirmation';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import {
+  selectBookingDraft,
+  setBookingStep,
+  saveBookingDraft,
+  selectService,
+  selectBarber,
+  selectSlot,
+  setConfirmedBooking,
+  clearBookingDraft,
+} from '@/features/booking/bookingDraftSlice';
+import { addToast } from '@/features/ui/uiSlice';
 
-export function BookAppointmentPage() {
+export default function BookAppointmentPage() {
+  const dispatch = useAppDispatch();
   const draft = useAppSelector(selectBookingDraft);
 
-  const hasDraft = Boolean(draft.name || draft.phone || draft.dateTime);
+  const currentStep = draft.currentStep || 1;
+
+  const handleStepSelect = (step) => {
+    dispatch(setBookingStep(step));
+  };
+
+  const handleServiceSelect = (serviceId) => {
+    dispatch(selectService(serviceId));
+  };
+
+  const handleBarberSelect = (barberId) => {
+    dispatch(selectBarber(barberId));
+  };
+
+  const handleSlotSelect = (slotData) => {
+    dispatch(selectSlot(slotData));
+  };
+
+  const handleSaveDetails = (detailsData) => {
+    dispatch(saveBookingDraft(detailsData));
+  };
+
+  const handleBookingSuccess = (response) => {
+    const booking = response.data || response;
+    dispatch(setConfirmedBooking(booking));
+    dispatch(
+      addToast({
+        type: 'success',
+        message: 'Your appointment has been confirmed!',
+      })
+    );
+  };
+
+  const handleBookingConflict = (errorMessage) => {
+    dispatch(
+      addToast({
+        type: 'error',
+        message: errorMessage || 'That slot was just taken. Please pick another slot.',
+      })
+    );
+    // Return to step 3 to choose a different slot
+    dispatch(saveBookingDraft({ startTime: '', endTime: '' }));
+    dispatch(setBookingStep(3));
+  };
+
+  const handleReset = () => {
+    dispatch(clearBookingDraft());
+  };
 
   return (
     <>
       <Seo
-        title="Book an Appointment"
-        description="Schedule your bespoke haircut, beard styling, or hot towel shave online in seconds."
+        title="Book an Appointment | Sovereign Barbershop"
+        description="Book your bespoke haircut, hot lather straight razor shave, or beard grooming appointment online with our master barbers."
       />
-      <div className="pt-20 sm:pt-24 bg-ink text-white py-12">
+
+      <PageBanner
+        eyebrow="Online Reservations"
+        title="RESERVE YOUR CHAIR"
+        description="Experience the classic barber ritual. Select your preferred treatment, master craftsman, and time."
+      />
+
+      <Section tone="cream" className="py-12 md:py-20">
         <Container>
-          <SectionHeading
-            subtitle="Online Scheduling"
-            title="Book an Appointment"
-            tone="dark"
-            align="center"
-          />
-        </Container>
-      </div>
+          {/* Stepper Navigation */}
+          <Stepper currentStep={currentStep} onSelectStep={handleStepSelect} />
 
-      <Section tone="cream" py="lg">
-        <Container className="max-w-2xl">
-          {hasDraft ? (
-            <Card tone="white" padding="lg" className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-border-light pb-4">
-                <div className="p-2.5 rounded-pill bg-accent/15 text-accent">
-                  <Calendar className="h-5 w-5" />
-                </div>
-                <div>
-                  <span className="text-xs font-semibold text-accent uppercase tracking-wider">
-                    Draft Loaded from Session
-                  </span>
-                  <h3 className="font-display text-2xl text-ink">Appointment Details</h3>
-                </div>
-              </div>
+          {/* Wizard Step Views */}
+          {currentStep === 1 && (
+            <StepService
+              selectedServiceId={draft.serviceId}
+              onSelect={handleServiceSelect}
+              onNext={() => dispatch(setBookingStep(2))}
+            />
+          )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center gap-2.5 p-3 rounded-md bg-card border border-card-border">
-                  <User className="h-4 w-4 text-accent shrink-0" />
-                  <div>
-                    <span className="text-xs text-muted block">Client Name</span>
-                    <span className="font-medium text-ink">{draft.name || 'Not provided'}</span>
-                  </div>
-                </div>
+          {currentStep === 2 && (
+            <StepBarber
+              selectedBarberId={draft.barberId}
+              onSelect={handleBarberSelect}
+              onNext={() => dispatch(setBookingStep(3))}
+              onBack={() => dispatch(setBookingStep(1))}
+            />
+          )}
 
-                <div className="flex items-center gap-2.5 p-3 rounded-md bg-card border border-card-border">
-                  <Phone className="h-4 w-4 text-accent shrink-0" />
-                  <div>
-                    <span className="text-xs text-muted block">Phone</span>
-                    <span className="font-medium text-ink">{draft.phone || 'Not provided'}</span>
-                  </div>
-                </div>
+          {currentStep === 3 && (
+            <StepDateTime
+              serviceId={draft.serviceId}
+              barberId={draft.barberId}
+              selectedDate={draft.date}
+              selectedSlot={{
+                date: draft.date,
+                startTime: draft.startTime,
+                endTime: draft.endTime,
+              }}
+              onSelectSlot={handleSlotSelect}
+              onNext={() => dispatch(setBookingStep(4))}
+              onBack={() => dispatch(setBookingStep(2))}
+            />
+          )}
 
-                <div className="flex items-center gap-2.5 p-3 rounded-md bg-card border border-card-border sm:col-span-2">
-                  <Clock className="h-4 w-4 text-accent shrink-0" />
-                  <div>
-                    <span className="text-xs text-muted block">Requested Slot</span>
-                    <span className="font-medium text-ink">
-                      {draft.dateTime ? new Date(draft.dateTime).toLocaleString() : 'Not selected'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+          {currentStep === 4 && (
+            <StepDetails
+              draft={draft}
+              onSaveDraft={handleSaveDetails}
+              onSuccess={handleBookingSuccess}
+              onConflict={handleBookingConflict}
+              onBack={() => dispatch(setBookingStep(3))}
+            />
+          )}
 
-              <p className="text-xs text-muted">
-                Your draft has survived navigation and page reloads. In the upcoming booking wizard
-                prompt, you will choose specific barbers and add-on services.
-              </p>
-
-              <Button
-                to="/"
-                variant="secondary"
-                size="sm"
-                rightIcon={<ArrowRight className="h-4 w-4" />}
-              >
-                Modify Request on Home
-              </Button>
-            </Card>
-          ) : (
-            <Card tone="white" padding="lg" className="text-center">
-              <div className="inline-flex p-3 rounded-pill bg-accent/15 text-accent mb-4">
-                <Calendar className="h-6 w-6" />
-              </div>
-              <h3 className="font-display text-3xl text-ink">No Active Booking Draft</h3>
-              <p className="text-muted text-sm mt-2 mb-6">
-                Start by making an appointment request from the home page hero form.
-              </p>
-              <Button to="/" variant="primary" size="md">
-                Go to Home Hero Form
-              </Button>
-            </Card>
+          {currentStep === 5 && draft.confirmedBooking && (
+            <StepConfirmation
+              booking={draft.confirmedBooking}
+              onReset={handleReset}
+            />
           )}
         </Container>
       </Section>
     </>
   );
 }
-
-export default BookAppointmentPage;

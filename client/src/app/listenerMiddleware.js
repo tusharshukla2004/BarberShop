@@ -1,5 +1,13 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
-import { saveBookingDraft, clearBookingDraft } from '@/features/booking/bookingDraftSlice';
+import {
+  saveBookingDraft,
+  clearBookingDraft,
+  setBookingStep,
+  selectService,
+  selectBarber,
+  selectSlot,
+  setConfirmedBooking,
+} from '@/features/booking/bookingDraftSlice';
 
 const STORAGE_KEY = 'barbershop_booking_draft';
 
@@ -7,7 +15,15 @@ export const listenerMiddleware = createListenerMiddleware();
 
 // Synchronize booking draft changes to sessionStorage
 listenerMiddleware.startListening({
-  matcher: isAnyOf(saveBookingDraft, clearBookingDraft),
+  matcher: isAnyOf(
+    saveBookingDraft,
+    clearBookingDraft,
+    setBookingStep,
+    selectService,
+    selectBarber,
+    selectSlot,
+    setConfirmedBooking
+  ),
   effect: (action, listenerApi) => {
     if (typeof window === 'undefined') return;
 

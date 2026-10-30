@@ -256,6 +256,35 @@ export const handlers = [
       message: 'Booking cancelled.',
     });
   }),
+
+  // 12. Contact Form Submission
+  http.post('*/api/contact', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+
+    if (!body.name || !body.phone || !body.message) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Name, phone number, and message are required.',
+        },
+        { status: 400 }
+      );
+    }
+
+    return HttpResponse.json(
+      {
+        success: true,
+        data: {
+          id: `msg_${Date.now()}`,
+          ...body,
+          status: 'unread',
+        },
+        message: 'Thank you for reaching out. Our concierge will get back to you shortly.',
+      },
+      { status: 201 }
+    );
+  }),
 ];
 
 export default handlers;

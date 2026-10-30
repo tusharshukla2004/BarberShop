@@ -3,6 +3,7 @@ import { Hero } from '@/features/home/Hero';
 import { ServiceLocationSection } from '@/features/home/ServiceLocationSection';
 import { WorksPricingSection } from '@/features/home/WorksPricingSection';
 import { TeamSection } from '@/features/barbers/TeamSection';
+import { ClosingCtaSection } from '@/features/home/ClosingCtaSection';
 import { siteConfig } from '@/config/site';
 
 /**
@@ -11,6 +12,7 @@ import { siteConfig } from '@/config/site';
  * 2. Service Beyond Expectation + Tinted Map + Contact Info
  * 3. Discover Our Works Slider + Testimonial Card + Our Prices
  * 4. Meet Our Experts (3 Barbers + Join Team Card)
+ * 5. Closing CTA Band
  *
  * @returns {JSX.Element}
  */
@@ -33,6 +35,9 @@ export function HomePage() {
 
       {/* White Section: Meet Our Experts Team Grid */}
       <TeamSection />
+
+      {/* Dark Ink Closing Call to Action */}
+      <ClosingCtaSection />
     </>
   );
 }
