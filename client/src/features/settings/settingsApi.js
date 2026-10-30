@@ -8,9 +8,20 @@ export const settingsApi = baseApi.injectEndpoints({
       transformErrorResponse: normalizeError,
       providesTags: ['Settings'],
     }),
+
+    updateSettings: builder.mutation({
+      query: (data) => ({
+        url: '/admin/settings',
+        method: 'PUT',
+        body: data,
+      }),
+      transformResponse: (response) => response?.data || response,
+      transformErrorResponse: normalizeError,
+      invalidatesTags: ['Settings', 'Slots'],
+    }),
   }),
 });
 
-export const { useGetSettingsQuery } = settingsApi;
+export const { useGetSettingsQuery, useUpdateSettingsMutation } = settingsApi;
 
 export default settingsApi;

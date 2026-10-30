@@ -170,7 +170,14 @@ export async function adminListBookings(req, res, next) {
 
     const filter = {};
     if (date) filter.date = date;
-    if (barberId) filter.barberId = barberId;
+
+    // Role-based scoping: barbers can ONLY view their own appointments
+    if (req.user?.role === 'barber') {
+      filter.barberId = req.user.barberId || req.user.id;
+    } else if (barberId) {
+      filter.barberId = barberId;
+    }
+
     if (status) filter.status = status;
 
     const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);

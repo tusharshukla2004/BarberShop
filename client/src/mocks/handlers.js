@@ -8,14 +8,23 @@ import {
   mockBookings,
 } from './data';
 
-// In-memory bookings store for the session
+// In-memory reactive collections for the MSW dev/test session
+const dynamicServices = [...mockServices];
+const dynamicBarbers = [...mockBarbers];
+const dynamicGallery = [...mockGalleryItems];
+const dynamicReviews = [...mockTestimonials];
+let dynamicSettings = { ...mockSettings };
 const dynamicBookings = [...mockBookings];
 
+let currentUser = {
+  id: 'admin-1',
+  name: 'Devraj Saxena (Owner)',
+  email: 'owner@barbershop.com',
+  role: 'owner',
+};
+
 /**
- * Standard operating schedule slots generation helper (9:00 AM to 8:30 PM at 30-min intervals)
- * @param {string} date
- * @param {string} barberId
- * @returns {Array<{ startTime: string, endTime: string, isAvailable: boolean }>}
+ * Standard operating schedule slots generation helper
  */
 function generateDeterministicSlots(date, barberId) {
   const timeSlots = [
@@ -32,7 +41,6 @@ function generateDeterministicSlots(date, barberId) {
   ];
 
   return timeSlots.map((slot) => {
-    // Check if slot conflicts with an active booking
     const isBooked = dynamicBookings.some(
       (b) =>
         b.date === date &&
@@ -49,119 +57,138 @@ function generateDeterministicSlots(date, barberId) {
   });
 }
 
-/**
- * Mock Service Worker request handlers with wildcard origin support
- */
 export const handlers = [
-  // 1. Services
+  // --- AUTH ENDPOINTS ---
+  http.post('*/api/auth/login', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+
+    const email = body.email?.toLowerCase();
+    const isBarber = email?.includes('barber');
+
+    currentUser = {
+      id: isBarber ? 'barb-2' : 'admin-1',
+      name: isBarber ? 'Arbaaz Khan' : 'Devraj Saxena',
+      email: body.email,
+      role: isBarber ? 'barber' : 'owner',
+    };
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        user: currentUser,
+        token: 'mock-jwt-token-xyz',
+      },
+      message: 'Signed in successfully',
+    });
+  }),
+
+  http.post('*/api/auth/logout', async () => {
+    await delay(50);
+    currentUser = null;
+    return HttpResponse.json({
+      success: true,
+      message: 'Logged out successfully',
+    });
+  }),
+
+  http.get('*/api/auth/me', async () => {
+    await delay(50);
+    if (!currentUser) {
+      return HttpResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: { user: currentUser },
+    });
+  }),
+
+  // --- PUBLIC ENDPOINTS ---
   http.get('*/api/services', async () => {
     await delay(50);
     return HttpResponse.json({
       success: true,
-      data: mockServices,
+      data: dynamicServices,
     });
   }),
 
-  // 2. Barbers
   http.get('*/api/barbers', async () => {
     await delay(50);
     return HttpResponse.json({
       success: true,
-      data: mockBarbers,
+      data: dynamicBarbers,
     });
   }),
 
-  // 3. Gallery
   http.get('*/api/gallery', async () => {
     await delay(50);
     return HttpResponse.json({
       success: true,
-      data: mockGalleryItems,
+      data: dynamicGallery,
     });
   }),
 
-  // 4. Reviews / Testimonials
   http.get('*/api/reviews', async () => {
     await delay(50);
     return HttpResponse.json({
       success: true,
-      data: mockTestimonials,
+      data: dynamicReviews,
     });
   }),
 
-  // 5. Settings
   http.get('*/api/settings', async () => {
     await delay(50);
     return HttpResponse.json({
       success: true,
-      data: mockSettings,
+      data: dynamicSettings,
     });
   }),
 
-  // 6. Slots (Deterministic, respecting bookings)
+  // Slots
   http.get('*/api/bookings/slots', async ({ request }) => {
     const url = new URL(request.url);
     const date = url.searchParams.get('date') || '2026-11-01';
     const barberId = url.searchParams.get('barberId') || 'barb-1';
-
     await delay(50);
-    const slots = generateDeterministicSlots(date, barberId);
-
     return HttpResponse.json({
       success: true,
-      data: slots,
+      data: generateDeterministicSlots(date, barberId),
+    });
+  }),
+  http.get('*/api/slots', async ({ request }) => {
+    const url = new URL(request.url);
+    const date = url.searchParams.get('date') || '2026-11-01';
+    const barberId = url.searchParams.get('barberId') || 'barb-1';
+    await delay(50);
+    return HttpResponse.json({
+      success: true,
+      data: generateDeterministicSlots(date, barberId),
     });
   }),
 
-  // 7. Quick Appointment Request
+  // Public Booking Creation
   http.post('*/api/bookings/request', async ({ request }) => {
     const body = await request.json();
     await delay(50);
-
-    if (!body.name || !body.phone || !body.dateTime) {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Name, phone number, and appointment date/time are required.',
-        },
-        { status: 400 }
-      );
-    }
-
-    const bookingId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-
+    const bookingId = `req_${Date.now()}`;
     return HttpResponse.json(
       {
         success: true,
-        data: {
-          id: bookingId,
-          ...body,
-          status: 'pending',
-        },
-        message: 'Your appointment request has been received. Our concierge will confirm your slot.',
+        data: { id: bookingId, ...body, status: 'pending' },
+        message: 'Your appointment request has been received.',
       },
       { status: 201 }
     );
   }),
 
-  // 8. Full Booking Creation (Enforces 409 Conflict on Double-Booking)
   http.post('*/api/bookings', async ({ request }) => {
     const body = await request.json();
     await delay(50);
 
     const { customerName, phone, serviceId, barberId, date, startTime, endTime } = body;
-
-    if (!customerName || !phone || !date || !startTime) {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Missing required booking fields.',
-        },
-        { status: 400 }
-      );
-    }
-
-    // Check conflict
     const isConflict = dynamicBookings.some(
       (b) =>
         b.date === date &&
@@ -193,7 +220,6 @@ export const handlers = [
       status: 'confirmed',
       notes: body.notes || '',
     };
-
     dynamicBookings.push(newBooking);
 
     return HttpResponse.json(
@@ -206,84 +232,194 @@ export const handlers = [
     );
   }),
 
-  // 9. Admin: List Bookings
-  http.get('*/api/admin/bookings', async () => {
+  // Contact
+  http.post('*/api/contact', async ({ request }) => {
+    const body = await request.json();
     await delay(50);
-    return HttpResponse.json({
-      success: true,
-      data: dynamicBookings,
-    });
+    return HttpResponse.json(
+      {
+        success: true,
+        data: { id: `msg_${Date.now()}`, ...body, status: 'unread' },
+        message: 'Thank you for reaching out.',
+      },
+      { status: 201 }
+    );
   }),
 
-  // 10. Admin: Update Booking Status
+  // --- ADMIN ENDPOINTS ---
+  // Admin Bookings
+  http.get('*/api/admin/bookings', async ({ request }) => {
+    const url = new URL(request.url);
+    const barberId = url.searchParams.get('barberId');
+    const status = url.searchParams.get('status');
+    const date = url.searchParams.get('date');
+
+    await delay(50);
+    let list = [...dynamicBookings];
+
+    if (currentUser?.role === 'barber') {
+      list = list.filter((b) => b.barberId === currentUser.id || b.barberId === 'barb-1');
+    } else if (barberId) {
+      list = list.filter((b) => b.barberId === barberId);
+    }
+
+    if (status) list = list.filter((b) => b.status === status);
+    if (date) list = list.filter((b) => b.date === date);
+
+    return HttpResponse.json({ success: true, data: list });
+  }),
+
+  http.patch('*/api/admin/bookings/:id', async ({ params, request }) => {
+    const { id } = params;
+    const patch = await request.json();
+    await delay(50);
+    const booking = dynamicBookings.find((b) => b.id === id);
+    if (!booking) {
+      return HttpResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
+    }
+    Object.assign(booking, patch);
+    return HttpResponse.json({ success: true, data: booking });
+  }),
+
   http.patch('*/api/admin/bookings/:id/status', async ({ params, request }) => {
     const { id } = params;
     const { status } = await request.json();
     await delay(50);
-
     const booking = dynamicBookings.find((b) => b.id === id);
     if (!booking) {
-      return HttpResponse.json(
-        { success: false, error: 'Booking not found.' },
-        { status: 404 }
-      );
+      return HttpResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
     }
-
     booking.status = status;
-    return HttpResponse.json({
-      success: true,
-      data: booking,
-    });
+    return HttpResponse.json({ success: true, data: booking });
   }),
 
-  // 11. Admin: Cancel Booking
   http.delete('*/api/admin/bookings/:id', async ({ params }) => {
     const { id } = params;
     await delay(50);
-
-    const index = dynamicBookings.findIndex((b) => b.id === id);
-    if (index === -1) {
-      return HttpResponse.json(
-        { success: false, error: 'Booking not found.' },
-        { status: 404 }
-      );
-    }
-
-    dynamicBookings[index].status = 'cancelled';
-    return HttpResponse.json({
-      success: true,
-      data: dynamicBookings[index],
-      message: 'Booking cancelled.',
-    });
+    const booking = dynamicBookings.find((b) => b.id === id);
+    if (booking) booking.status = 'cancelled';
+    return HttpResponse.json({ success: true, data: booking });
   }),
 
-  // 12. Contact Form Submission
-  http.post('*/api/contact', async ({ request }) => {
+  // Admin Services
+  http.post('*/api/admin/services', async ({ request }) => {
     const body = await request.json();
     await delay(50);
+    const newService = { id: `srv-${Date.now()}`, isActive: true, ...body };
+    dynamicServices.push(newService);
+    return HttpResponse.json({ success: true, data: newService }, { status: 201 });
+  }),
 
-    if (!body.name || !body.phone || !body.message) {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: 'Name, phone number, and message are required.',
-        },
-        { status: 400 }
-      );
+  http.put('*/api/admin/services/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(50);
+    const idx = dynamicServices.findIndex((s) => s.id === id);
+    if (idx !== -1) {
+      dynamicServices[idx] = { ...dynamicServices[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicServices[idx] });
     }
+    return HttpResponse.json({ success: false, error: 'Service not found' }, { status: 404 });
+  }),
 
-    return HttpResponse.json(
-      {
-        success: true,
-        data: {
-          id: `msg_${Date.now()}`,
-          ...body,
-          status: 'unread',
-        },
-        message: 'Thank you for reaching out. Our concierge will get back to you shortly.',
-      },
-      { status: 201 }
-    );
+  http.delete('*/api/admin/services/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(50);
+    const idx = dynamicServices.findIndex((s) => s.id === id);
+    if (idx !== -1) dynamicServices.splice(idx, 1);
+    return HttpResponse.json({ success: true, message: 'Deleted' });
+  }),
+
+  // Admin Barbers
+  http.post('*/api/admin/barbers', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+    const newBarber = { id: `barb-${Date.now()}`, isActive: true, ...body };
+    dynamicBarbers.push(newBarber);
+    return HttpResponse.json({ success: true, data: newBarber }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/barbers/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(50);
+    const idx = dynamicBarbers.findIndex((b) => b.id === id);
+    if (idx !== -1) {
+      dynamicBarbers[idx] = { ...dynamicBarbers[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicBarbers[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Barber not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/barbers/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(50);
+    const idx = dynamicBarbers.findIndex((b) => b.id === id);
+    if (idx !== -1) dynamicBarbers.splice(idx, 1);
+    return HttpResponse.json({ success: true, message: 'Deleted' });
+  }),
+
+  // Admin Gallery
+  http.post('*/api/admin/gallery', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+    const newItem = { id: `gal-${Date.now()}`, ...body };
+    dynamicGallery.push(newItem);
+    return HttpResponse.json({ success: true, data: newItem }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/gallery/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(50);
+    const idx = dynamicGallery.findIndex((g) => g.id === id);
+    if (idx !== -1) {
+      dynamicGallery[idx] = { ...dynamicGallery[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicGallery[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Item not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/gallery/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(50);
+    const idx = dynamicGallery.findIndex((g) => g.id === id);
+    if (idx !== -1) dynamicGallery.splice(idx, 1);
+    return HttpResponse.json({ success: true, message: 'Deleted' });
+  }),
+
+  // Admin Reviews
+  http.put('*/api/admin/reviews/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(50);
+    const idx = dynamicReviews.findIndex((r) => r.id === id);
+    if (idx !== -1) {
+      dynamicReviews[idx] = { ...dynamicReviews[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicReviews[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Review not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/reviews/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(50);
+    const idx = dynamicReviews.findIndex((r) => r.id === id);
+    if (idx !== -1) dynamicReviews.splice(idx, 1);
+    return HttpResponse.json({ success: true, message: 'Deleted' });
+  }),
+
+  // Admin Settings
+  http.get('*/api/admin/settings', async () => {
+    await delay(50);
+    return HttpResponse.json({ success: true, data: dynamicSettings });
+  }),
+
+  http.put('*/api/admin/settings', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+    dynamicSettings = { ...dynamicSettings, ...body };
+    return HttpResponse.json({ success: true, data: dynamicSettings });
   }),
 ];
 
