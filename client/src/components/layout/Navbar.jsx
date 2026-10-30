@@ -5,7 +5,7 @@ import { useScrolled } from '@/hooks/useScrolled';
 import { siteConfig } from '@/config/site';
 import { Button, IconButton, Container } from '@/components/ui';
 import { MobileMenu } from './MobileMenu';
-import { Scissors, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
@@ -39,10 +39,7 @@ export function Navbar() {
             className="flex items-center gap-2 group text-white transition-opacity hover:opacity-90"
             aria-label={`${siteConfig.name} Home`}
           >
-            <div className="h-9 w-9 rounded-pill bg-accent/15 border border-accent/40 flex items-center justify-center text-accent group-hover:scale-105 transition-transform">
-              <Scissors className="h-5 w-5 text-accent" />
-            </div>
-            <span className="font-display text-2xl sm:text-3xl tracking-wide uppercase text-white">
+            <span className="font-display text-2xl sm:text-3xl tracking-wider uppercase text-white font-bold select-none">
               {siteConfig.name}
             </span>
           </NavLink>

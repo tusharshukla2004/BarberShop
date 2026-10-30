@@ -38,9 +38,9 @@
  * @type {SiteConfig}
  */
 export const siteConfig = {
-  name: 'The Vintage Blade',
-  url: 'https://vintageblade.in',
-  tagline: 'Mastering the Art of Traditional Grooming',
+  name: 'Modern Mane',
+  url: 'https://modernmane.com',
+  tagline: 'Where Tradition Meets Modern Style',
   description:
     'Experience high-precision haircuts, classic hot towel straight razor shaves, and bespoke beard trims in a vintage lounge atmosphere.',
   address: '42 Heritage Lane, Near Clock Tower, Bandra West, Mumbai 400050',

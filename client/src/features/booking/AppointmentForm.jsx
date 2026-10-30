@@ -7,12 +7,17 @@ import { addToast } from '@/features/ui/uiSlice';
 import { saveBookingDraft, selectBookingDraft } from './bookingDraftSlice';
 import { useCreateBookingRequestMutation } from './bookingApi';
 import { appointmentRequestSchema } from './schema';
-import { Button, DateTimeField } from '@/components/ui';
-import { Calendar, User, Phone, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { DateTimeField } from '@/components/ui';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
  * Quick appointment request form embedded inside Hero glass card
+ * Matches reference screenshot exactly:
+ * - John Lennon
+ * - Email
+ * - Phone
+ * - [ Date & Time ] [ Submit request ]
  *
  * @param {Object} props
  * @param {string} [props.className]
@@ -42,7 +47,6 @@ export function AppointmentForm({ className = '' }) {
     },
   });
 
-  // Keep form in sync if draft loads after initial mount
   useEffect(() => {
     if (draft.name) setValue('name', draft.name);
     if (draft.email) setValue('email', draft.email);
@@ -52,13 +56,8 @@ export function AppointmentForm({ className = '' }) {
 
   const onSubmit = async (data) => {
     try {
-      // 1. Save draft to Redux + SessionStorage
       dispatch(saveBookingDraft(data));
-
-      // 2. Call backend / MSW mock mutation
       const res = await createBookingRequest(data).unwrap();
-
-      // 3. Dispatch success toast
       dispatch(
         addToast({
           message: res?.message || 'Appointment requested! Click to complete your reservation.',
@@ -80,145 +79,128 @@ export function AppointmentForm({ className = '' }) {
     }
   };
 
-  // Dedicated custom focus-switch input class matching reference style
+  // Sleek dark glass input matching reference screenshot
   const glassInputClass = cn(
-    'w-full px-4 py-3 rounded-sm text-sm transition-all duration-fast outline-none',
-    'bg-ink/75 text-white placeholder:text-white/50 border border-white/20',
+    'w-full px-4 py-2.5 rounded-lg text-sm transition-all duration-fast outline-none',
+    'bg-black/35 text-white placeholder:text-white/45 border border-white/20',
     '[color-scheme:dark] focus:[color-scheme:light]',
-    // Reference focus behavior: switches to white fill with dark ink text
-    'focus:bg-white focus:text-ink focus:border-white focus:placeholder:text-muted focus:ring-2 focus:ring-accent'
+    // High-contrast focus state matching reference (white fill, black text)
+    'focus:bg-white focus:text-black focus:border-white focus:placeholder:text-gray-400 focus:ring-1 focus:ring-accent'
   );
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className={cn('flex flex-col gap-4 text-left w-full', className)}
+      className={cn('flex flex-col gap-3 text-left w-full', className)}
     >
-      {/* Full Name */}
-      <div className="flex flex-col gap-1.5 w-full">
+      {/* Full Name (John Lennon) */}
+      <div className="flex flex-col gap-1 w-full">
         <label htmlFor="hero-name" className="sr-only">
           Full Name
         </label>
-        <div className="relative">
-          <input
-            id="hero-name"
-            type="text"
-            placeholder="Full Name *"
-            autoComplete="name"
-            aria-invalid={Boolean(errors.name)}
-            aria-describedby={errors.name ? 'hero-name-error' : undefined}
-            disabled={isLoading || isSubmitting}
-            className={cn(glassInputClass, errors.name && 'border-red-500 focus:border-red-500')}
-            {...register('name')}
-          />
-          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/60">
-            <User className="h-4 w-4" aria-hidden="true" />
-          </div>
-        </div>
+        <input
+          id="hero-name"
+          type="text"
+          placeholder="John Lennon"
+          autoComplete="name"
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby={errors.name ? 'hero-name-error' : undefined}
+          disabled={isLoading || isSubmitting}
+          className={cn(glassInputClass, errors.name && 'border-red-500 focus:border-red-500')}
+          {...register('name')}
+        />
         {errors.name && (
           <span
             id="hero-name-error"
             role="alert"
-            className="text-xs font-medium text-red-400 tracking-wide"
+            className="text-[11px] font-medium text-red-400 tracking-wide"
           >
             {errors.name.message}
           </span>
         )}
       </div>
 
-      {/* Phone Number */}
-      <div className="flex flex-col gap-1.5 w-full">
-        <label htmlFor="hero-phone" className="sr-only">
-          Phone Number
-        </label>
-        <div className="relative">
-          <input
-            id="hero-phone"
-            type="tel"
-            placeholder="Phone Number (e.g. 98765 43210) *"
-            autoComplete="tel"
-            aria-invalid={Boolean(errors.phone)}
-            aria-describedby={errors.phone ? 'hero-phone-error' : undefined}
-            disabled={isLoading || isSubmitting}
-            className={cn(glassInputClass, errors.phone && 'border-red-500 focus:border-red-500')}
-            {...register('phone')}
-          />
-          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/60">
-            <Phone className="h-4 w-4" aria-hidden="true" />
-          </div>
-        </div>
-        {errors.phone && (
-          <span
-            id="hero-phone-error"
-            role="alert"
-            className="text-xs font-medium text-red-400 tracking-wide"
-          >
-            {errors.phone.message}
-          </span>
-        )}
-      </div>
-
-      {/* Email (Optional) */}
-      <div className="flex flex-col gap-1.5 w-full">
+      {/* Email */}
+      <div className="flex flex-col gap-1 w-full">
         <label htmlFor="hero-email" className="sr-only">
-          Email Address (Optional)
+          Email
         </label>
-        <div className="relative">
-          <input
-            id="hero-email"
-            type="email"
-            placeholder="Email Address (Optional)"
-            autoComplete="email"
-            aria-invalid={Boolean(errors.email)}
-            aria-describedby={errors.email ? 'hero-email-error' : undefined}
-            disabled={isLoading || isSubmitting}
-            className={cn(glassInputClass, errors.email && 'border-red-500 focus:border-red-500')}
-            {...register('email')}
-          />
-          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/60">
-            <Mail className="h-4 w-4" aria-hidden="true" />
-          </div>
-        </div>
+        <input
+          id="hero-email"
+          type="email"
+          placeholder="Email"
+          autoComplete="email"
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby={errors.email ? 'hero-email-error' : undefined}
+          disabled={isLoading || isSubmitting}
+          className={cn(glassInputClass, errors.email && 'border-red-500 focus:border-red-500')}
+          {...register('email')}
+        />
         {errors.email && (
           <span
             id="hero-email-error"
             role="alert"
-            className="text-xs font-medium text-red-400 tracking-wide"
+            className="text-[11px] font-medium text-red-400 tracking-wide"
           >
             {errors.email.message}
           </span>
         )}
       </div>
 
-      {/* Preferred Date & Time */}
-      <DateTimeField
-        label="Preferred Date and Time"
-        hideLabel
-        required
-        disabled={isLoading || isSubmitting}
-        error={errors.dateTime?.message}
-        {...register('dateTime')}
-      />
-
-      {/* Submit Button */}
-      <div className="pt-2">
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
+      {/* Phone Number */}
+      <div className="flex flex-col gap-1 w-full">
+        <label htmlFor="hero-phone" className="sr-only">
+          Phone
+        </label>
+        <input
+          id="hero-phone"
+          type="tel"
+          placeholder="Phone"
+          autoComplete="tel"
+          aria-invalid={Boolean(errors.phone)}
+          aria-describedby={errors.phone ? 'hero-phone-error' : undefined}
           disabled={isLoading || isSubmitting}
-          isLoading={isLoading || isSubmitting}
-          rightIcon={<Calendar className="h-4 w-4" />}
-          className="w-full text-center"
+          className={cn(glassInputClass, errors.phone && 'border-red-500 focus:border-red-500')}
+          {...register('phone')}
+        />
+        {errors.phone && (
+          <span
+            id="hero-phone-error"
+            role="alert"
+            className="text-[11px] font-medium text-red-400 tracking-wide"
+          >
+            {errors.phone.message}
+          </span>
+        )}
+      </div>
+
+      {/* Date & Time + Submit Button Row (Matching reference screenshot exactly) */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2.5 pt-1">
+        <div className="flex-1">
+          <DateTimeField
+            id="hero-datetime"
+            label="Preferred Date and Time"
+            hideLabel
+            required
+            disabled={isLoading || isSubmitting}
+            error={errors.dateTime?.message}
+            {...register('dateTime')}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || isSubmitting}
+          className="bg-accent hover:bg-accent-hover text-ink font-semibold text-xs sm:text-sm px-4 sm:px-5 rounded-lg whitespace-nowrap transition-colors shadow-md hover:shadow-lg disabled:opacity-50 shrink-0 h-[42px] flex items-center justify-center cursor-pointer select-none"
         >
-          Submit request
-        </Button>
+          {isLoading || isSubmitting ? 'Requesting...' : 'Submit request'}
+        </button>
       </div>
 
       {/* Post-submit Callout */}
       {isSuccess && (
-        <div className="p-3.5 rounded-sm bg-accent/15 border border-accent/40 text-xs text-white flex items-center justify-between gap-2 mt-2">
+        <div className="p-3 rounded-lg bg-accent/20 border border-accent/40 text-xs text-white flex items-center justify-between gap-2 mt-2">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-accent shrink-0" />
             <span>Draft saved! Continue to slot booking?</span>
