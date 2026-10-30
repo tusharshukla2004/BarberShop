@@ -1,0 +1,75 @@
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.js';
+import { requireRole } from '../middleware/rbac.js';
+import { validate } from '../middleware/validate.js';
+import {
+  createService,
+  updateService,
+  deleteService,
+} from '../controllers/serviceController.js';
+import {
+  createBarber,
+  updateBarber,
+  deleteBarber,
+} from '../controllers/barberController.js';
+import {
+  createGalleryItem,
+  updateGalleryItem,
+  deleteGalleryItem,
+} from '../controllers/galleryController.js';
+import {
+  updateReview,
+  deleteReview,
+} from '../controllers/reviewController.js';
+import {
+  getSettings,
+  updateSettings,
+} from '../controllers/settingsController.js';
+import {
+  adminListBookings,
+  adminUpdateBooking,
+  adminCancelBooking,
+} from '../controllers/bookingController.js';
+import {
+  serviceSchema,
+  barberSchema,
+  galleryItemSchema,
+  settingsSchema,
+} from '../schemas/content.schema.js';
+import { updateBookingSchema } from '../schemas/booking.schema.js';
+
+const router = Router();
+
+// Protect all admin routes
+router.use(authenticate, requireRole('owner', 'barber'));
+
+// Bookings management
+router.get('/bookings', adminListBookings);
+router.patch('/bookings/:id', validate(updateBookingSchema), adminUpdateBooking);
+router.patch('/bookings/:id/status', adminUpdateBooking);
+router.delete('/bookings/:id', adminCancelBooking);
+
+// Services management
+router.post('/services', validate(serviceSchema), createService);
+router.put('/services/:id', updateService);
+router.delete('/services/:id', deleteService);
+
+// Barbers management
+router.post('/barbers', validate(barberSchema), createBarber);
+router.put('/barbers/:id', updateBarber);
+router.delete('/barbers/:id', deleteBarber);
+
+// Gallery management
+router.post('/gallery', validate(galleryItemSchema), createGalleryItem);
+router.put('/gallery/:id', updateGalleryItem);
+router.delete('/gallery/:id', deleteGalleryItem);
+
+// Reviews management
+router.put('/reviews/:id', updateReview);
+router.delete('/reviews/:id', deleteReview);
+
+// Settings management
+router.get('/settings', getSettings);
+router.put('/settings', validate(settingsSchema), updateSettings);
+
+export default router;

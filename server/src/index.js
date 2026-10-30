@@ -1,27 +1,41 @@
-import http from 'node:http';
+import { app } from './app.js';
+import { env } from './config/env.js';
+import { connectDB, disconnectDB } from './config/db.js';
 
-const PORT = process.env.PORT || 5000;
+let server;
 
-const server = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  if (req.url === '/api/health' || req.url === '/') {
-    res.writeHead(200);
-    res.end(
-      JSON.stringify({
-        status: 'ok',
-        service: 'barbershop-server',
-        message: 'Barbershop API backend is running (Phase 1 skeleton).',
-        timestamp: new Date().toISOString(),
-      })
-    );
-    return;
+async function bootstrap() {
+  try {
+    await connectDB();
+
+    server = app.listen(env.PORT, () => {
+      // eslint-disable-next-line no-console
+      console.log(`🚀 Barbershop API server running at http://localhost:${env.PORT} [${env.NODE_ENV}]`);
+    });
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Fatal server start error:', error);
+    process.exit(1);
   }
+}
 
-  res.writeHead(404);
-  res.end(JSON.stringify({ error: 'Not Found' }));
-});
-
-server.listen(PORT, () => {
+async function shutdown(signal) {
   // eslint-disable-next-line no-console
-  console.log(`Barbershop server running on http://localhost:${PORT}`);
-});
+  console.log(`\nReceived ${signal}. Gracefully shutting down...`);
+  if (server) {
+    server.close(async () => {
+      await disconnectDB();
+      // eslint-disable-next-line no-console
+      console.log('Server process terminated gracefully.');
+      process.exit(0);
+    });
+  } else {
+    await disconnectDB();
+    process.exit(0);
+  }
+}
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+bootstrap();
