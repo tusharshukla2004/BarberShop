@@ -2,11 +2,12 @@ import { Container, Section, SectionHeading } from '@/components/ui';
 import { Seo } from '@/components/common/Seo';
 import { Hero } from '@/features/home/Hero';
 import { ServiceLocationSection } from '@/features/home/ServiceLocationSection';
+import { WorksPricingSection } from '@/features/home/WorksPricingSection';
 import { siteConfig } from '@/config/site';
 
 /**
  * Home Page
- * Full-screen Hero + Service Beyond Expectation dark-brown section + subsequent section skeletons
+ * Full-screen Hero + Service & Location + Works Gallery & Prices + Team Skeleton
  * @returns {JSX.Element}
  */
 export function HomePage() {
@@ -23,12 +24,8 @@ export function HomePage() {
       {/* Dark Brown Section: Service Beyond Expectation + Map + Contact */}
       <ServiceLocationSection />
 
-      {/* Cream Section (Works gallery slider placeholder) */}
-      <Section tone="cream" py="lg">
-        <Container>
-          <SectionHeading subtitle="Our Works" title="Works & Testimonials" align="center" />
-        </Container>
-      </Section>
+      {/* Cream Section: Works Gallery Slider + Testimonial Card + Price List */}
+      <WorksPricingSection />
 
       {/* White Section (Team section) */}
       <Section tone="white" py="lg">

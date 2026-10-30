@@ -1,4 +1,5 @@
 import { http, HttpResponse, delay } from 'msw';
+import { mockGalleryItems, mockServices, mockTestimonials } from './data';
 
 /**
  * Mock Service Worker request handlers
@@ -9,7 +10,6 @@ export const handlers = [
     const body = await request.json();
     await delay(500);
 
-    // Basic server-side guard simulation
     if (!body.name || !body.phone || !body.dateTime) {
       return HttpResponse.json(
         {
@@ -32,6 +32,33 @@ export const handlers = [
       },
       { status: 201 }
     );
+  }),
+
+  // Gallery Items Endpoint
+  http.get('/api/gallery', async () => {
+    await delay(200);
+    return HttpResponse.json({
+      success: true,
+      data: mockGalleryItems,
+    });
+  }),
+
+  // Services Menu Endpoint
+  http.get('/api/services', async () => {
+    await delay(200);
+    return HttpResponse.json({
+      success: true,
+      data: mockServices,
+    });
+  }),
+
+  // Reviews & Testimonials Endpoint
+  http.get('/api/reviews', async () => {
+    await delay(200);
+    return HttpResponse.json({
+      success: true,
+      data: mockTestimonials,
+    });
   }),
 ];
 
