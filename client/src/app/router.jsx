@@ -10,7 +10,6 @@ const BarbersPage = lazy(() => import('@/pages/BarbersPage'));
 const BookAppointmentPage = lazy(() => import('@/pages/BookAppointmentPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
-const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 // Admin portal route views (lazy-loaded chunks)
@@ -77,7 +76,6 @@ export function AppRouter() {
           <Route path="/book" element={<BookAppointmentPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/design-system" element={<DesignSystemPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

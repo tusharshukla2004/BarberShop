@@ -60,6 +60,7 @@ export default function ServicesPage() {
       <Seo
         title="Services & Pricing | Sovereign Gentleman Grooming"
         description="Explore our artisanal barbershop services: classic haircutting, hot lather straight razor shaves, bespoke beard sculpts, and executive groom packages."
+        canonical="/services"
       />
 
       <PageBanner

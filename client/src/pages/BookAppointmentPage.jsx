@@ -79,6 +79,7 @@ export default function BookAppointmentPage() {
       <Seo
         title="Book an Appointment | Sovereign Barbershop"
         description="Book your bespoke haircut, hot lather straight razor shave, or beard grooming appointment online with our master barbers."
+        canonical="/book"
       />
 
       <PageBanner

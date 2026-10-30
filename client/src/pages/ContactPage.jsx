@@ -79,6 +79,7 @@ export default function ContactPage() {
       <Seo
         title="Contact & Studio Location | Sovereign Barbershop"
         description="Connect with our concierge. Visit our studio at 100 Feet Road, Indiranagar, Bengaluru. Phone, email, WhatsApp, and studio map."
+        canonical="/contact"
       />
 
       <PageBanner

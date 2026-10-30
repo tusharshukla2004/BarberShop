@@ -13,32 +13,7 @@ import FormField from '@/components/admin/FormField';
 import DataTable from '@/components/admin/DataTable';
 import ProtectedRoute from './ProtectedRoute';
 
-function renderWithStore(ui, { role = 'guest', user = null } = {}) {
-  const store = configureStore({
-    reducer: {
-      auth: authReducer,
-      ui: uiReducer,
-      [baseApi.reducerPath]: baseApi.reducer,
-    },
-    preloadedState: {
-      auth: {
-        user,
-        role,
-        status: user ? 'authenticated' : 'unauthenticated',
-      },
-    },
-    middleware: (gDM) => gDM().concat(baseApi.middleware),
-  });
 
-  return {
-    ...render(
-      <Provider store={store}>
-        <MemoryRouter>{ui}</MemoryRouter>
-      </Provider>
-    ),
-    store,
-  };
-}
 
 describe('Admin Feature Components & Guards', () => {
   describe('StatusBadge', () => {

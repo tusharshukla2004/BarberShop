@@ -22,6 +22,8 @@ export function HomePage() {
       <Seo
         title={`${siteConfig.name} - ${siteConfig.tagline}`}
         description={siteConfig.description}
+        canonical="/"
+        includeSchema={true}
       />
 
       {/* Hero with Appointment Request Card and Fluid Headline */}

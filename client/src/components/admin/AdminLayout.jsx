@@ -16,6 +16,7 @@ import {
 import { useAppSelector } from '@/app/hooks';
 import { selectCurrentUser, selectIsOwner } from '@/features/auth/authSlice';
 import { useLogoutMutation } from '@/features/auth/authApi';
+import Seo from '@/components/common/Seo';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-card/40 flex flex-col md:flex-row text-ink">
+      <Seo title="Admin Console | Sovereign Barbershop" noindex={true} />
       {/* Mobile Top Bar */}
       <div className="md:hidden bg-ink text-white px-4 py-3 flex items-center justify-between border-b border-border-dark sticky top-0 z-40">
         <div className="flex items-center gap-2">

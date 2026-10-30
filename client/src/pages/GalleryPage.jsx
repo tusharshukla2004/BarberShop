@@ -36,6 +36,7 @@ export default function GalleryPage() {
       <Seo
         title="Works & Portfolio Gallery | Sovereign Barbershop"
         description="Browse our portfolio of artisanal scissor fades, hot towel straight razor shaves, bespoke beard trims, and transformations."
+        canonical="/gallery"
       />
 
       <PageBanner

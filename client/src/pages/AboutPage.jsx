@@ -6,6 +6,7 @@ import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import SectionHeading from '@/components/ui/SectionHeading';
 import Card from '@/components/ui/Card';
+import { assets } from '@/assets';
 
 const shopStory = {
   headline: 'THE ART OF BESPOKE GROOMING REIMAGINED',
@@ -14,8 +15,7 @@ const shopStory = {
     'We believe a haircut or shave is far more than routine upkeep—it is a restorative ritual. From our hand-restored Japanese Takara Belmont chairs to our custom-formulated sandalwood and eucalyptus tonics, every touchpoint in our studio was designed as a sanctuary away from the city hustle.',
     'Our craftsmen undergo rigorous classical apprentice training, mastering scissors-over-comb architecture, hot-lather razor glides, and anatomical beard contouring. Here, tradition meets contemporary elegance.',
   ],
-  teamPhotoUrl:
-    'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1200&q=80',
+  teamPhotoUrl: assets.aboutTeam,
 };
 
 const shopValues = [
@@ -103,6 +103,7 @@ export default function AboutPage() {
       <Seo
         title="Our Heritage & Story | Sovereign Barbershop"
         description="Learn about Sovereign Barbershop's craftsmanship, founding heritage, master barbers, shop values, and customer policies."
+        canonical="/about"
       />
 
       <PageBanner

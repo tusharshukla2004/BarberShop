@@ -13,9 +13,11 @@
     "lint:fix": "npm --workspace=client run lint:fix",
     "format": "npm --workspace=client run format",
     "test": "npm --workspace=client run test",
+    "test:e2e": "playwright test",
     "prepare": "husky install"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.2"
   }

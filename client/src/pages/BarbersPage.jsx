@@ -28,6 +28,7 @@ export default function BarbersPage() {
       <Seo
         title="Meet Our Master Barbers | Sovereign Craftsmen"
         description="Get to know our master barbers, stylists, and beard artisans. Decades of combined heritage and precision grooming."
+        canonical="/barbers"
       />
 
       <PageBanner

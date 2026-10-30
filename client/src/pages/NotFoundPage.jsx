@@ -5,7 +5,11 @@ import { Home } from 'lucide-react';
 export function NotFoundPage() {
   return (
     <>
-      <Seo title="404 - Page Not Found" description="The requested page could not be found." />
+      <Seo
+        title="404 - Page Not Found"
+        description="The requested page could not be found."
+        noindex={true}
+      />
       <Section tone="dark" py="xl" className="min-h-[70vh] flex items-center justify-center">
         <Container className="text-center">
           <span className="font-display text-8xl sm:text-9xl text-accent block leading-none">
