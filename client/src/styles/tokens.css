@@ -4,6 +4,15 @@
  * NOTE: This is the ONLY file where raw hex values may appear.
  */
 :root {
+  /* RGB channel triples for Tailwind alpha-value opacity support */
+  --color-ink-rgb: 20 16 14;
+  --color-brown-rgb: 74 63 58;
+  --color-cream-rgb: 235 224 200;
+  --color-accent-rgb: 249 165 90;
+  --color-accent-hover-rgb: 232 146 67;
+  --color-card-rgb: 240 236 230;
+  --color-muted-rgb: 122 122 122;
+
   /* Colors */
   --color-ink: #14100e;
   --color-brown: #4a3f3a;

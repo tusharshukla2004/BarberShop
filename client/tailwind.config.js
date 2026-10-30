@@ -10,19 +10,19 @@ export default {
     },
     extend: {
       colors: {
-        ink: 'var(--color-ink)',
-        brown: 'var(--color-brown)',
-        cream: 'var(--color-cream)',
+        ink: 'rgb(var(--color-ink-rgb, 20 16 14) / <alpha-value>)',
+        brown: 'rgb(var(--color-brown-rgb, 74 63 58) / <alpha-value>)',
+        cream: 'rgb(var(--color-cream-rgb, 235 224 200) / <alpha-value>)',
         accent: {
-          DEFAULT: 'var(--color-accent)',
-          hover: 'var(--color-accent-hover)',
+          DEFAULT: 'rgb(var(--color-accent-rgb, 249 165 90) / <alpha-value>)',
+          hover: 'rgb(var(--color-accent-hover-rgb, 232 146 67) / <alpha-value>)',
         },
-        white: 'var(--color-white)',
+        white: '#ffffff',
         card: {
-          DEFAULT: 'var(--color-card)',
+          DEFAULT: 'rgb(var(--color-card-rgb, 240 236 230) / <alpha-value>)',
           border: 'var(--color-card-border)',
         },
-        muted: 'var(--color-muted)',
+        muted: 'rgb(var(--color-muted-rgb, 122 122 122) / <alpha-value>)',
         'on-dark-muted': 'var(--color-on-dark-muted)',
         'on-light-muted': 'var(--color-on-light-muted)',
         'border-light': 'var(--color-border-light)',

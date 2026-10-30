@@ -26,7 +26,7 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          'top-0 left-0 right-0 z-40 transition-all duration-base w-full',
+          'top-0 left-0 right-0 z-40 transition-all duration-base w-full text-white',
           isTransparent
             ? 'absolute bg-transparent py-5 sm:py-6'
             : 'fixed bg-ink/95 text-white backdrop-blur-md shadow-md py-3.5 sm:py-4 border-b border-border-dark'
@@ -49,7 +49,7 @@ export function Navbar() {
 
           {/* Center (Desktop): Pill container for NavLinks */}
           <nav
-            className="hidden lg:flex items-center gap-1 p-1 rounded-pill border border-white/20 bg-ink/40 backdrop-blur-sm"
+            className="hidden lg:flex items-center gap-1 p-1 rounded-pill border border-white/20 bg-ink/60 backdrop-blur-md shadow-lg"
             aria-label="Main Navigation"
           >
             {siteConfig.navLinks.map((item) => (
@@ -59,10 +59,10 @@ export function Navbar() {
                 end={item.href === '/'}
                 className={({ isActive }) =>
                   cn(
-                    'text-xs uppercase tracking-wider font-medium px-4 py-1.5 rounded-pill transition-all duration-fast select-none',
+                    'text-xs uppercase tracking-wider font-semibold px-4 py-1.5 rounded-pill transition-all duration-fast select-none',
                     isActive
                       ? 'bg-white text-ink shadow-sm'
-                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                      : 'text-white/85 hover:text-white hover:bg-white/10'
                   )
                 }
               >

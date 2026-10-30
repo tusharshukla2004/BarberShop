@@ -82,10 +82,11 @@ export function AppointmentForm({ className = '' }) {
 
   // Dedicated custom focus-switch input class matching reference style
   const glassInputClass = cn(
-    'w-full px-4 py-3 rounded-sm text-sm transition-all duration-fast outline-none select-none',
-    'bg-white/5 text-white placeholder:text-white/40 border border-white/20',
+    'w-full px-4 py-3 rounded-sm text-sm transition-all duration-fast outline-none',
+    'bg-ink/75 text-white placeholder:text-white/50 border border-white/20',
+    '[color-scheme:dark] focus:[color-scheme:light]',
     // Reference focus behavior: switches to white fill with dark ink text
-    'focus:bg-white focus:text-ink focus:border-white focus:placeholder:text-ink/40 focus:ring-2 focus:ring-accent'
+    'focus:bg-white focus:text-ink focus:border-white focus:placeholder:text-muted focus:ring-2 focus:ring-accent'
   );
 
   return (
@@ -111,7 +112,7 @@ export function AppointmentForm({ className = '' }) {
             className={cn(glassInputClass, errors.name && 'border-red-500 focus:border-red-500')}
             {...register('name')}
           />
-          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40">
+          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/60">
             <User className="h-4 w-4" aria-hidden="true" />
           </div>
         </div>
@@ -143,7 +144,7 @@ export function AppointmentForm({ className = '' }) {
             className={cn(glassInputClass, errors.phone && 'border-red-500 focus:border-red-500')}
             {...register('phone')}
           />
-          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40">
+          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/60">
             <Phone className="h-4 w-4" aria-hidden="true" />
           </div>
         </div>
@@ -175,7 +176,7 @@ export function AppointmentForm({ className = '' }) {
             className={cn(glassInputClass, errors.email && 'border-red-500 focus:border-red-500')}
             {...register('email')}
           />
-          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40">
+          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/60">
             <Mail className="h-4 w-4" aria-hidden="true" />
           </div>
         </div>
