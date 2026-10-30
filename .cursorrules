@@ -1,0 +1,14 @@
+# Barbershop Website Project Rules
+
+Follow all rules in PROJECT_RULES.md:
+1. Client: Vite, React 18, Plain JavaScript (.js/.jsx), Tailwind CSS, React Router v6, Redux Toolkit + RTK Query, React Hook Form + Zod, Embla Carousel, react-leaflet, lucide-react, react-helmet-async, MSW.
+2. Server: Node, Express, JavaScript (ES modules), Mongoose, Zod, JWT in httpOnly cookie.
+3. Design tokens only: `src/styles/tokens.css` + Tailwind theme. Never hardcode hex/pixel values.
+4. Centralized shop data: `src/config/site.js`.
+5. Features in `src/features/<feature>`, shared UI in `src/components/ui`.
+6. Function components in .jsx with JSDoc, accept className. No TypeScript.
+7. RTK Query for server state; Redux slices for draft, ui, auth.
+8. Zod validation for forms, APIs, env variables.
+9. Accessibility: WCAG AA, labels, focus states, aria-labels, 360px+ responsive.
+10. Clean ESLint, Prettier, no console.log, no unused code.
+11. End of every prompt: list files, how to run/verify, items unsure about, wait for user.
