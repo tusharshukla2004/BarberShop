@@ -105,3 +105,4 @@ queueEntrySchema.index({ date: 1, status: 1 });
 queueEntrySchema.index({ date: 1, tokenNumber: 1 });
 
 export const QueueEntry = mongoose.model('QueueEntry', queueEntrySchema);
+

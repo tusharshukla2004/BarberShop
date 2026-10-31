@@ -130,6 +130,7 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 - `/admin/reminders` — Today's and Tomorrow's 1-tap WhatsApp reminders with 60s auto-refresh polling, status tracking ("Not sent" vs "Sent at HH:mm by Staff"), and sent-row sinking.
 - `/admin/customers` — Client directory with search, repeat no-show flags, visit counters, lifetime spend, and manual customer creation.
 - `/admin/customers/:id` — Individual customer dossier with editable barber notes, tags, preferred barber, visit history timeline, and WhatsApp quick actions (message, rebooking nudge).
+- `/admin/reports` — Executive analytics & business intelligence: date presets (Today, 7d, 30d, This/Last Month, Custom), barber filter, period-over-period delta KPI cards, Recharts bookings/revenue timeline with screen-reader table fallback, services breakdown, barber productivity, peak-hours heatmap, no-shows log, acquisition sources, and Excel-compatible UTF-8 BOM CSV exports.
 - `/admin/services` — Full CRUD for grooming treatments and prices.
 - `/admin/barbers` — Barber profile and weekly schedule management.
 - `/admin/gallery` — Portfolio image management.

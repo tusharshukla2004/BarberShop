@@ -736,6 +736,210 @@ export const handlers = [
 
     return HttpResponse.json({ success: true, data: entry });
   }),
+
+  // Reports: Summary
+  http.get('*/api/admin/reports/summary', async ({ request }) => {
+    const url = new URL(request.url);
+    const from = url.searchParams.get('from') || '2026-10-01';
+    const to = url.searchParams.get('to') || '2026-10-31';
+    await delay(50);
+
+    const completed = dynamicBookings.filter((b) => b.status === 'completed');
+    const revenue = completed.reduce((sum, b) => sum + (b.priceAtBooking || 650), 0) || 18450;
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        period: { from, to, prevFrom: '2026-09-01', prevTo: '2026-09-30' },
+        totalBookings: dynamicBookings.length || 28,
+        completedBookings: completed.length || 24,
+        revenue,
+        noShows: 2,
+        noShowRate: 7.7,
+        uniqueCustomers: 19,
+        repeatRate: 42.1,
+        previousPeriod: {
+          totalBookings: 24,
+          completedBookings: 20,
+          revenue: 15200,
+          noShowRate: 9.1,
+          uniqueCustomers: 16,
+          repeatRate: 37.5,
+        },
+        deltas: {
+          totalBookings: 16.7,
+          completedBookings: 20.0,
+          revenue: 21.4,
+          noShowRate: -1.4,
+          uniqueCustomers: 18.8,
+          repeatRate: 4.6,
+        },
+        insights: [
+          'Saturday 5:00 PM is your busiest time window.',
+          'No-show rate dropped by 1.4% compared to previous period.',
+          'Classic Haircut is your top revenue driver (₹12,400).',
+          'High client loyalty: 42.1% repeat visitor rate.',
+        ],
+      },
+    });
+  }),
+
+  // Reports: Bookings Over Time
+  http.get('*/api/admin/reports/bookings-over-time', async () => {
+    await delay(60);
+
+    const timeline = [];
+    const baseDays = 14;
+    for (let i = baseDays; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+      const isWeekend = new Date(d).getDay() === 0 || new Date(d).getDay() === 6;
+      const count = isWeekend ? 8 : 4;
+      const completed = Math.max(1, count - (isWeekend ? 1 : 0));
+      timeline.push({
+        date: d,
+        totalBookings: count,
+        completedBookings: completed,
+        revenue: completed * 650,
+        noShows: count - completed,
+      });
+    }
+
+    return HttpResponse.json({ success: true, data: timeline });
+  }),
+
+  // Reports: Services
+  http.get('*/api/admin/reports/services', async () => {
+    await delay(40);
+    const report = dynamicServices.map((s, idx) => {
+      const bookingsCount = 18 - idx * 3;
+      const completedCount = bookingsCount - 1;
+      const revenue = completedCount * (s.price || 500);
+      return {
+        serviceId: s.id,
+        name: s.name,
+        category: s.category || 'Grooming',
+        durationMinutes: s.durationMinutes || 30,
+        price: s.price || 500,
+        bookingsCount,
+        completedCount,
+        revenue,
+        shareOfRevenue: 35 - idx * 7,
+      };
+    });
+    return HttpResponse.json({ success: true, data: report });
+  }),
+
+  // Reports: Barbers
+  http.get('*/api/admin/reports/barbers', async () => {
+    await delay(40);
+    const report = dynamicBarbers.map((b, idx) => ({
+      barberId: b.id,
+      name: b.name,
+      role: b.role || 'Barber',
+      totalAssigned: 22 - idx * 4,
+      completedCount: 20 - idx * 4,
+      revenue: (20 - idx * 4) * 750,
+      noShowCount: idx === 0 ? 1 : 0,
+      noShowRate: idx === 0 ? 4.8 : 0,
+      avgServiceDuration: 35,
+    }));
+    return HttpResponse.json({ success: true, data: report });
+  }),
+
+  // Reports: Peak Hours Heatmap
+  http.get('*/api/admin/reports/peak-hours', async () => {
+    await delay(50);
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+    const matrix = [];
+
+    for (let day = 0; day < 7; day++) {
+      for (const h of hours) {
+        const isPeak = (day === 5 || day === 6) && (h === 16 || h === 17 || h === 18);
+        const count = isPeak ? 9 : (day === 0 || day === 6 ? 5 : 2);
+        matrix.push({
+          dayOfWeek: day,
+          dayName: dayNames[day],
+          hour: h,
+          hourLabel: `${h > 12 ? h - 12 : h}:00 ${h >= 12 ? 'PM' : 'AM'}`,
+          count,
+          revenue: count * 650,
+        });
+      }
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        matrix,
+        busiestWindow: {
+          dayName: 'Saturday',
+          hourLabel: '5:00 PM',
+          count: 9,
+          revenue: 5850,
+        },
+      },
+    });
+  }),
+
+  // Reports: Customers
+  http.get('*/api/admin/reports/customers', async () => {
+    await delay(40);
+    const top = dynamicCustomers.map((c) => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone,
+      totalLifetimeVisits: c.stats?.totalVisits || 3,
+      lifetimeSpent: c.stats?.totalSpent || 2400,
+      visitsInPeriod: 2,
+      spentInPeriod: 1300,
+    }));
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        totalDistinctInPeriod: 19,
+        newCustomersCount: 11,
+        returningCustomersCount: 8,
+        topCustomers: top,
+      },
+    });
+  }),
+
+  // Reports: No-Shows
+  http.get('*/api/admin/reports/no-shows', async () => {
+    await delay(40);
+    return HttpResponse.json({
+      success: true,
+      data: [
+        {
+          id: 'ns-1',
+          date: new Date().toISOString().slice(0, 10),
+          startTime: '02:00 PM',
+          customerName: 'Karan Joshi',
+          phone: '919876543211',
+          barberName: 'Alex Vance',
+          serviceName: 'Signature Haircut',
+          price: 650,
+          isFlagged: false,
+          noShowCount: 1,
+        },
+      ],
+    });
+  }),
+
+  // Reports: Sources
+  http.get('*/api/admin/reports/sources', async () => {
+    await delay(40);
+    return HttpResponse.json({
+      success: true,
+      data: [
+        { source: 'online_booking', label: 'Online Booking', count: 18, completedCount: 16, percentage: 64.3, revenue: 11200 },
+        { source: 'walk_in', label: 'Walk-in Queue', count: 7, completedCount: 6, percentage: 25.0, revenue: 4500 },
+        { source: 'admin_created', label: 'Admin Created', count: 3, completedCount: 2, percentage: 10.7, revenue: 1550 },
+      ],
+    });
+  }),
 ];
 
 export default handlers;

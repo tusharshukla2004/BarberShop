@@ -64,3 +64,4 @@ export const {
   useGetPublicQueueStatusQuery,
   useJoinPublicQueueMutation,
 } = queueApi;
+

@@ -166,3 +166,4 @@ describe('Queue Logic & Wait Time Estimation Engine (Pure Functions)', () => {
     expect(result.prospectEstimation.reason).toContain('closing time');
   });
 });
+

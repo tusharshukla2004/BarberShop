@@ -8,6 +8,8 @@ import {
   ArrowRight,
   User,
   Scissors,
+  Sparkles,
+  BarChart3,
 } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/admin/StatusBadge';
@@ -15,6 +17,7 @@ import QueryState from '@/components/common/QueryState';
 import { useGetBookingsQuery } from '@/features/booking/bookingApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
+import { useGetReportsSummaryQuery } from '@/features/reports/reportsApi';
 
 export default function AdminDashboardPage() {
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
@@ -22,6 +25,7 @@ export default function AdminDashboardPage() {
   const { data: bookings = [], isLoading, isError, error, refetch } = useGetBookingsQuery();
   const { data: barbers = [] } = useGetBarbersQuery();
   const { data: services = [] } = useGetServicesQuery();
+  const { data: summaryData } = useGetReportsSummaryQuery();
 
   // Metrics
   const counts = useMemo(() => {
@@ -81,14 +85,45 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <Link
-          to="/admin/bookings"
-          className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold text-accent hover:text-ink transition-colors self-start sm:self-auto"
-        >
-          <span>View All Bookings</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admin/reports"
+            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold text-white bg-ink px-3 py-1.5 rounded-pill hover:bg-ink/90 transition-colors"
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-accent" />
+            <span>Reports & Analytics</span>
+          </Link>
+          <Link
+            to="/admin/bookings"
+            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold text-accent hover:text-ink transition-colors self-start sm:self-auto"
+          >
+            <span>View All Bookings</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
+
+      {/* Rule-based Business Insights Highlight */}
+      {summaryData?.insights && summaryData.insights.length > 0 && (
+        <div className="bg-sand/30 border border-border/80 rounded-card p-4 flex items-start gap-3">
+          <div className="p-2 bg-accent/20 text-accent rounded-base shrink-0 mt-0.5">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-ink">
+              Live Business Insights
+            </h2>
+            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
+              {summaryData.insights.slice(0, 3).map((insight, idx) => (
+                <div key={idx} className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                  <span className="text-ink font-medium">{insight}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <QueryState isLoading={isLoading} isError={isError} error={error} onRetry={refetch}>
         {/* Metric Counter Cards */}

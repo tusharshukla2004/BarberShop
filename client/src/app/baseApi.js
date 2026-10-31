@@ -49,6 +49,7 @@ export const baseApi = createApi({
     'Reminders',
     'Queue',
     'QueueStatus',
+    'Reports',
   ],
   endpoints: () => ({}),
 });

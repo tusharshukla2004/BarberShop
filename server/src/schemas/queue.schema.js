@@ -42,3 +42,4 @@ export const joinPublicQueueSchema = z.object({
     hp_field: z.string().max(0, 'Spam bot detected').optional().or(z.literal('')),
   }),
 });
+

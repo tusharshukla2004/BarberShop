@@ -333,3 +333,4 @@ export async function deleteCustomer(req, res, next) {
     return next(error);
   }
 }
+

@@ -50,6 +50,16 @@ import {
   updateQueueStatus,
 } from '../controllers/queueController.js';
 import {
+  getSummaryReport,
+  getBookingsOverTime,
+  getServicesReport,
+  getBarbersReport,
+  getPeakHoursReport,
+  getCustomersReport,
+  getNoShowsReport,
+  getSourcesReport,
+} from '../controllers/reportController.js';
+import {
   serviceSchema,
   barberSchema,
   galleryItemSchema,
@@ -72,6 +82,7 @@ import {
   addWalkInSchema,
   updateQueueEntrySchema,
 } from '../schemas/queue.schema.js';
+import { reportQuerySchema } from '../schemas/report.schema.js';
 
 const router = Router();
 
@@ -103,6 +114,16 @@ router.delete('/customers/:id', validate(customerIdParamSchema), deleteCustomer)
 router.get('/queue', validate(listQueueQuerySchema), getAdminQueue);
 router.post('/queue', validate(addWalkInSchema), addWalkIn);
 router.patch('/queue/:id', validate(updateQueueEntrySchema), updateQueueStatus);
+
+// Reports & Analytics (Owner full view; Barbers see their own data only)
+router.get('/reports/summary', validate(reportQuerySchema), getSummaryReport);
+router.get('/reports/bookings-over-time', validate(reportQuerySchema), getBookingsOverTime);
+router.get('/reports/services', validate(reportQuerySchema), getServicesReport);
+router.get('/reports/barbers', validate(reportQuerySchema), getBarbersReport);
+router.get('/reports/peak-hours', validate(reportQuerySchema), getPeakHoursReport);
+router.get('/reports/customers', validate(reportQuerySchema), getCustomersReport);
+router.get('/reports/no-shows', validate(reportQuerySchema), getNoShowsReport);
+router.get('/reports/sources', validate(reportQuerySchema), getSourcesReport);
 
 // Services management
 router.post('/services', validate(serviceSchema), createService);

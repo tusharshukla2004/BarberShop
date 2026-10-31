@@ -144,4 +144,9 @@ bookingSchema.index(
   }
 );
 
+// High-performance compound indexes for reports and analytics aggregations
+bookingSchema.index({ date: 1, status: 1 });
+bookingSchema.index({ date: 1, barberId: 1, status: 1 });
+bookingSchema.index({ customerId: 1, date: 1 });
+
 export const Booking = mongoose.model('Booking', bookingSchema);
