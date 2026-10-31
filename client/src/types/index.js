@@ -131,6 +131,32 @@
  * @property {FaqCategory} category - Topic classification
  * @property {number} order - Visual sorting sequence
  * @property {boolean} isPublished - Public display toggle
+ *
+ * @typedef {'created' | 'authorized' | 'captured' | 'failed' | 'refunded' | 'partially_refunded'} PaymentStatus
+ * @typedef {'deposit' | 'full' | 'balance'} PaymentPurpose
+ *
+ * @typedef {Object} Payment
+ * @property {string} id - Unique payment record ID
+ * @property {string} bookingId - Associated booking ID
+ * @property {string} razorpayOrderId - Razorpay order reference
+ * @property {string} [razorpayPaymentId] - Razorpay transaction identifier
+ * @property {number} amount - Amount in paise (multiply by 100)
+ * @property {string} [currency='INR'] - Currency code
+ * @property {PaymentPurpose} purpose - Payment purpose (deposit, full, or balance)
+ * @property {PaymentStatus} status - Gateway lifecycle status
+ * @property {string} [method] - Payment method (upi, card, netbanking)
+ * @property {number} [refundedAmount=0] - Total refunded in paise
+ * @property {string} [createdAt] - Creation timestamp
+ *
+ * @typedef {Object} PaymentSettings
+ * @property {boolean} paymentsEnabled - Online gateway enable toggle
+ * @property {'none' | 'deposit' | 'full'} paymentMode - Collection mode
+ * @property {'flat' | 'percent'} depositType - Calculation type
+ * @property {number} depositValue - Percentage or flat amount
+ * @property {number} minimumServicePrice - Threshold below which deposits are exempt
+ * @property {number} refundPolicyHours - Cancellation window for full refund
+ * @property {BilingualString} refundPolicyText - Bilingual policy explanation
+ * @property {number} holdTimeoutMinutes - Slot hold duration
  */
 
 export {};

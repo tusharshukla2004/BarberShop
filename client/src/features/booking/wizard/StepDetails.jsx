@@ -11,6 +11,12 @@ import { useCreateBookingMutation } from '@/features/booking/bookingApi';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
 import { useGetPublicOffersQuery, useValidateOfferCodeMutation } from '@/features/offers/offersApi';
+import { useGetSettingsQuery } from '@/features/settings/settingsApi';
+import {
+  useCreatePaymentOrderMutation,
+  useVerifyPaymentMutation,
+} from '@/features/payments/paymentsApi';
+import { openRazorpayModal } from '@/lib/razorpay';
 
 const bookingDetailsSchema = z.object({
   customerName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -37,15 +43,21 @@ export default function StepDetails({
   onBack,
 }) {
   const [createBooking, { isLoading }] = useCreateBookingMutation();
+  const [createPaymentOrder, { isLoading: isCreatingOrder }] = useCreatePaymentOrderMutation();
+  const [verifyPayment, { isLoading: isVerifyingPayment }] = useVerifyPaymentMutation();
   const [validateOfferCode, { isLoading: isValidatingPromo }] = useValidateOfferCodeMutation();
 
   const { data: services = [] } = useGetServicesQuery();
   const { data: barbers = [] } = useGetBarbersQuery();
   const { data: publicOffers = [] } = useGetPublicOffersQuery();
+  const { data: settings = {} } = useGetSettingsQuery();
 
   const [promoInput, setPromoInput] = useState(draft.promoCode || '');
   const [promoError, setPromoError] = useState('');
   const [promoSuccess, setPromoSuccess] = useState('');
+  const [paymentError, setPaymentError] = useState('');
+  const [heldBooking, setHeldBooking] = useState(null);
+  const [holdSecondsLeft, setHoldSecondsLeft] = useState(null);
   const [appliedPromo, setAppliedPromo] = useState(
     draft.appliedOffer
       ? {
@@ -174,6 +186,65 @@ export default function StepDetails({
     },
   });
 
+  const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
+  const finalPrice = Math.max(0, originalPrice - discountAmount);
+
+  // Online Payment / Deposit Requirements Resolution
+  const paymentSettings = settings?.paymentSettings;
+  const isPaymentConfigured =
+    Boolean(paymentSettings?.paymentsEnabled) && paymentSettings?.paymentMode !== 'none';
+  const isServiceExempt = selectedService?.requiresDeposit === 'no';
+  const isBelowMin = finalPrice < (paymentSettings?.minimumServicePrice || 0);
+
+  const isDepositRequired =
+    isPaymentConfigured && !isServiceExempt && !isBelowMin && finalPrice > 0;
+
+  let depositAmount = 0;
+  let balanceDue = finalPrice;
+  let paymentPurpose = 'none';
+
+  if (isDepositRequired) {
+    if (paymentSettings?.paymentMode === 'full') {
+      depositAmount = finalPrice;
+      balanceDue = 0;
+      paymentPurpose = 'full';
+    } else {
+      const depVal = Number(paymentSettings?.depositValue ?? 20);
+      if (paymentSettings?.depositType === 'flat') {
+        depositAmount = Math.min(finalPrice, depVal);
+      } else {
+        depositAmount = Math.round((finalPrice * depVal) / 100);
+      }
+      balanceDue = Math.max(0, finalPrice - depositAmount);
+      paymentPurpose = depositAmount >= finalPrice ? 'full' : 'deposit';
+    }
+  }
+
+  // Countdown timer for held slot
+  useEffect(() => {
+    if (holdSecondsLeft === null || holdSecondsLeft <= 0) return;
+
+    const interval = setInterval(() => {
+      setHoldSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          onConflict('Your slot hold has expired. Please select a time slot again.');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [holdSecondsLeft, onConflict]);
+
+  const formatHoldTime = (seconds) => {
+    if (!seconds || seconds <= 0) return '00:00';
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   const onSubmit = async (formData, bypassPromo = false) => {
     onSaveDraft(formData);
 
@@ -195,25 +266,91 @@ export default function StepDetails({
       promoCode: activePromoCode,
     };
 
+    if (!isDepositRequired) {
+      try {
+        const res = await createBooking(payload).unwrap();
+        onSuccess(res);
+      } catch (err) {
+        if (
+          err.data?.code === 'USAGE_LIMIT_REACHED' ||
+          err.data?.error?.code === 'USAGE_LIMIT_REACHED'
+        ) {
+          setLimitExceededRetry(true);
+          setPromoError(
+            'This offer just reached its usage limit concurrently. You can still confirm your appointment at the standard price.'
+          );
+        } else if (
+          err.status === 409 ||
+          err.code === 'CONFLICT' ||
+          err.data?.error?.code === 'CONFLICT'
+        ) {
+          onConflict('That slot was just taken. Please pick another slot.');
+        } else {
+          onConflict(err.message || 'An error occurred while confirming your reservation.');
+        }
+      }
+      return;
+    }
+
+    // Razorpay Deposit / Online Payment Flow
     try {
-      const res = await createBooking(payload).unwrap();
-      onSuccess(res);
+      setPaymentError('');
+      let orderPayload = heldBooking;
+
+      if (!orderPayload) {
+        const res = await createPaymentOrder(payload).unwrap();
+        if (!res.paymentRequired) {
+          onSuccess(res.booking);
+          return;
+        }
+        orderPayload = res;
+        setHeldBooking(res);
+        setHoldSecondsLeft((res.holdTimeoutMinutes || 10) * 60);
+      }
+
+      await openRazorpayModal({
+        keyId: orderPayload.order.keyId,
+        order: orderPayload.order,
+        booking: orderPayload.booking,
+        customer: {
+          name: formData.customerName,
+          phone: formData.phone,
+          email: formData.email,
+        },
+        onSuccess: async (rzpResponse) => {
+          try {
+            const verifyRes = await verifyPayment({
+              bookingId: orderPayload.booking.id,
+              razorpayOrderId: rzpResponse.razorpay_order_id,
+              razorpayPaymentId: rzpResponse.razorpay_payment_id,
+              razorpaySignature: rzpResponse.razorpay_signature,
+            }).unwrap();
+
+            onSuccess(verifyRes.booking);
+          } catch (vErr) {
+            setPaymentError(
+              vErr.message || 'Payment signature verification failed. Please contact reception.'
+            );
+          }
+        },
+        onDismiss: () => {
+          setPaymentError(
+            'Payment window closed. Your slot is held for the remaining time. Click "Retry Payment" to complete.'
+          );
+        },
+      });
     } catch (err) {
-      if (err.data?.code === 'USAGE_LIMIT_REACHED' || err.data?.error?.code === 'USAGE_LIMIT_REACHED') {
-        setLimitExceededRetry(true);
-        setPromoError(
-          'This offer just reached its usage limit concurrently. You can still confirm your appointment at the standard price.'
-        );
-      } else if (err.status === 409 || err.code === 'CONFLICT' || err.data?.error?.code === 'CONFLICT') {
-        onConflict('That slot was just taken. Please pick another slot.');
+      if (
+        err.status === 409 ||
+        err.code === 'SLOT_CONFLICT' ||
+        err.data?.error?.code === 'SLOT_CONFLICT'
+      ) {
+        onConflict('That slot is currently held or was just booked. Please pick another slot.');
       } else {
-        onConflict(err.message || 'An error occurred while confirming your reservation.');
+        setPaymentError(err.message || 'Payment initiation failed. Please try again.');
       }
     }
   };
-
-  const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
-  const finalPrice = Math.max(0, originalPrice - discountAmount);
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -444,7 +581,7 @@ export default function StepDetails({
                     className="mt-1 h-4 w-4 rounded border-border-light text-accent focus:ring-accent"
                   />
                   <span className="text-xs text-muted leading-relaxed">
-                    I acknowledge that Sovereign Barbershop provides complimentary cancellation up to 2 hours prior to the appointment. Payment is settled at the studio after your service.
+                    I acknowledge that Sovereign Barbershop provides complimentary cancellation up to 2 hours prior to the appointment. {isDepositRequired ? 'A deposit is collected online to hold your appointment slot.' : 'Payment is settled at the studio after your service.'}
                   </span>
                 </label>
                 {errors.agreedToPolicy && (
@@ -454,6 +591,29 @@ export default function StepDetails({
                   </p>
                 )}
               </div>
+
+              {/* Hold status timer & payment error alerts */}
+              {holdSecondsLeft > 0 && (
+                <div className="p-3.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 shrink-0 text-amber-600 animate-pulse" />
+                    <span>
+                      Slot held for you! Complete payment within{' '}
+                      <strong className="font-mono font-bold text-amber-950">
+                        {formatHoldTime(holdSecondsLeft)}
+                      </strong>{' '}
+                      to secure your appointment.
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {paymentError && (
+                <div className="p-3 rounded-md bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  <span>{paymentError}</span>
+                </div>
+              )}
 
               {/* Nav Buttons */}
               <div className="pt-4 flex items-center justify-between border-t border-border-light/50">
@@ -471,10 +631,20 @@ export default function StepDetails({
                   type="submit"
                   variant="accent"
                   size="lg"
-                  disabled={isLoading}
+                  disabled={isLoading || isCreatingOrder || isVerifyingPayment}
                   className="px-8 tracking-wider uppercase font-semibold text-xs"
                 >
-                  {isLoading ? 'Confirming...' : 'Confirm Appointment'}
+                  {isCreatingOrder || isVerifyingPayment
+                    ? 'Processing...'
+                    : isDepositRequired
+                    ? heldBooking
+                      ? `Retry Payment (${formatPrice(depositAmount)})`
+                      : paymentPurpose === 'full'
+                      ? `Proceed to Pay ${formatPrice(depositAmount)}`
+                      : `Pay Deposit ${formatPrice(depositAmount)}`
+                    : isLoading
+                    ? 'Confirming...'
+                    : 'Confirm Appointment'}
                 </Button>
               </div>
             </form>
@@ -546,15 +716,43 @@ export default function StepDetails({
                 </div>
               )}
 
-              <div className="pt-2 border-t border-border-dark/60 flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-on-dark-muted font-semibold uppercase">Total Due at Studio</p>
-                  <p className="text-[11px] text-accent">Zero upfront deposit required</p>
+              {isDepositRequired ? (
+                <>
+                  <div className="pt-2 border-t border-border-dark/60 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-accent font-semibold uppercase">
+                        {paymentPurpose === 'full' ? 'Full Payment Due Online' : 'Deposit Due Online'}
+                      </p>
+                      <p className="text-[11px] text-on-dark-muted">Secures chair via Razorpay</p>
+                    </div>
+                    <span className="font-display text-2xl text-accent font-bold">
+                      {formatPrice(depositAmount)}
+                    </span>
+                  </div>
+
+                  {balanceDue > 0 && (
+                    <div className="flex items-center justify-between text-xs text-on-dark-muted pt-1">
+                      <span>Remaining Balance Due at Studio</span>
+                      <span className="font-semibold text-white">{formatPrice(balanceDue)}</span>
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-on-dark-muted/80 pt-2 border-t border-border-dark/40 italic">
+                    {settings?.paymentSettings?.refundPolicyText?.en ||
+                      'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.'}
+                  </p>
+                </>
+              ) : (
+                <div className="pt-2 border-t border-border-dark/60 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-on-dark-muted font-semibold uppercase">Total Due at Studio</p>
+                    <p className="text-[11px] text-accent">Zero upfront deposit required</p>
+                  </div>
+                  <span className="font-display text-2xl text-white">
+                    {formatPrice(finalPrice)}
+                  </span>
                 </div>
-                <span className="font-display text-2xl text-white">
-                  {formatPrice(finalPrice)}
-                </span>
-              </div>
+              )}
             </div>
           </Card>
         </div>

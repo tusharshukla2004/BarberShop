@@ -27,6 +27,7 @@ const AdminRemindersPage = lazy(() => import('@/pages/admin/AdminRemindersPage')
 const AdminCustomersPage = lazy(() => import('@/pages/admin/AdminCustomersPage'));
 const AdminCustomerDetailPage = lazy(() => import('@/pages/admin/AdminCustomerDetailPage'));
 const AdminReportsPage = lazy(() => import('@/pages/admin/AdminReportsPage'));
+const AdminPaymentsPage = lazy(() => import('@/pages/admin/AdminPaymentsPage'));
 const AdminOffersPage = lazy(() => import('@/pages/admin/AdminOffersPage'));
 const AdminFaqsPage = lazy(() => import('@/pages/admin/AdminFaqsPage'));
 const AdminServicesPage = lazy(() => import('@/pages/admin/AdminServicesPage'));
@@ -75,6 +76,7 @@ export function AppRouter() {
             <Route path="/admin/customers" element={<AdminCustomersPage />} />
             <Route path="/admin/customers/:id" element={<AdminCustomerDetailPage />} />
             <Route path="/admin/reports" element={<AdminReportsPage />} />
+            <Route path="/admin/payments" element={<AdminPaymentsPage />} />
             <Route path="/admin/offers" element={<AdminOffersPage />} />
             <Route path="/admin/faqs" element={<AdminFaqsPage />} />
             <Route path="/admin/services" element={<AdminServicesPage />} />

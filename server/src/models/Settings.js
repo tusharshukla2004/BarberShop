@@ -49,6 +49,30 @@ const queueSettingsSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const paymentSettingsSchema = new mongoose.Schema(
+  {
+    paymentsEnabled: { type: Boolean, default: false },
+    paymentMode: { type: String, enum: ['none', 'deposit', 'full'], default: 'none' },
+    depositType: { type: String, enum: ['flat', 'percent'], default: 'percent' },
+    depositValue: { type: Number, default: 20 },
+    minimumServicePrice: { type: Number, default: 0 },
+    refundPolicyHours: { type: Number, default: 2 },
+    refundPolicyText: {
+      en: {
+        type: String,
+        default:
+          'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.',
+      },
+      hi: {
+        type: String,
+        default: 'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।',
+      },
+    },
+    holdTimeoutMinutes: { type: Number, default: 10 },
+  },
+  { _id: false }
+);
+
 const settingsSchema = new mongoose.Schema(
   {
     shopHours: {
@@ -85,6 +109,10 @@ const settingsSchema = new mongoose.Schema(
     },
     queueSettings: {
       type: queueSettingsSchema,
+      default: () => ({}),
+    },
+    paymentSettings: {
+      type: paymentSettingsSchema,
       default: () => ({}),
     },
     policies: {

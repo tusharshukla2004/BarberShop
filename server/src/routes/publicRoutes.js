@@ -17,6 +17,11 @@ import {
 } from '../controllers/queueController.js';
 import { getPublicOffers, validateOfferCode } from '../controllers/offerController.js';
 import { getPublicFaqs } from '../controllers/faqController.js';
+import {
+  createPaymentOrder,
+  verifyPayment,
+  handlePaymentWebhook,
+} from '../controllers/paymentController.js';
 import { validate } from '../middleware/validate.js';
 import {
   createBookingSchema,
@@ -27,6 +32,10 @@ import { reviewSchema } from '../schemas/content.schema.js';
 import { contactSchema } from '../schemas/contact.schema.js';
 import { joinPublicQueueSchema } from '../schemas/queue.schema.js';
 import { validateOfferCodeSchema } from '../schemas/offer.schema.js';
+import {
+  createPaymentOrderSchema,
+  verifyPaymentSchema,
+} from '../schemas/payment.schema.js';
 import { bookingLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
@@ -75,5 +84,15 @@ router.post('/queue/join', bookingLimiter, validate(joinPublicQueueSchema), join
 router.get('/offers', getPublicOffers);
 router.post('/offers/validate', validate(validateOfferCodeSchema), validateOfferCode);
 router.get('/faqs', getPublicFaqs);
+
+// Online Payments & Deposits (Razorpay)
+router.post(
+  '/payments/create-order',
+  bookingLimiter,
+  validate(createPaymentOrderSchema),
+  createPaymentOrder
+);
+router.post('/payments/verify', validate(verifyPaymentSchema), verifyPayment);
+router.post('/payments/webhook', handlePaymentWebhook);
 
 export default router;

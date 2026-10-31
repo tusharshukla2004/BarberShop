@@ -17,6 +17,7 @@ import {
   BarChart3,
   Tag,
   HelpCircle,
+  CreditCard,
 } from 'lucide-react';
 import { useAppSelector } from '@/app/hooks';
 import { selectCurrentUser, selectIsOwner } from '@/features/auth/authSlice';
@@ -42,6 +43,7 @@ export default function AdminLayout() {
     { to: '/admin/reminders', label: 'Reminders', icon: Bell },
     { to: '/admin/customers', label: 'Customers', icon: Users },
     { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
+    { to: '/admin/payments', label: 'Payments', icon: CreditCard },
     ...(isOwner
       ? [
           { to: '/admin/services', label: 'Services', icon: Scissors },

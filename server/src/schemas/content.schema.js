@@ -8,6 +8,7 @@ export const serviceSchema = z.object({
     price: z.number().nonnegative('Price must be greater than or equal to 0'),
     durationMinutes: z.number().int().min(5, 'Duration must be at least 5 minutes'),
     isActive: z.boolean().optional(),
+    requiresDeposit: z.enum(['inherit', 'yes', 'no']).optional(),
   }),
 });
 
@@ -89,6 +90,25 @@ export const settingsSchema = z.object({
         cancellation: z.string().optional(),
         review_request: z.string().optional(),
         running_late: z.string().optional(),
+        queue_turn_near: z.string().optional(),
+      })
+      .optional(),
+    queueSettings: z.record(z.any()).optional(),
+    paymentSettings: z
+      .object({
+        paymentsEnabled: z.boolean().optional(),
+        paymentMode: z.enum(['none', 'deposit', 'full']).optional(),
+        depositType: z.enum(['flat', 'percent']).optional(),
+        depositValue: z.number().min(0).optional(),
+        minimumServicePrice: z.number().min(0).optional(),
+        refundPolicyHours: z.number().min(0).optional(),
+        refundPolicyText: z
+          .object({
+            en: z.string().optional(),
+            hi: z.string().optional(),
+          })
+          .optional(),
+        holdTimeoutMinutes: z.number().min(1).max(60).optional(),
       })
       .optional(),
     policies: z.record(z.any()).optional(),

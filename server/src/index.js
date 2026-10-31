@@ -1,12 +1,14 @@
 import { app } from './app.js';
 import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
+import { startSlotHoldCleaner, stopSlotHoldCleaner } from './services/slotHoldService.js';
 
 let server;
 
 async function bootstrap() {
   try {
     await connectDB();
+    startSlotHoldCleaner();
 
     server = app.listen(env.PORT, () => {
       // eslint-disable-next-line no-console
@@ -22,6 +24,7 @@ async function bootstrap() {
 async function shutdown(signal) {
   // eslint-disable-next-line no-console
   console.log(`\nReceived ${signal}. Gracefully shutting down...`);
+  stopSlotHoldCleaner();
   if (server) {
     server.close(async () => {
       await disconnectDB();

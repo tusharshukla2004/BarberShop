@@ -76,6 +76,12 @@ import {
   reorderFaqs,
 } from '../controllers/faqController.js';
 import {
+  getPaymentsList,
+  getReconciliation,
+  refundPayment,
+  markPaidAtShop,
+} from '../controllers/paymentController.js';
+import {
   serviceSchema,
   barberSchema,
   galleryItemSchema,
@@ -98,6 +104,7 @@ import {
   addWalkInSchema,
   updateQueueEntrySchema,
 } from '../schemas/queue.schema.js';
+import { refundPaymentSchema } from '../schemas/payment.schema.js';
 import { reportQuerySchema } from '../schemas/report.schema.js';
 import {
   createOfferSchema,
@@ -193,5 +200,16 @@ router.delete('/products/:id', deleteProduct);
 // Settings management
 router.get('/settings', getSettings);
 router.put('/settings', validate(settingsSchema), updateSettings);
+
+// Payments & Financial Ledger
+router.get('/payments', getPaymentsList);
+router.get('/payments/reconciliation', requireRole('owner'), getReconciliation);
+router.post(
+  '/payments/:id/refund',
+  requireRole('owner'),
+  validate(refundPaymentSchema),
+  refundPayment
+);
+router.patch('/bookings/:id/mark-paid', markPaidAtShop);
 
 export default router;

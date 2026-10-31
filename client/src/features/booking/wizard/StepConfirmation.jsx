@@ -213,10 +213,29 @@ export default function StepConfirmation({ booking, onReset }) {
                 <span>-{formatPrice(booking.discountAmount)}</span>
               </div>
             )}
-            <div className="flex justify-between font-bold text-ink text-sm pt-1 border-t border-border-light/60">
-              <span>Total Due at Studio:</span>
-              <span className="text-accent">{formatPrice(booking.priceAtBooking)}</span>
-            </div>
+            {booking.amountPaid > 0 ? (
+              <>
+                <div className="flex justify-between text-muted">
+                  <span>Total Service Price:</span>
+                  <span className="font-semibold text-ink">{formatPrice(booking.priceAtBooking)}</span>
+                </div>
+                <div className="flex justify-between text-emerald-700 font-medium">
+                  <span>Paid Online (Razorpay):</span>
+                  <span>-{formatPrice(booking.amountPaid)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-ink text-sm pt-1 border-t border-border-light/60">
+                  <span>Remaining Balance Due at Studio:</span>
+                  <span className="text-accent">
+                    {formatPrice(booking.balanceDue ?? Math.max(0, booking.priceAtBooking - booking.amountPaid))}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="flex justify-between font-bold text-ink text-sm pt-1 border-t border-border-light/60">
+                <span>Total Due at Studio:</span>
+                <span className="text-accent">{formatPrice(booking.priceAtBooking)}</span>
+              </div>
+            )}
           </div>
         )}
 

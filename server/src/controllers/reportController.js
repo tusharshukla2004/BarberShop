@@ -3,6 +3,7 @@ import { Barber } from '../models/Barber.js';
 import { Service } from '../models/Service.js';
 import { Customer } from '../models/Customer.js';
 import { Offer } from '../models/Offer.js';
+import { Payment } from '../models/Payment.js';
 import { getKolkataCurrentDateAndMinutes, timeToMinutes } from '../utils/slots.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import {
@@ -10,6 +11,7 @@ import {
   calculateNoShowRate,
   calculateRepeatRate,
   calculatePeriodDelta,
+  calculatePaymentBreakdown,
 } from '../reports/definitions.js';
 
 // In-memory 60s cache
@@ -146,9 +148,10 @@ export async function getSummaryReport(req, res, next) {
     const prevFilter = { date: { $gte: prevFrom, $lte: prevTo } };
     if (barberId) prevFilter.barberId = barberId;
 
-    const [currentBookings, prevBookings, uniqueCustomers] = await Promise.all([
+    const [currentBookings, prevBookings, uniqueCustomers, periodPayments] = await Promise.all([
       Booking.find(baseFilter).lean(),
       Booking.find(prevFilter).lean(),
+      Payment.find({}).lean(),
       Customer.find({ isDeleted: false }).lean(),
     ]);
 
@@ -216,6 +219,7 @@ export async function getSummaryReport(req, res, next) {
         repeatRate: prevRepeatRate,
       },
       deltas,
+      payments: calculatePaymentBreakdown(currentBookings, periodPayments),
     };
 
     // Calculate light insights

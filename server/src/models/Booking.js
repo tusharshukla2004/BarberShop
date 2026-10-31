@@ -75,8 +75,29 @@ const bookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'completed', 'cancelled', 'no_show'],
+      enum: ['pending', 'confirmed', 'completed', 'cancelled', 'no_show', 'pending_payment'],
       default: 'confirmed',
+      index: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['not_required', 'pending', 'paid', 'refunded', 'partially_refunded'],
+      default: 'not_required',
+      index: true,
+    },
+    amountPaid: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    balanceDue: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    expiresAt: {
+      type: Date,
+      default: null,
       index: true,
     },
     notes: {
@@ -161,7 +182,7 @@ bookingSchema.index(
   {
     unique: true,
     partialFilterExpression: {
-      status: { $in: ['pending', 'confirmed'] },
+      status: { $in: ['pending', 'confirmed', 'pending_payment'] },
     },
   }
 );

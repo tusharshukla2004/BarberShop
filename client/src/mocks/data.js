@@ -238,6 +238,19 @@ export const mockSettings = {
     gracePeriodMinutes: 10,
     termsNotice: 'Free cancellation up to 2 hours prior to scheduled appointment.',
   },
+  paymentSettings: {
+    paymentsEnabled: true,
+    paymentMode: 'deposit',
+    depositType: 'percent',
+    depositValue: 20,
+    minimumServicePrice: 300,
+    refundPolicyHours: 2,
+    refundPolicyText: {
+      en: 'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.',
+      hi: 'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।',
+    },
+    holdTimeoutMinutes: 10,
+  },
 };
 
 /** @type {import('@/types').Booking[]} */
@@ -533,5 +546,57 @@ export const mockFaqs = [
     category: 'Other',
     order: 1,
     isPublished: true,
+  },
+];
+
+export const mockPayments = [
+  {
+    id: 'pay_mock_1',
+    _id: 'pay_mock_1',
+    bookingId: 'bk-101',
+    razorpayOrderId: 'order_mock_101',
+    razorpayPaymentId: 'pay_mock_trans_101',
+    amount: 13000,
+    currency: 'INR',
+    purpose: 'deposit',
+    status: 'captured',
+    method: 'upi',
+    refundedAmount: 0,
+    createdAt: '2026-10-31T09:00:00.000Z',
+    booking: {
+      id: 'bk-101',
+      customerName: 'Arjun Verma',
+      phone: '9876543210',
+      date: '2026-11-05',
+      startTime: '10:00 AM',
+      priceAtBooking: 650,
+      status: 'confirmed',
+      paymentStatus: 'paid',
+    },
+  },
+  {
+    id: 'pay_mock_2',
+    _id: 'pay_mock_2',
+    bookingId: 'bk-102',
+    razorpayOrderId: 'order_mock_102',
+    razorpayPaymentId: 'pay_mock_trans_102',
+    amount: 8000,
+    currency: 'INR',
+    purpose: 'deposit',
+    status: 'refunded',
+    method: 'card',
+    refundedAmount: 8000,
+    refundReason: 'Customer requested cancellation 24h prior',
+    createdAt: '2026-10-30T14:30:00.000Z',
+    booking: {
+      id: 'bk-102',
+      customerName: 'Devraj Saxena',
+      phone: '9812345678',
+      date: '2026-11-06',
+      startTime: '02:00 PM',
+      priceAtBooking: 400,
+      status: 'cancelled',
+      paymentStatus: 'refunded',
+    },
   },
 ];

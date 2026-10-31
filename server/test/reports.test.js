@@ -7,6 +7,7 @@ import { Booking } from '../src/models/Booking.js';
 import { Barber } from '../src/models/Barber.js';
 import { Service } from '../src/models/Service.js';
 import { Customer } from '../src/models/Customer.js';
+import { Payment } from '../src/models/Payment.js';
 import {
   calculateRevenue,
   calculateNoShowRate,
@@ -83,6 +84,10 @@ describe('Reports & Analytics Suite', () => {
       });
 
       vi.spyOn(Customer, 'find').mockReturnValue({
+        lean: vi.fn().mockResolvedValue([]),
+      });
+
+      vi.spyOn(Payment, 'find').mockReturnValue({
         lean: vi.fn().mockResolvedValue([]),
       });
     });

@@ -34,6 +34,11 @@ const serviceSchema = new mongoose.Schema(
       default: true,
       index: true,
     },
+    requiresDeposit: {
+      type: String,
+      enum: ['inherit', 'yes', 'no'],
+      default: 'inherit',
+    },
   },
   {
     timestamps: true,

@@ -11,6 +11,7 @@ import {
   findOrCreateCustomer,
   recalculateCustomerStats,
 } from '../services/customerService.js';
+import { cleanExpiredHolds } from '../services/slotHoldService.js';
 
 /**
  * Finds a document by either custom id string or MongoDB ObjectId
@@ -47,13 +48,19 @@ export async function getSlots(req, res, next) {
       settings = { slotLengthMinutes: 30, holidays: [] };
     }
 
+    // Clean expired slot holds so availability is immediate
+    await cleanExpiredHolds();
+
     // Query active bookings for this barber & date
-    // Account for both barber.id and barber._id
+    // Account for both barber.id and barber._id, plus active payment holds
     const barberIdStr = barber.id || barber._id.toString();
     const existingBookings = await Booking.find({
       barberId: { $in: [barberId, barberIdStr, barber._id] },
       date,
-      status: { $in: ['pending', 'confirmed'] },
+      $or: [
+        { status: { $in: ['pending', 'confirmed'] } },
+        { status: 'pending_payment', expiresAt: { $gt: new Date() } },
+      ],
     }).lean();
 
     const slots = calculateSlots({
@@ -85,12 +92,18 @@ export async function createBooking(req, res, next) {
       }
       barberIdStr = barber.id || barber._id.toString();
 
+      // Immediately cancel any expired holds for this slot so new attempt is never blocked by dead holds
+      await cleanExpiredHolds();
+
       // 2. Conflict check before insert
       const existingConflict = await Booking.findOne({
         barberId: { $in: [barberId, barberIdStr] },
         date,
         startTime,
-        status: { $in: ['pending', 'confirmed'] },
+        $or: [
+          { status: { $in: ['pending', 'confirmed'] } },
+          { status: 'pending_payment', expiresAt: { $gt: new Date() } },
+        ],
       });
 
       if (existingConflict) {

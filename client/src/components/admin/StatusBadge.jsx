@@ -41,6 +41,34 @@ const STATUS_CONFIG = {
     label: 'Expired',
     classes: 'bg-amber-100 text-amber-800 border-amber-200',
   },
+  captured: {
+    label: 'Captured',
+    classes: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  },
+  paid: {
+    label: 'Paid',
+    classes: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  },
+  refunded: {
+    label: 'Refunded',
+    classes: 'bg-purple-100 text-purple-800 border-purple-200',
+  },
+  partially_refunded: {
+    label: 'Part. Refunded',
+    classes: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+  },
+  failed: {
+    label: 'Failed',
+    classes: 'bg-rose-100 text-rose-800 border-rose-200',
+  },
+  created: {
+    label: 'Created',
+    classes: 'bg-zinc-100 text-zinc-700 border-zinc-200',
+  },
+  pending_payment: {
+    label: 'Pending Payment',
+    classes: 'bg-amber-100 text-amber-800 border-amber-200',
+  },
 };
 
 export default function StatusBadge({ status }) {

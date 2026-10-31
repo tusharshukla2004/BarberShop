@@ -154,8 +154,17 @@ export function calculateSlots({
   const isToday = date === todayDate;
 
   // 5. Convert existing active bookings to minute intervals
+  // Active bookings include 'confirmed', 'pending', and unexpired 'pending_payment' holds
+  const nowMs = new Date(now).getTime();
   const activeBookings = (existingBookings || [])
-    .filter((b) => b.status === 'confirmed' || b.status === 'pending')
+    .filter((b) => {
+      if (b.status === 'confirmed' || b.status === 'pending') return true;
+      if (b.status === 'pending_payment') {
+        if (!b.expiresAt) return true;
+        return new Date(b.expiresAt).getTime() > nowMs;
+      }
+      return false;
+    })
     .map((b) => {
       const bStart = timeToMinutes(b.startTime);
       const bEnd = b.endTime ? timeToMinutes(b.endTime) : bStart + serviceDuration;

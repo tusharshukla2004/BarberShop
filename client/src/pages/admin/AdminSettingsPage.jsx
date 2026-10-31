@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Calendar, Save, PlusCircle, MessageSquare, RotateCcw, AlertCircle, Check } from 'lucide-react';
+import { Clock, Calendar, Save, PlusCircle, MessageSquare, RotateCcw, AlertCircle, Check, CreditCard } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import FormField from '@/components/admin/FormField';
@@ -59,6 +59,21 @@ export default function AdminSettingsPage() {
   const [messageTemplates, setMessageTemplates] = useState({ ...DEFAULT_TEMPLATES });
   const [activeTemplateKey, setActiveTemplateKey] = useState('confirmation');
 
+  // Payment Settings state
+  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+  const [paymentMode, setPaymentMode] = useState('deposit');
+  const [depositType, setDepositType] = useState('percent');
+  const [depositValue, setDepositValue] = useState(20);
+  const [minimumServicePrice, setMinimumServicePrice] = useState(0);
+  const [refundPolicyHours, setRefundPolicyHours] = useState(2);
+  const [refundPolicyTextEn, setRefundPolicyTextEn] = useState(
+    'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.'
+  );
+  const [refundPolicyTextHi, setRefundPolicyTextHi] = useState(
+    'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।'
+  );
+  const [holdTimeoutMinutes, setHoldTimeoutMinutes] = useState(10);
+
   useEffect(() => {
     if (settings) {
       setShopHours(
@@ -81,6 +96,23 @@ export default function AdminSettingsPage() {
       );
       setWhatsappNumber(settings.whatsappNumber || '919876543210');
       setGoogleReviewLink(settings.googleReviewLink || 'https://g.page/r/modern-mane-reviews');
+
+      const pSet = settings.paymentSettings || {};
+      setPaymentsEnabled(Boolean(pSet.paymentsEnabled));
+      setPaymentMode(pSet.paymentMode || 'deposit');
+      setDepositType(pSet.depositType || 'percent');
+      setDepositValue(pSet.depositValue ?? 20);
+      setMinimumServicePrice(pSet.minimumServicePrice ?? 0);
+      setRefundPolicyHours(pSet.refundPolicyHours ?? 2);
+      setRefundPolicyTextEn(
+        pSet.refundPolicyText?.en ||
+          'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.'
+      );
+      setRefundPolicyTextHi(
+        pSet.refundPolicyText?.hi ||
+          'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।'
+      );
+      setHoldTimeoutMinutes(pSet.holdTimeoutMinutes ?? 10);
       if (settings.messageTemplates) {
         setMessageTemplates({ ...DEFAULT_TEMPLATES, ...settings.messageTemplates });
       }
@@ -159,6 +191,19 @@ export default function AdminSettingsPage() {
         whatsappNumber,
         googleReviewLink,
         messageTemplates,
+        paymentSettings: {
+          paymentsEnabled,
+          paymentMode,
+          depositType,
+          depositValue: Number(depositValue),
+          minimumServicePrice: Number(minimumServicePrice),
+          refundPolicyHours: Number(refundPolicyHours),
+          refundPolicyText: {
+            en: refundPolicyTextEn,
+            hi: refundPolicyTextHi,
+          },
+          holdTimeoutMinutes: Number(holdTimeoutMinutes),
+        },
         policies: {
           cancellationGraceMinutes: Number(graceMinutes),
           termsNotice,
@@ -498,6 +543,196 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
             </div>
+          </Card>
+
+          {/* Online Payments & Deposits (Razorpay) */}
+          <Card tone="white" className="p-6 border border-border-light space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-light pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-lg bg-accent/10 text-accent">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg text-ink uppercase tracking-wide">
+                    Online Payments & Deposits (Razorpay)
+                  </h3>
+                  <p className="text-xs text-muted">
+                    Collect upfront deposits or full payments to drastically reduce no-shows.
+                  </p>
+                </div>
+              </div>
+
+              {/* Enable / Disable Toggle */}
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={paymentsEnabled}
+                  onChange={(e) => setPaymentsEnabled(e.target.checked)}
+                  className="h-4 w-4 rounded border-border-light text-accent focus:ring-accent accent-accent"
+                />
+                <span className="text-xs font-bold uppercase tracking-wider text-ink">
+                  {paymentsEnabled ? 'Payments Enabled' : 'Payments Disabled'}
+                </span>
+              </label>
+            </div>
+
+            {paymentsEnabled && (
+              <div className="space-y-6 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* Payment Mode */}
+                  <div>
+                    <label
+                      htmlFor="payment-mode-select"
+                      className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5"
+                    >
+                      Payment Mode
+                    </label>
+                    <select
+                      id="payment-mode-select"
+                      value={paymentMode}
+                      onChange={(e) => setPaymentMode(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink focus:outline-none"
+                    >
+                      <option value="deposit">Deposit Only (Partial)</option>
+                      <option value="full">Full Payment Required</option>
+                      <option value="none">Disabled</option>
+                    </select>
+                  </div>
+
+                  {/* Deposit Type */}
+                  {paymentMode === 'deposit' && (
+                    <>
+                      <div>
+                        <label
+                          htmlFor="deposit-type-select"
+                          className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5"
+                        >
+                          Deposit Type
+                        </label>
+                        <select
+                          id="deposit-type-select"
+                          value={depositType}
+                          onChange={(e) => setDepositType(e.target.value)}
+                          className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink focus:outline-none"
+                        >
+                          <option value="percent">Percentage (%)</option>
+                          <option value="flat">Flat Amount (₹)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="deposit-value-input"
+                          className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5"
+                        >
+                          Deposit Value ({depositType === 'percent' ? '%' : '₹'})
+                        </label>
+                        <input
+                          id="deposit-value-input"
+                          type="number"
+                          min="1"
+                          max={depositType === 'percent' ? 100 : 10000}
+                          value={depositValue}
+                          onChange={(e) => setDepositValue(e.target.value)}
+                          className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink focus:outline-none font-semibold"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Minimum Service Price */}
+                  <div>
+                    <label
+                      htmlFor="min-service-price-input"
+                      className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5"
+                    >
+                      Min Price for Deposit (₹)
+                    </label>
+                    <input
+                      id="min-service-price-input"
+                      type="number"
+                      min="0"
+                      value={minimumServicePrice}
+                      onChange={(e) => setMinimumServicePrice(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Slot Hold Timeout */}
+                  <div>
+                    <label
+                      htmlFor="hold-timeout-input"
+                      className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5"
+                    >
+                      Slot Hold Timeout (Mins)
+                    </label>
+                    <input
+                      id="hold-timeout-input"
+                      type="number"
+                      min="5"
+                      max="60"
+                      value={holdTimeoutMinutes}
+                      onChange={(e) => setHoldTimeoutMinutes(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Refund Policy Hours */}
+                  <div>
+                    <label
+                      htmlFor="refund-policy-hours-input"
+                      className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5"
+                    >
+                      Free Cancel Window (Hours)
+                    </label>
+                    <input
+                      id="refund-policy-hours-input"
+                      type="number"
+                      min="0"
+                      max="72"
+                      value={refundPolicyHours}
+                      onChange={(e) => setRefundPolicyHours(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Refund Policy Text (Bilingual) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-border-light">
+                  <div>
+                    <label
+                      htmlFor="refund-policy-en-input"
+                      className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1"
+                    >
+                      Refund Policy Notice (English)
+                    </label>
+                    <input
+                      id="refund-policy-en-input"
+                      type="text"
+                      value={refundPolicyTextEn}
+                      onChange={(e) => setRefundPolicyTextEn(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="refund-policy-hi-input"
+                      className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1"
+                    >
+                      Refund Policy Notice (Hindi)
+                    </label>
+                    <input
+                      id="refund-policy-hi-input"
+                      type="text"
+                      value={refundPolicyTextHi}
+                      onChange={(e) => setRefundPolicyTextHi(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </Card>
 
           {/* Submit */}

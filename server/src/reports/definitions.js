@@ -102,5 +102,51 @@ export function calculatePeriodDelta(currentVal = 0, previousVal = 0) {
  *   2. `walk_in`: Created via queue system / walk-in entry (`source: 'walk_in'`)
  *   3. `admin_created`: Scheduled directly by staff from admin portal (`source: 'admin'`)
  */
+/**
+ * Metric 7: Payment Breakdown (Online vs Shop vs Pending)
+ * - Online: Captured payments collected through Razorpay gateway
+ * - Shop: Collected in person at studio (completed booking price minus online deposit)
+ * - Pending: Remaining balance due on confirmed/completed bookings
+ * - Refunded: Amount returned to customer upon cancellation/admin refund
+ *
+ * @param {Array<Object>} bookings
+ * @param {Array<Object>} payments
+ * @returns {{ collectedOnline: number, collectedAtShop: number, pendingBalance: number, refunded: number }}
+ */
+export function calculatePaymentBreakdown(bookings = [], payments = []) {
+  let collectedOnline = 0;
+  let refunded = 0;
+
+  payments.forEach((p) => {
+    if (p.status === 'captured') {
+      collectedOnline += (p.amount || 0) / 100;
+    }
+    if (p.refundedAmount > 0) {
+      refunded += (p.refundedAmount || 0) / 100;
+    }
+  });
+
+  let collectedAtShop = 0;
+  let pendingBalance = 0;
+
+  bookings.forEach((b) => {
+    if (b.status === 'completed' || b.status === 'confirmed') {
+      pendingBalance += b.balanceDue || 0;
+      if (b.status === 'completed' && (!b.balanceDue || b.balanceDue === 0)) {
+        const fullPrice = b.priceAtBooking || 0;
+        const onlinePaid = b.amountPaid || 0;
+        collectedAtShop += Math.max(0, fullPrice - onlinePaid);
+      }
+    }
+  });
+
+  return {
+    collectedOnline: Math.max(0, collectedOnline - refunded),
+    collectedAtShop,
+    pendingBalance,
+    refunded,
+  };
+}
+
 export const BOOKING_SOURCES = ['online_booking', 'walk_in', 'admin_created'];
 

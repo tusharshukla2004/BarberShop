@@ -21,6 +21,9 @@ const envSchema = z.object({
   OWNER_NAME: z.string().default('Barbershop Master'),
   OWNER_EMAIL: z.string().email().default('owner@barbershop.com'),
   OWNER_PASSWORD: z.string().min(6).default('Admin@123456'),
+  RAZORPAY_KEY_ID: z.string().default('rzp_test_placeholder_key'),
+  RAZORPAY_KEY_SECRET: z.string().default('rzp_test_placeholder_secret'),
+  RAZORPAY_WEBHOOK_SECRET: z.string().default('rzp_webhook_placeholder_secret'),
 });
 
 const parsed = envSchema.safeParse(process.env);

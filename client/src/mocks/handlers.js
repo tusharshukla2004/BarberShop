@@ -10,6 +10,7 @@ import {
   mockQueueEntries,
   mockOffers,
   mockFaqs,
+  mockPayments,
 } from './data';
 
 // In-memory reactive collections for the MSW dev/test session
@@ -23,6 +24,7 @@ const dynamicCustomers = [...mockCustomers];
 const dynamicQueue = [...mockQueueEntries];
 const dynamicOffers = [...mockOffers];
 const dynamicFaqs = [...mockFaqs];
+const dynamicPayments = [...mockPayments];
 
 let currentUser = {
   id: 'admin-1',
@@ -1177,6 +1179,216 @@ export const handlers = [
     });
     dynamicFaqs.sort((a, b) => a.order - b.order);
     return HttpResponse.json({ success: true, data: dynamicFaqs });
+  }),
+
+  // Online Payments & Deposits
+  http.post('*/api/payments/create-order', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    const service = dynamicServices.find((s) => s.id === body.serviceId) || dynamicServices[0];
+    const originalPrice = service ? service.price : 650;
+    const depositAmount = Math.round((originalPrice * 20) / 100);
+    const balanceDue = originalPrice - depositAmount;
+
+    const mockOrderId = `order_mock_${Date.now()}`;
+    const newBooking = {
+      id: `bk-${Date.now()}`,
+      customerName: body.customerName,
+      phone: body.phone,
+      email: body.email,
+      serviceId: body.serviceId,
+      barberId: body.barberId,
+      date: body.date,
+      startTime: body.startTime,
+      endTime: body.endTime || body.startTime,
+      notes: body.notes,
+      priceAtBooking: originalPrice,
+      amountPaid: 0,
+      balanceDue,
+      status: 'pending_payment',
+      paymentStatus: 'pending',
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    };
+    dynamicBookings.push(newBooking);
+
+    const paymentRecord = {
+      id: `pay_mock_${Date.now()}`,
+      bookingId: newBooking.id,
+      razorpayOrderId: mockOrderId,
+      amount: depositAmount * 100,
+      purpose: 'deposit',
+      status: 'created',
+      currency: 'INR',
+      booking: newBooking,
+    };
+    dynamicPayments.push(paymentRecord);
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        paymentRequired: true,
+        booking: newBooking,
+        order: {
+          id: mockOrderId,
+          amount: depositAmount * 100,
+          currency: 'INR',
+          keyId: 'rzp_test_mock_key',
+        },
+        paymentId: paymentRecord.id,
+        breakdown: {
+          totalPrice: originalPrice,
+          depositAmount,
+          balanceDue,
+          purpose: 'deposit',
+        },
+        expiresAt: newBooking.expiresAt,
+        holdTimeoutMinutes: 10,
+      },
+    });
+  }),
+
+  http.post('*/api/payments/verify', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    const { bookingId, razorpayOrderId, razorpayPaymentId } = body;
+
+    const booking = dynamicBookings.find((b) => b.id === bookingId || b._id === bookingId);
+    if (booking) {
+      const deposit = Math.round(((booking.priceAtBooking || 650) * 20) / 100);
+      booking.status = 'confirmed';
+      booking.paymentStatus = 'paid';
+      booking.amountPaid = deposit;
+      booking.balanceDue = (booking.priceAtBooking || 650) - deposit;
+      booking.expiresAt = null;
+    }
+
+    const payment = dynamicPayments.find((p) => p.razorpayOrderId === razorpayOrderId);
+    if (payment) {
+      payment.status = 'captured';
+      payment.razorpayPaymentId = razorpayPaymentId;
+      payment.method = 'upi';
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        success: true,
+        booking: booking || { id: bookingId, status: 'confirmed' },
+        payment: payment || { id: 'pay_mock', status: 'captured' },
+      },
+    });
+  }),
+
+  // Admin Payments List
+  http.get('*/api/admin/payments', async ({ request }) => {
+    await delay(50);
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const search = url.searchParams.get('search');
+
+    let filtered = [...dynamicPayments];
+    if (status && status !== 'all') {
+      filtered = filtered.filter((p) => p.status === status);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.razorpayOrderId?.toLowerCase().includes(q) ||
+          p.booking?.customerName?.toLowerCase().includes(q) ||
+          p.booking?.phone?.includes(q)
+      );
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        payments: filtered,
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: filtered.length,
+          totalPages: 1,
+        },
+      },
+    });
+  }),
+
+  // Admin Payments Reconciliation
+  http.get('*/api/admin/payments/reconciliation', async () => {
+    await delay(50);
+    const totalExpected = dynamicBookings.reduce((sum, b) => sum + (b.priceAtBooking || 0), 0);
+    const collectedOnline = dynamicPayments.reduce((sum, p) => {
+      if (p.status === 'captured') return sum + (p.amount || 0) / 100;
+      return sum;
+    }, 0);
+    const refundedOnline = dynamicPayments.reduce((sum, p) => sum + (p.refundedAmount || 0) / 100, 0);
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        totalExpected,
+        collectedOnline: Math.max(0, collectedOnline - refundedOnline),
+        collectedAtShop: 1200,
+        pendingBalance: 450,
+        refundedOnline,
+        totalCollected: Math.max(0, collectedOnline - refundedOnline) + 1200,
+      },
+    });
+  }),
+
+  // Admin Refund Payment
+  http.post('*/api/admin/payments/:id/refund', async ({ params, request }) => {
+    await delay(50);
+    const { id } = params;
+    const body = await request.json();
+    const payment = dynamicPayments.find((p) => p.id === id || p._id === id);
+    if (!payment) {
+      return HttpResponse.json({ success: false, error: 'Payment not found' }, { status: 404 });
+    }
+
+    const refundAmount = body.amountPaise || payment.amount;
+    payment.status = 'refunded';
+    payment.refundedAmount = refundAmount;
+    payment.refundReason = body.reason || 'Customer request';
+
+    const booking = dynamicBookings.find((b) => b.id === payment.bookingId);
+    if (booking) {
+      booking.paymentStatus = 'refunded';
+      booking.amountPaid = Math.max(0, (booking.amountPaid || 0) - refundAmount / 100);
+      booking.balanceDue = booking.priceAtBooking || 0;
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        success: true,
+        payment,
+        booking,
+      },
+    });
+  }),
+
+  // Admin Mark Paid at Shop
+  http.patch('*/api/admin/bookings/:id/mark-paid', async ({ params }) => {
+    await delay(50);
+    const { id } = params;
+    const booking = dynamicBookings.find((b) => b.id === id || b._id === id);
+    if (!booking) {
+      return HttpResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
+    }
+
+    booking.amountPaid = booking.priceAtBooking || 0;
+    booking.balanceDue = 0;
+    booking.paymentStatus = 'paid';
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        success: true,
+        booking,
+      },
+    });
   }),
 ];
 
