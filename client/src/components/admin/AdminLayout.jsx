@@ -35,6 +35,7 @@ export default function AdminLayout() {
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/bookings', label: 'Bookings', icon: Calendar },
     { to: '/admin/reminders', label: 'Reminders', icon: Bell },
+    { to: '/admin/customers', label: 'Customers', icon: Users },
     ...(isOwner
       ? [
           { to: '/admin/services', label: 'Services', icon: Scissors },

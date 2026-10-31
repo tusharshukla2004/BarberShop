@@ -6,6 +6,7 @@ import {
   mockTestimonials,
   mockSettings,
   mockBookings,
+  mockCustomers,
 } from './data';
 
 // In-memory reactive collections for the MSW dev/test session
@@ -15,6 +16,7 @@ const dynamicGallery = [...mockGalleryItems];
 const dynamicReviews = [...mockTestimonials];
 let dynamicSettings = { ...mockSettings };
 const dynamicBookings = [...mockBookings];
+const dynamicCustomers = [...mockCustomers];
 
 let currentUser = {
   id: 'admin-1',
@@ -475,6 +477,135 @@ export const handlers = [
     });
 
     return HttpResponse.json({ success: true, data: booking });
+  }),
+
+  // Customers Management
+  http.get('*/api/admin/customers', async ({ request }) => {
+    await delay(50);
+    const url = new URL(request.url);
+    const search = url.searchParams.get('search');
+    const isFlagged = url.searchParams.get('isFlagged');
+    const tag = url.searchParams.get('tag');
+
+    let filtered = dynamicCustomers.filter((c) => !c.isDeleted);
+
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter(
+        (c) => c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.email?.toLowerCase().includes(q)
+      );
+    }
+
+    if (isFlagged !== null && isFlagged !== undefined) {
+      const flagBool = isFlagged === 'true';
+      filtered = filtered.filter((c) => Boolean(c.isFlagged) === flagBool);
+    }
+
+    if (tag) {
+      filtered = filtered.filter((c) => Array.isArray(c.tags) && c.tags.includes(tag));
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        customers: filtered,
+        pagination: {
+          total: filtered.length,
+          page: 1,
+          limit: 50,
+          totalPages: 1,
+        },
+      },
+    });
+  }),
+
+  http.get('*/api/admin/customers/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(50);
+
+    const customer = dynamicCustomers.find((c) => c.id === id && !c.isDeleted);
+    if (!customer) {
+      return HttpResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
+    }
+
+    const bookings = dynamicBookings.filter(
+      (b) => b.customerId === id || b.phone === customer.phone
+    );
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        customer,
+        bookings,
+      },
+    });
+  }),
+
+  http.post('*/api/admin/customers', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+
+    const newCustomer = {
+      id: `cust-${Date.now()}`,
+      name: body.name,
+      phone: body.phone,
+      email: body.email || '',
+      notes: body.notes || '',
+      tags: body.tags || [],
+      preferredBarberId: body.preferredBarberId || null,
+      preferredServiceIds: body.preferredServiceIds || [],
+      whatsappConsent: Boolean(body.whatsappConsent),
+      stats: {
+        totalVisits: 0,
+        completedVisits: 0,
+        cancelledCount: 0,
+        noShowCount: 0,
+        lastVisitAt: null,
+        totalSpent: 0,
+      },
+      isFlagged: Boolean(body.isFlagged),
+      flagReason: body.flagReason || '',
+      createdAt: new Date().toISOString(),
+    };
+
+    dynamicCustomers.unshift(newCustomer);
+    return HttpResponse.json({ success: true, data: newCustomer }, { status: 201 });
+  }),
+
+  http.patch('*/api/admin/customers/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(50);
+
+    const customer = dynamicCustomers.find((c) => c.id === id);
+    if (!customer) {
+      return HttpResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
+    }
+
+    Object.assign(customer, body);
+    return HttpResponse.json({ success: true, data: customer });
+  }),
+
+  http.delete('*/api/admin/customers/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(50);
+
+    const customer = dynamicCustomers.find((c) => c.id === id);
+    if (!customer) {
+      return HttpResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
+    }
+
+    customer.name = 'Anonymized Customer';
+    customer.phone = '0000000000';
+    customer.email = '';
+    customer.notes = '';
+    customer.tags = [];
+    customer.isDeleted = true;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Customer permanently anonymized',
+    });
   }),
 ];
 

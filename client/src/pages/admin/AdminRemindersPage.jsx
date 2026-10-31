@@ -22,6 +22,7 @@ import { useGetSettingsQuery } from '@/features/settings/settingsApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { buildWhatsAppLink, renderTemplate } from '@/lib/whatsapp';
+import { CompactCustomerCard } from '@/features/customers/CompactCustomerCard';
 import { useAppDispatch } from '@/app/hooks';
 import { addToast } from '@/features/ui/uiSlice';
 
@@ -457,6 +458,13 @@ export default function AdminRemindersPage() {
                       <div className="flex items-center gap-1 text-xs text-ink/70 font-mono mt-0.5">
                         <Phone className="w-3 h-3 text-ink/40" />
                         <span>{booking.customerPhone}</span>
+                      </div>
+
+                      <div className="mt-2.5">
+                        <CompactCustomerCard
+                          phone={booking.customerPhone}
+                          customerId={booking.customerId}
+                        />
                       </div>
                     </div>
 

@@ -38,6 +38,13 @@ import {
   getReminders,
 } from '../controllers/bookingController.js';
 import {
+  listCustomers,
+  getCustomerById,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+} from '../controllers/customerController.js';
+import {
   serviceSchema,
   barberSchema,
   galleryItemSchema,
@@ -49,6 +56,12 @@ import {
   recordNotificationSchema,
   getRemindersQuerySchema,
 } from '../schemas/booking.schema.js';
+import {
+  listCustomersQuerySchema,
+  createCustomerSchema,
+  updateCustomerSchema,
+  customerIdParamSchema,
+} from '../schemas/customer.schema.js';
 
 const router = Router();
 
@@ -68,6 +81,13 @@ router.delete('/bookings/:id', adminCancelBooking);
 
 // Reminders (Today / Tomorrow upcoming sessions)
 router.get('/reminders', validate(getRemindersQuerySchema), getReminders);
+
+// Customers management
+router.get('/customers', validate(listCustomersQuerySchema), listCustomers);
+router.get('/customers/:id', validate(customerIdParamSchema), getCustomerById);
+router.post('/customers', validate(createCustomerSchema), createCustomer);
+router.patch('/customers/:id', validate(updateCustomerSchema), updateCustomer);
+router.delete('/customers/:id', validate(customerIdParamSchema), deleteCustomer);
 
 // Services management
 router.post('/services', validate(serviceSchema), createService);

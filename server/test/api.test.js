@@ -7,10 +7,19 @@ import { Booking } from '../src/models/Booking.js';
 import { Barber } from '../src/models/Barber.js';
 import { Admin } from '../src/models/Admin.js';
 import { Service } from '../src/models/Service.js';
+import { Customer } from '../src/models/Customer.js';
 
 describe('API Integration Tests', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(Service, 'findOne').mockResolvedValue({ id: 'srv-1', price: 500 });
+    vi.spyOn(Customer, 'findOne').mockResolvedValue(null);
+    vi.spyOn(Customer, 'create').mockResolvedValue({
+      _id: '60c72b2f9b1d8b2bad123457',
+      id: 'cust-1',
+      phone: '919876543210',
+      stats: {},
+    });
   });
 
   describe('Public & Health Endpoints', () => {

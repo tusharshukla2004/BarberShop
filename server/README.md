@@ -173,6 +173,11 @@ _Requires `httpOnly` cookie or `Authorization: Bearer <token>` with `owner` or `
 - **`PUT /api/admin/settings`**: Update shop hours, holidays, policies, `whatsappNumber`, `googleReviewLink`, and `messageTemplates`.
 - **`GET /api/admin/reminders?hours=3&day=today|tomorrow`**: List confirmed bookings in window for 1-tap reminders.
 - **`PATCH /api/admin/bookings/:id/notifications`**: Log notification sent event (`type`, `channel: 'whatsapp_link'`).
+- **`GET /api/admin/customers`**: Search, filter by flag/tags/visit range, sort, and paginate client profiles (barber role restricted to their clients).
+- **`GET /api/admin/customers/:id`**: Get customer profile and complete booking history (role guarded).
+- **`POST /api/admin/customers`**: Manually create a customer profile.
+- **`PATCH /api/admin/customers/:id`**: Update notes, tags, preferred barber, or flag (barber role can edit notes only).
+- **`DELETE /api/admin/customers/:id`**: Permanently anonymize customer data (Right to be Forgotten, owner only).
 
 ---
 

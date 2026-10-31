@@ -64,6 +64,29 @@
  * @property {number} slotLengthMinutes - Standard booking interval
  * @property {Object} policies - Booking cancellation and grace period rules
  *
+ * @typedef {Object} CustomerStats
+ * @property {number} totalVisits - Total appointment count
+ * @property {number} completedVisits - Finished appointments count
+ * @property {number} cancelledCount - Cancelled appointments count
+ * @property {number} noShowCount - Missed appointments count
+ * @property {string|null} lastVisitAt - ISO timestamp of latest visit
+ * @property {number} totalSpent - Lifetime spend in INR
+ *
+ * @typedef {Object} Customer
+ * @property {string} id - Unique customer ID
+ * @property {string} name - Customer full name
+ * @property {string} phone - Normalized 12-digit Indian mobile number (e.g. 919876543210)
+ * @property {string} [email] - Customer email address
+ * @property {string} [notes] - Barber notes and preferences
+ * @property {string[]} [tags] - Categorization tags (e.g. 'VIP', 'Fade', 'Beard')
+ * @property {string|null} [preferredBarberId] - Preferred barber ID
+ * @property {string[]} [preferredServiceIds] - Preferred service IDs
+ * @property {boolean} [whatsappConsent] - WhatsApp communication opt-in
+ * @property {CustomerStats} stats - Aggregated visit statistics
+ * @property {boolean} isFlagged - Staff review flag
+ * @property {string} [flagReason] - Reason for flagging
+ * @property {string} createdAt - ISO timestamp
+ *
  * @typedef {Object} ApiError
  * @property {number} status - HTTP status code
  * @property {string} message - User-friendly error message

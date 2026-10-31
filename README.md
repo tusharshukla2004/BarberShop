@@ -127,6 +127,8 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 - `/admin` — Executive overview dashboard (KPI counts, today's bookings timeline, next appointments, barber status).
 - `/admin/bookings` — Filterable roster, date picker, status dropdown with optimistic updates, reschedule dialog, detail slide-over, and WhatsApp action menu with consent badges.
 - `/admin/reminders` — Today's and Tomorrow's 1-tap WhatsApp reminders with 60s auto-refresh polling, status tracking ("Not sent" vs "Sent at HH:mm by Staff"), and sent-row sinking.
+- `/admin/customers` — Client directory with search, repeat no-show flags, visit counters, lifetime spend, and manual customer creation.
+- `/admin/customers/:id` — Individual customer dossier with editable barber notes, tags, preferred barber, visit history timeline, and WhatsApp quick actions (message, rebooking nudge).
 - `/admin/services` — Full CRUD for grooming treatments and prices.
 - `/admin/barbers` — Barber profile and weekly schedule management.
 - `/admin/gallery` — Portfolio image management.

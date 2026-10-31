@@ -47,6 +47,10 @@ export default function AdminSettingsPage() {
   const [slotLengthMinutes, setSlotLengthMinutes] = useState(30);
   const [graceMinutes, setGraceMinutes] = useState(120);
   const [termsNotice, setTermsNotice] = useState('');
+  const [noShowThreshold, setNoShowThreshold] = useState(3);
+  const [privacyNotice, setPrivacyNotice] = useState(
+    'We use your phone number only for booking updates.'
+  );
   const [newHoliday, setNewHoliday] = useState('');
 
   // WhatsApp & Templates state
@@ -67,6 +71,10 @@ export default function AdminSettingsPage() {
       setHolidays(settings.holidays || []);
       setSlotLengthMinutes(settings.slotLengthMinutes || 30);
       setGraceMinutes(settings.policies?.cancellationGraceMinutes || 120);
+      setNoShowThreshold(settings.policies?.noShowThreshold ?? 3);
+      setPrivacyNotice(
+        settings.policies?.privacyNotice || 'We use your phone number only for booking updates.'
+      );
       setTermsNotice(
         settings.policies?.termsNotice ||
           'Free cancellation up to 2 hours prior to scheduled appointment.'
@@ -154,6 +162,8 @@ export default function AdminSettingsPage() {
         policies: {
           cancellationGraceMinutes: Number(graceMinutes),
           termsNotice,
+          noShowThreshold: Number(noShowThreshold),
+          privacyNotice,
         },
       }).unwrap();
 
@@ -289,6 +299,38 @@ export default function AdminSettingsPage() {
                   min={0}
                   value={graceMinutes}
                   onChange={(e) => setGraceMinutes(e.target.value)}
+                  className="w-full px-3 py-2 rounded bg-card border border-border-light text-xs sm:text-sm text-ink"
+                />
+              </FormField>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                label="Repeat No-Show Flagging Threshold"
+                id="set-noshow-thresh"
+                hint="Auto-flags customer profile with 'Repeated no-shows' when reached"
+              >
+                <input
+                  id="set-noshow-thresh"
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={noShowThreshold}
+                  onChange={(e) => setNoShowThreshold(e.target.value)}
+                  className="w-full px-3 py-2 rounded bg-card border border-border-light text-xs sm:text-sm text-ink"
+                />
+              </FormField>
+
+              <FormField
+                label="Public Customer Privacy Notice"
+                id="set-privacy-notice"
+                hint="Displayed on checkout forms regarding phone usage"
+              >
+                <input
+                  id="set-privacy-notice"
+                  type="text"
+                  value={privacyNotice}
+                  onChange={(e) => setPrivacyNotice(e.target.value)}
                   className="w-full px-3 py-2 rounded bg-card border border-border-light text-xs sm:text-sm text-ink"
                 />
               </FormField>

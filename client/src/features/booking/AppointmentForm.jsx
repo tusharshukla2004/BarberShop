@@ -231,15 +231,20 @@ export function AppointmentForm({ className = '' }) {
         )}
       </div>
 
-      {/* WhatsApp Consent Checkbox */}
-      <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-white/90 hover:text-white pt-0.5">
-        <input
-          type="checkbox"
-          className="h-3.5 w-3.5 rounded border-white/30 text-accent focus:ring-accent bg-black/40 accent-[#f9a55a]"
-          {...register('whatsappConsent')}
-        />
-        <span>Send me booking updates on WhatsApp</span>
-      </label>
+      {/* WhatsApp Consent Checkbox & Privacy Notice */}
+      <div className="space-y-1 pt-0.5">
+        <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-white/90 hover:text-white">
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5 rounded border-white/30 text-accent focus:ring-accent bg-black/40 accent-[#f9a55a]"
+            {...register('whatsappConsent')}
+          />
+          <span>Send me booking updates on WhatsApp</span>
+        </label>
+        <span className="text-[10px] text-white/50 block pl-5.5">
+          We use your phone number only for booking updates.
+        </span>
+      </div>
 
       {/* Post-submit Callout */}
       {isSuccess && (

@@ -17,6 +17,17 @@ const bookingSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Customer',
+      default: null,
+      index: true,
+    },
+    priceAtBooking: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     serviceId: {
       type: String,
       required: [true, 'Service ID is required'],

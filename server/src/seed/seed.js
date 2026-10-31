@@ -9,6 +9,7 @@ import { Review } from '../models/Review.js';
 import { Settings, DEFAULT_MESSAGE_TEMPLATES } from '../models/Settings.js';
 import { Booking } from '../models/Booking.js';
 import { Product } from '../models/Product.js';
+import { backfillCustomers } from './backfillCustomers.js';
 
 const seedServices = [
   {
@@ -501,6 +502,9 @@ async function seedDatabase() {
     const insertedProducts = await Product.insertMany(seedProducts);
     // eslint-disable-next-line no-console
     console.log(`🛍️ Seeded ${insertedProducts.length} apothecary products`);
+
+    // Backfill customers and visit stats from seeded bookings
+    await backfillCustomers();
 
     // eslint-disable-next-line no-console
     console.log('🎉 Seeding successfully completed!');

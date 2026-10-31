@@ -72,6 +72,11 @@ const settingsSchema = new mongoose.Schema(
     policies: {
       cancellationGraceMinutes: { type: Number, default: 120 },
       advanceBookingDays: { type: Number, default: 30 },
+      noShowThreshold: { type: Number, default: 3 },
+      privacyNotice: {
+        type: String,
+        default: 'We use your phone number only for booking updates.',
+      },
       termsNotice: {
         type: String,
         default: 'Free cancellation up to 2 hours prior to scheduled appointment.',

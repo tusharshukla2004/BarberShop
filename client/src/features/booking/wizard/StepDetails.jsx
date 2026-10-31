@@ -201,8 +201,8 @@ export default function StepDetails({
                 />
               </div>
 
-              {/* WhatsApp Opt-in Checkbox */}
-              <div className="pt-2">
+              {/* WhatsApp Opt-in Checkbox & Privacy Note */}
+              <div className="pt-2 space-y-1">
                 <label className="flex items-center gap-3 cursor-pointer select-none">
                   <input
                     type="checkbox"
@@ -213,6 +213,9 @@ export default function StepDetails({
                     Send me booking updates on WhatsApp
                   </span>
                 </label>
+                <span className="text-[11px] text-muted block pl-7">
+                  We use your phone number only for booking updates.
+                </span>
               </div>
 
               {/* Policy Checkbox */}

@@ -24,6 +24,7 @@ import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { useGetSettingsQuery } from '@/features/settings/settingsApi';
 import { WhatsAppActionMenu } from '@/features/booking/admin/WhatsAppActions';
+import { CompactCustomerCard } from '@/features/customers/CompactCustomerCard';
 import { useAppDispatch } from '@/app/hooks';
 import { addToast } from '@/features/ui/uiSlice';
 
@@ -310,6 +311,12 @@ export default function AdminBookingsPage() {
                   <span className="font-semibold text-muted">Status:</span>
                   <StatusBadge status={detailBooking.status} />
                 </div>
+
+                {/* Compact Customer Profile & History Card */}
+                <CompactCustomerCard
+                  phone={detailBooking.phone}
+                  customerId={detailBooking.customerId}
+                />
 
                 <div className="flex items-start gap-3 p-3 rounded bg-card">
                   <User className="w-4 h-4 text-accent shrink-0 mt-0.5" />

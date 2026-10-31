@@ -5,6 +5,10 @@ import { Service } from '../models/Service.js';
 import { Settings } from '../models/Settings.js';
 import { calculateSlots } from '../utils/slots.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import {
+  findOrCreateCustomer,
+  recalculateCustomerStats,
+} from '../services/customerService.js';
 
 /**
  * Finds a document by either custom id string or MongoDB ObjectId
@@ -15,8 +19,7 @@ async function findByIdOrCustom(model, id) {
     const doc = await model.findById(id);
     if (doc) return doc;
   }
-  // Try querying by custom id or _id as string
-  return model.findOne({ $or: [{ _id: id }, { id }] });
+  return model.findOne({ id });
 }
 
 export async function getSlots(req, res, next) {
@@ -98,11 +101,36 @@ export async function createBooking(req, res, next) {
       }
     }
 
+    // Resolve price at booking
+    let priceAtBooking = 0;
+    if (serviceId) {
+      const srv = await findByIdOrCustom(Service, serviceId);
+      if (srv) priceAtBooking = srv.price || 0;
+    }
+
+    // Resolve or create customer profile
+    let customerId = null;
+    try {
+      const customer = await findOrCreateCustomer({
+        phone,
+        name: customerName,
+        email,
+        whatsappConsent: req.body.whatsappConsent,
+        preferredBarberId: barberIdStr || null,
+        preferredServiceId: serviceId || null,
+      });
+      if (customer) customerId = customer._id;
+    } catch {
+      // Continue booking creation even if customer profile resolution hits an edge
+    }
+
     // 3. Create booking
     const booking = await Booking.create({
       customerName,
       phone,
       email: email || '',
+      customerId,
+      priceAtBooking,
       serviceId,
       barberId: barberIdStr,
       date,
@@ -112,6 +140,10 @@ export async function createBooking(req, res, next) {
       notes: notes || '',
       whatsappConsent: Boolean(req.body.whatsappConsent),
     });
+
+    if (customerId) {
+      recalculateCustomerStats(customerId).catch(() => {});
+    }
 
     return sendSuccess(res, booking, 201, 'Booking confirmed successfully!');
   } catch (error) {
@@ -145,10 +177,33 @@ export async function createBookingRequest(req, res, next) {
     const assignedBarberId =
       barberId && barberId !== 'any' && barberId !== 'unassigned' ? barberId : '';
 
+    let priceAtBooking = 0;
+    if (service) {
+      const srv = await findByIdOrCustom(Service, service);
+      if (srv) priceAtBooking = srv.price || 0;
+    }
+
+    let customerId = null;
+    try {
+      const customer = await findOrCreateCustomer({
+        phone,
+        name,
+        email,
+        whatsappConsent,
+        preferredBarberId: assignedBarberId || null,
+        preferredServiceId: service || null,
+      });
+      if (customer) customerId = customer._id;
+    } catch {
+      // Continue
+    }
+
     const booking = await Booking.create({
       customerName: name,
       phone,
       email: email || '',
+      customerId,
+      priceAtBooking,
       serviceId: service || '',
       barberId: assignedBarberId,
       date: parsedDate,
@@ -158,6 +213,10 @@ export async function createBookingRequest(req, res, next) {
       notes: `Requested at: ${dateTime}. ${notes || ''}`.trim(),
       whatsappConsent: Boolean(whatsappConsent),
     });
+
+    if (customerId) {
+      recalculateCustomerStats(customerId).catch(() => {});
+    }
 
     return sendSuccess(
       res,
@@ -239,6 +298,23 @@ export async function adminUpdateBooking(req, res, next) {
     Object.assign(booking, updateData);
     await booking.save();
 
+    if (booking.customerId) {
+      await recalculateCustomerStats(booking.customerId);
+    } else if (booking.phone) {
+      try {
+        const cust = await findOrCreateCustomer({
+          phone: booking.phone,
+          name: booking.customerName,
+          email: booking.email,
+        });
+        if (cust) {
+          booking.customerId = cust._id;
+          await booking.save();
+          await recalculateCustomerStats(cust._id);
+        }
+      } catch {}
+    }
+
     return sendSuccess(res, booking, 200, 'Booking updated successfully');
   } catch (error) {
     return next(error);
@@ -256,6 +332,10 @@ export async function adminCancelBooking(req, res, next) {
 
     booking.status = 'cancelled';
     await booking.save();
+
+    if (booking.customerId) {
+      await recalculateCustomerStats(booking.customerId);
+    }
 
     return sendSuccess(res, booking, 200, 'Booking cancelled.');
   } catch (error) {
