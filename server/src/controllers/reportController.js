@@ -4,6 +4,9 @@ import { Service } from '../models/Service.js';
 import { Customer } from '../models/Customer.js';
 import { Offer } from '../models/Offer.js';
 import { Payment } from '../models/Payment.js';
+import { CustomerPackage } from '../models/CustomerPackage.js';
+import { CustomerMembership } from '../models/CustomerMembership.js';
+import { LoyaltyAccount } from '../models/LoyaltyAccount.js';
 import { getKolkataCurrentDateAndMinutes, timeToMinutes } from '../utils/slots.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import {
@@ -12,6 +15,7 @@ import {
   calculateRepeatRate,
   calculatePeriodDelta,
   calculatePaymentBreakdown,
+  calculateWalletMetrics,
 } from '../reports/definitions.js';
 
 // In-memory 60s cache
@@ -995,6 +999,64 @@ export async function getOffersReport(req, res, next) {
     }
 
     return sendSuccess(res, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+/**
+ * GET /api/admin/reports/wallet
+ */
+export async function getWalletReport(req, res, next) {
+  try {
+    const { from, to, format } = resolveReportParams(req);
+    const cacheKey = `wallet:${from}:${to}`;
+
+    if (format !== 'csv') {
+      const cached = getCached(cacheKey);
+      if (cached) return sendSuccess(res, cached);
+    }
+
+    const fromDate = new Date(`${from}T00:00:00+05:30`);
+    const toDate = new Date(`${to}T23:59:59+05:30`);
+
+    const [packages, memberships, loyaltyAccounts] = await Promise.all([
+      CustomerPackage.find({
+        purchasedAt: { $gte: fromDate, $lte: toDate },
+      }).lean(),
+      CustomerMembership.find({
+        startsAt: { $gte: fromDate, $lte: toDate },
+      }).lean(),
+      LoyaltyAccount.find().lean(),
+    ]);
+
+    const metrics = calculateWalletMetrics({
+      customerPackages: packages,
+      customerMemberships: memberships,
+      loyaltyAccounts,
+    });
+
+    setCached(cacheKey, metrics);
+
+    if (format === 'csv') {
+      return sendCSVResponse(
+        res,
+        `wallet-loyalty-${from}-to-${to}`,
+        [
+          { key: 'packageSalesCount', label: 'Package Sales Count' },
+          { key: 'packageSalesRevenue', label: 'Package Revenue (INR)' },
+          { key: 'membershipSalesCount', label: 'Membership Sales Count' },
+          { key: 'membershipSalesRevenue', label: 'Membership Revenue (INR)' },
+          { key: 'sessionRedemptionsCount', label: 'Sessions Redeemed' },
+          { key: 'outstandingSessionLiability', label: 'Outstanding Session Liability (INR)' },
+          { key: 'loyaltyRewardsGiven', label: 'Loyalty Rewards Given' },
+        ],
+        [metrics]
+      );
+    }
+
+    return sendSuccess(res, metrics);
   } catch (err) {
     next(err);
   }

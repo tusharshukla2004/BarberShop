@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Calendar, Save, PlusCircle, MessageSquare, RotateCcw, AlertCircle, Check, CreditCard } from 'lucide-react';
+import { Clock, Calendar, Save, PlusCircle, MessageSquare, RotateCcw, AlertCircle, Check, CreditCard, Sparkles } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import FormField from '@/components/admin/FormField';
@@ -24,6 +24,10 @@ const DEFAULT_TEMPLATES = {
     'Namaste {name}! Aapka booking (Ref: {bookingRef}) {shopName} par cancel kar diya gaya hai.\n\nNaye appointment ke liye aap kabhi bhi humari website par visit kar sakte hain ya hume yahan message karein. Shukriya!',
   review_request:
     'Namaste {name}! {shopName} visit karne ke liye bohot shukriya! Ummeed hai aapko hamara service aur cut pasand aaya.\n\nAapka feedback hamare liye bohot keemti hai. Kripya 1 minute nikaal kar apna review zaroor dein:\n⭐ {reviewLink}\n\nHave a great day ahead!',
+  rebooking_nudge:
+    'Namaste {name}! {shopName} se yaad dila rahe hain ki aapka aakhri visit lagbhag {lastVisitAgo} hua tha. Fresh haircut aur styling ke liye aaj hi slot book karein: {bookingLink}',
+  birthday_greeting:
+    'Janamdin Mubarak {name}! 🎂 {shopName} ki taraf se aapko hardik shubhkaamnayein. Apne birthday par aaiye aur ek premium grooming session enjoy karein: {bookingLink}',
   running_late:
     'Namaste {name}! {shopName} se update: aaj chair thodi busy hone ke karan aapka slot lagbhag 10-15 minute late ho sakta hai. Asuvidha ke liye khed hai. Hum jaldi hi aapko attend karenge!',
 };
@@ -35,6 +39,8 @@ const TEMPLATE_TABS = [
   { key: 'cancellation', label: 'Cancellation' },
   { key: 'review_request', label: 'Review Request' },
   { key: 'running_late', label: 'Running Late' },
+  { key: 'rebooking_nudge', label: 'Rebooking Nudge' },
+  { key: 'birthday_greeting', label: 'Birthday Greeting' },
 ];
 
 export default function AdminSettingsPage() {
@@ -73,6 +79,13 @@ export default function AdminSettingsPage() {
     'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।'
   );
   const [holdTimeoutMinutes, setHoldTimeoutMinutes] = useState(10);
+
+  // Loyalty & Rebooking Settings
+  const [loyaltyEnabled, setLoyaltyEnabled] = useState(false);
+  const [loyaltyMode, setLoyaltyMode] = useState('stamps');
+  const [stampsForReward, setStampsForReward] = useState(10);
+  const [stampsPerBooking, setStampsPerBooking] = useState(1);
+  const [rebookingNudgeDays, setRebookingNudgeDays] = useState(28);
 
   useEffect(() => {
     if (settings) {
@@ -113,6 +126,13 @@ export default function AdminSettingsPage() {
           'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।'
       );
       setHoldTimeoutMinutes(pSet.holdTimeoutMinutes ?? 10);
+
+      const lSet = settings.loyaltySettings || {};
+      setLoyaltyEnabled(Boolean(lSet.loyaltyEnabled));
+      setLoyaltyMode(lSet.mode || 'stamps');
+      setStampsForReward(lSet.stampsForReward ?? 10);
+      setStampsPerBooking(lSet.stampsPerBooking ?? 1);
+      setRebookingNudgeDays(settings.rebookingSettings?.rebookingNudgeDays ?? 28);
       if (settings.messageTemplates) {
         setMessageTemplates({ ...DEFAULT_TEMPLATES, ...settings.messageTemplates });
       }
@@ -203,6 +223,15 @@ export default function AdminSettingsPage() {
             hi: refundPolicyTextHi,
           },
           holdTimeoutMinutes: Number(holdTimeoutMinutes),
+        },
+        loyaltySettings: {
+          loyaltyEnabled,
+          mode: loyaltyMode,
+          stampsForReward: Number(stampsForReward),
+          stampsPerBooking: Number(stampsPerBooking),
+        },
+        rebookingSettings: {
+          rebookingNudgeDays: Number(rebookingNudgeDays),
         },
         policies: {
           cancellationGraceMinutes: Number(graceMinutes),
@@ -541,6 +570,100 @@ export default function AdminSettingsPage() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Loyalty Program & Rebooking Automation */}
+          <Card tone="white" className="p-6 border border-border-light space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-light pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg text-ink uppercase tracking-wide">
+                    Loyalty Stamp Program & Rebooking Intervals
+                  </h3>
+                  <p className="text-xs text-ink/60">
+                    Award digital stamps upon completed cuts and automate client return reminders.
+                  </p>
+                </div>
+              </div>
+
+              {/* Enable / Disable Toggle */}
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={loyaltyEnabled}
+                  onChange={(e) => setLoyaltyEnabled(e.target.checked)}
+                  className="h-4 w-4 rounded border-border-light text-accent focus:ring-accent accent-accent"
+                />
+                <span className="text-xs font-bold uppercase tracking-wider text-ink">
+                  {loyaltyEnabled ? 'Loyalty Enabled' : 'Loyalty Disabled'}
+                </span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label htmlFor="loyalty-mode-select" className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
+                  Loyalty Mode
+                </label>
+                <select
+                  id="loyalty-mode-select"
+                  value={loyaltyMode}
+                  onChange={(e) => setLoyaltyMode(e.target.value)}
+                  className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink"
+                >
+                  <option value="stamps">Visit Stamps (1 per visit)</option>
+                  <option value="points">Points System</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="stamps-for-reward-input" className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
+                  Stamps Required for Reward
+                </label>
+                <input
+                  id="stamps-for-reward-input"
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={stampsForReward}
+                  onChange={(e) => setStampsForReward(e.target.value)}
+                  className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="stamps-per-booking-input" className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
+                  Stamps Earned Per Booking
+                </label>
+                <input
+                  id="stamps-per-booking-input"
+                  type="number"
+                  min="1"
+                  max="5"
+                  value={stampsPerBooking}
+                  onChange={(e) => setStampsPerBooking(e.target.value)}
+                  className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="rebooking-nudge-days-input" className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
+                  Rebooking Interval (Days)
+                </label>
+                <input
+                  id="rebooking-nudge-days-input"
+                  type="number"
+                  min="7"
+                  max="180"
+                  value={rebookingNudgeDays}
+                  onChange={(e) => setRebookingNudgeDays(e.target.value)}
+                  className="w-full text-xs px-3 py-2 rounded-md border border-border-light bg-neutral-50 focus:bg-white text-ink"
+                />
               </div>
             </div>
           </Card>

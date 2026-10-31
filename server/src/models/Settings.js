@@ -23,6 +23,10 @@ export const DEFAULT_MESSAGE_TEMPLATES = {
     'Namaste {name}! {shopName} se update: aaj chair thodi busy hone ke karan aapka slot lagbhag 10-15 minute late ho sakta hai. Asuvidha ke liye khed hai. Hum jaldi hi aapko attend karenge!',
   queue_turn_near:
     'Namaste {name}! Aapka turn {shopName} me aane wala hai (Token #{tokenNumber}). Kripya reception/waiting area me rahein. Service: {service}. Barber: {barber}. Dekhne ke liye shukriya!',
+  rebooking_nudge:
+    'Namaste {name}! {shopName} se yaad dila rahe hain ki aapka aakhri visit lagbhag {lastVisitAgo} hua tha. Fresh haircut aur styling ke liye aaj hi slot book karein: {bookingLink}',
+  birthday_greeting:
+    'Janamdin Mubarak {name}! 🎂 {shopName} ki taraf se aapko hardik shubhkaamnayein. Apne birthday par aaiye aur ek premium grooming session enjoy karein: {bookingLink}',
 };
 
 const messageTemplatesSchema = new mongoose.Schema(
@@ -34,6 +38,8 @@ const messageTemplatesSchema = new mongoose.Schema(
     review_request: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.review_request },
     running_late: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.running_late },
     queue_turn_near: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.queue_turn_near },
+    rebooking_nudge: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.rebooking_nudge },
+    birthday_greeting: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.birthday_greeting },
   },
   { _id: false }
 );
@@ -69,6 +75,32 @@ const paymentSettingsSchema = new mongoose.Schema(
       },
     },
     holdTimeoutMinutes: { type: Number, default: 10 },
+  },
+  { _id: false }
+);
+
+const loyaltySettingsSchema = new mongoose.Schema(
+  {
+    loyaltyEnabled: { type: Boolean, default: false },
+    mode: { type: String, enum: ['stamps', 'points'], default: 'stamps' },
+    stampsForReward: { type: Number, default: 10, min: 1 },
+    rewardDefinition: {
+      type: {
+        type: String,
+        enum: ['free_service', 'flat_discount', 'percent_discount'],
+        default: 'free_service',
+      },
+      value: { type: Number, default: 0 },
+      serviceId: { type: String, default: null },
+    },
+    stampsPerBooking: { type: Number, default: 1, min: 1 },
+  },
+  { _id: false }
+);
+
+const rebookingSettingsSchema = new mongoose.Schema(
+  {
+    rebookingNudgeDays: { type: Number, default: 28, min: 7 },
   },
   { _id: false }
 );
@@ -113,6 +145,14 @@ const settingsSchema = new mongoose.Schema(
     },
     paymentSettings: {
       type: paymentSettingsSchema,
+      default: () => ({}),
+    },
+    loyaltySettings: {
+      type: loyaltySettingsSchema,
+      default: () => ({}),
+    },
+    rebookingSettings: {
+      type: rebookingSettingsSchema,
       default: () => ({}),
     },
     policies: {

@@ -13,6 +13,9 @@ import {
   CheckCircle2,
   X,
   Clock,
+  Cake,
+  MessageSquare,
+  Send,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -22,11 +25,18 @@ import {
   useCreateCustomerMutation,
 } from '@/features/customers/customersApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
+import { useGetSettingsQuery } from '@/features/settings/settingsApi';
+import {
+  useGetDueForVisitCustomersQuery,
+  useGetUpcomingBirthdaysQuery,
+} from '@/features/wallet/walletApi';
+import { buildWhatsAppLink, renderTemplate } from '@/lib/whatsapp';
 import { useAppDispatch } from '@/app/hooks';
 import { addToast } from '@/features/ui/uiSlice';
 
 export default function AdminCustomersPage() {
   const dispatch = useAppDispatch();
+  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'due' | 'birthdays'
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFlagFilter, setSelectedFlagFilter] = useState('all');
   const [selectedTag, setSelectedTag] = useState('');
@@ -37,6 +47,7 @@ export default function AdminCustomersPage() {
     name: '',
     phone: '',
     email: '',
+    birthday: '',
     notes: '',
     tags: '',
     preferredBarberId: '',
@@ -61,7 +72,40 @@ export default function AdminCustomersPage() {
   } = useGetCustomersQuery(queryParams);
 
   const { data: barbers = [] } = useGetBarbersQuery();
+  const { data: settings = {} } = useGetSettingsQuery();
+  const { data: dueData = { customers: [], total: 0 } } =
+    useGetDueForVisitCustomersQuery(28);
+  const { data: bdayData = { upcomingBirthdays: [], total: 0 } } =
+    useGetUpcomingBirthdaysQuery(7);
+
   const [createCustomer, { isLoading: isCreating }] = useCreateCustomerMutation();
+
+  const handleSendRebookingNudge = (cust) => {
+    const template =
+      settings?.messageTemplates?.rebooking_nudge ||
+      'Namaste {name}! {shopName} se yaad dila rahe hain ki aapka last haircut lagbhag {lastVisitAgo} hua tha. Fresh haircut aur styling ke liye aaj hi slot book karein: {bookingLink}';
+    const message = renderTemplate(template, {
+      name: cust.name,
+      shopName: 'Modern Mane Luxury Barber Studio',
+      lastVisitAgo: cust.lastVisitAgo || 'a few weeks ago',
+      bookingLink: `${window.location.origin}/book`,
+    });
+    const link = buildWhatsAppLink(cust.phone, message);
+    if (link) window.open(link, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSendBirthdayGreeting = (cust) => {
+    const template =
+      settings?.messageTemplates?.birthday_greeting ||
+      'Janamdin Mubarak {name}! 🎂 {shopName} ki taraf se aapko hardik shubhkaamnayein. Apne birthday par aaiye aur ek premium grooming session enjoy karein: {bookingLink}';
+    const message = renderTemplate(template, {
+      name: cust.name,
+      shopName: 'Modern Mane Luxury Barber Studio',
+      bookingLink: `${window.location.origin}/book`,
+    });
+    const link = buildWhatsAppLink(cust.phone, message);
+    if (link) window.open(link, '_blank', 'noopener,noreferrer');
+  };
 
   const customers = useMemo(() => customersData?.customers || [], [customersData]);
   const pagination = customersData?.pagination || { total: customers.length };
@@ -176,7 +220,135 @@ export default function AdminCustomersPage() {
         </Button>
       </div>
 
-      {/* Search & Filters */}
+      {/* Directory Tabs */}
+      <div className="flex border-b border-border-light gap-6 text-sm font-medium">
+        <button
+          onClick={() => setActiveTab('all')}
+          className={`pb-3 border-b-2 flex items-center gap-2 transition-colors ${
+            activeTab === 'all'
+              ? 'border-accent text-accent font-semibold'
+              : 'border-transparent text-muted hover:text-ink'
+          }`}
+        >
+          <Users className="w-4 h-4" /> All Clients ({pagination.total})
+        </button>
+        <button
+          onClick={() => setActiveTab('due')}
+          className={`pb-3 border-b-2 flex items-center gap-2 transition-colors ${
+            activeTab === 'due'
+              ? 'border-accent text-accent font-semibold'
+              : 'border-transparent text-muted hover:text-ink'
+          }`}
+        >
+          <Clock className="w-4 h-4 text-amber-500" /> Due for Visit Nudges ({dueData.total || 0})
+        </button>
+        <button
+          onClick={() => setActiveTab('birthdays')}
+          className={`pb-3 border-b-2 flex items-center gap-2 transition-colors ${
+            activeTab === 'birthdays'
+              ? 'border-accent text-accent font-semibold'
+              : 'border-transparent text-muted hover:text-ink'
+          }`}
+        >
+          <Cake className="w-4 h-4 text-pink-500" /> Upcoming Birthdays ({bdayData.total || 0})
+        </button>
+      </div>
+
+      {/* Tab 2: Due for Visit (Rebooking Nudges) */}
+      {activeTab === 'due' && (
+        <div className="space-y-4">
+          <Card className="p-5">
+            <div className="mb-4">
+              <h2 className="text-base font-bold text-ink">Due for Visit (Over 4 Weeks Since Last Appointment)</h2>
+              <p className="text-xs text-muted">
+                One-tap WhatsApp button pre-fills a friendly Hinglish rebooking reminder with customer name and booking link.
+              </p>
+            </div>
+
+            {dueData.customers?.length === 0 ? (
+              <div className="py-8 text-center text-xs text-muted">
+                No clients are currently overdue for a visit.
+              </div>
+            ) : (
+              <div className="divide-y divide-border-light">
+                {dueData.customers?.map((cust) => (
+                  <div key={cust.id} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-ink text-sm">{cust.name}</span>
+                        <span className="text-xs text-muted font-mono">{cust.phone}</span>
+                      </div>
+                      <div className="text-xs text-muted mt-0.5">
+                        Last visit: <strong className="text-amber-700">{cust.lastVisitAgo}</strong> ({cust.daysSinceVisit} days ago) · {cust.stats?.completedVisits || 0} lifetime visits
+                      </div>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      onClick={() => handleSendRebookingNudge(cust)}
+                      className="text-xs bg-[#25D366] hover:bg-[#1EBE5D] text-white self-start sm:self-center"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 mr-1.5" /> Send Rebooking Nudge
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Tab 3: Upcoming Birthdays */}
+      {activeTab === 'birthdays' && (
+        <div className="space-y-4">
+          <Card className="p-5">
+            <div className="mb-4">
+              <h2 className="text-base font-bold text-ink">Upcoming Birthdays (Next 7 Days)</h2>
+              <p className="text-xs text-muted">
+                Congratulate your clients on their birthday with a one-tap WhatsApp greeting (consent verified).
+              </p>
+            </div>
+
+            {bdayData.upcomingBirthdays?.length === 0 ? (
+              <div className="py-8 text-center text-xs text-muted">
+                No client birthdays registered in the next 7 days with WhatsApp consent.
+              </div>
+            ) : (
+              <div className="divide-y divide-border-light">
+                {bdayData.upcomingBirthdays?.map((cust) => (
+                  <div key={cust.id} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-ink text-sm flex items-center gap-1.5">
+                          <Cake className="w-4 h-4 text-pink-500" />
+                          {cust.name}
+                        </span>
+                        <span className="text-xs text-muted font-mono">{cust.phone}</span>
+                      </div>
+                      <div className="text-xs text-muted mt-0.5">
+                        Birthday: <strong className="text-pink-600">{cust.birthdayFormatted}</strong> ({cust.daysUntilBirthday === 0 ? 'Today! 🎉' : `in ${cust.daysUntilBirthday} days`})
+                      </div>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      onClick={() => handleSendBirthdayGreeting(cust)}
+                      className="text-xs bg-[#25D366] hover:bg-[#1EBE5D] text-white self-start sm:self-center"
+                    >
+                      <Send className="w-3.5 h-3.5 mr-1.5" /> Send Birthday Wish
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Tab 1: All Clients */}
+      {activeTab === 'all' && (
+        <>
+          {/* Search & Filters */}
       <Card className="p-4 sm:p-5">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
           {/* Search Bar */}
@@ -372,6 +544,8 @@ export default function AdminCustomersPage() {
           </div>
         )}
       </QueryState>
+        </>
+      )}
 
       {/* Add Customer Modal */}
       {showAddModal && (
@@ -445,6 +619,22 @@ export default function AdminCustomersPage() {
                   placeholder="customer@domain.com"
                   value={newCustomer.email}
                   onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                  className="w-full px-3 py-2 rounded bg-surface border border-border-light text-xs sm:text-sm text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="new-cust-bday"
+                  className="block text-xs font-semibold uppercase tracking-wider text-ink/70 mb-1"
+                >
+                  Date of Birth (Optional - For Birthday Greetings)
+                </label>
+                <input
+                  id="new-cust-bday"
+                  type="date"
+                  value={newCustomer.birthday}
+                  onChange={(e) => setNewCustomer({ ...newCustomer, birthday: e.target.value })}
                   className="w-full px-3 py-2 rounded bg-surface border border-border-light text-xs sm:text-sm text-ink focus:outline-none focus:ring-1 focus:ring-accent"
                 />
               </div>

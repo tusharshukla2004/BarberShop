@@ -157,6 +157,64 @@
  * @property {number} refundPolicyHours - Cancellation window for full refund
  * @property {BilingualString} refundPolicyText - Bilingual policy explanation
  * @property {number} holdTimeoutMinutes - Slot hold duration
+ *
+ * @typedef {Object} Package
+ * @property {string} id - Unique package ID
+ * @property {BilingualString} name - Bilingual name
+ * @property {BilingualString} [description] - Bilingual description
+ * @property {string[]} serviceIds - Eligible service IDs
+ * @property {number} sessions - Total sessions included
+ * @property {number} price - Package price in INR
+ * @property {number} validityDays - Validity in days
+ * @property {boolean} isActive - Active toggle
+ *
+ * @typedef {Object} MembershipBenefit
+ * @property {'discount_percent' | 'free_service' | 'priority_booking'} type - Benefit type
+ * @property {number} [value] - Percentage or discount value
+ * @property {string[]} [serviceIds] - Eligible service IDs
+ *
+ * @typedef {Object} MembershipPlan
+ * @property {string} id - Unique membership plan ID
+ * @property {BilingualString} name - Bilingual name
+ * @property {BilingualString} [description] - Bilingual description
+ * @property {number} price - Plan price in INR
+ * @property {number} durationDays - Duration in days
+ * @property {MembershipBenefit[]} benefits - Array of benefits
+ * @property {boolean} isActive - Active toggle
+ *
+ * @typedef {Object} CustomerPackage
+ * @property {string} id - Unique customer package record ID
+ * @property {string} customerId - Associated customer ID
+ * @property {string} packageId - Associated package ID
+ * @property {BilingualString} packageName - Package title
+ * @property {number} sessionsTotal - Total sessions
+ * @property {number} sessionsUsed - Sessions consumed
+ * @property {number} sessionsRemaining - Sessions left
+ * @property {number} pricePaid - INR paid
+ * @property {string} paymentMethod - cash, upi, card, or online
+ * @property {string[]} serviceIds - Covered services
+ * @property {string} expiresAt - Expiry date ISO string
+ * @property {'active' | 'exhausted' | 'expired' | 'cancelled'} status - Package status
+ *
+ * @typedef {Object} CustomerMembership
+ * @property {string} id - Unique customer membership record ID
+ * @property {string} customerId - Associated customer ID
+ * @property {string} planId - Associated plan ID
+ * @property {BilingualString} planName - Plan title
+ * @property {number} pricePaid - INR paid
+ * @property {string} paymentMethod - cash, upi, card, or online
+ * @property {MembershipBenefit[]} benefits - Plan perks
+ * @property {string} startsAt - Activation date ISO
+ * @property {string} endsAt - Expiration date ISO
+ * @property {'active' | 'expired' | 'cancelled'} status - Membership status
+ *
+ * @typedef {Object} LoyaltyAccount
+ * @property {number} balance - Current stamps or points count
+ * @property {number} totalEarned - Total lifetime earned
+ * @property {number} totalRedeemed - Total lifetime redeemed
+ * @property {number} stampsForReward - Threshold required for reward
+ * @property {boolean} isRewardReady - Whether reward can be redeemed
+ * @property {Array<Object>} history - Transaction and audit log
  */
 
 export {};

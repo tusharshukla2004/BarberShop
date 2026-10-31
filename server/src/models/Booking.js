@@ -45,6 +45,18 @@ const bookingSchema = new mongoose.Schema(
       trim: true,
       uppercase: true,
     },
+    appliedBenefitType: {
+      type: String,
+      enum: ['none', 'package', 'membership', 'loyalty_reward', 'offer'],
+      default: 'none',
+      index: true,
+    },
+    appliedBenefitDetails: {
+      customerPackageId: { type: mongoose.Schema.Types.ObjectId, ref: 'CustomerPackage', default: null },
+      customerMembershipId: { type: mongoose.Schema.Types.ObjectId, ref: 'CustomerMembership', default: null },
+      rewardRedemptionId: { type: String, default: null },
+      notes: { type: String, default: '' },
+    },
     priceAtBooking: {
       type: Number,
       default: 0,

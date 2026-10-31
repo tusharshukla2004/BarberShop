@@ -5,6 +5,10 @@ import { Tag, Calendar, Copy, Check, Scissors, ArrowRight, Sparkles } from 'luci
 import { Container, Button, Card } from '@/components/ui';
 import { Seo } from '@/components/common/Seo';
 import { useGetPublicOffersQuery } from '@/features/offers/offersApi';
+import {
+  useGetPublicPackagesQuery,
+  useGetPublicMembershipsQuery,
+} from '@/features/wallet/walletApi';
 import { applyOffer } from '@/features/booking/bookingDraftSlice';
 import { addToast } from '@/features/ui/uiSlice';
 import { formatPrice } from '@/lib/formatters';
@@ -13,6 +17,8 @@ export default function OffersPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data: offers = [], isLoading, isError } = useGetPublicOffersQuery();
+  const { data: publicPackages = [] } = useGetPublicPackagesQuery();
+  const { data: publicMemberships = [] } = useGetPublicMembershipsQuery();
   const [copiedCode, setCopiedCode] = useState(null);
 
   const handleCopyCode = (code) => {
@@ -243,6 +249,65 @@ export default function OffersPage() {
           )}
         </Container>
       </section>
+
+      {/* Prepaid Packages & VIP Membership Perks */}
+      {(publicPackages.length > 0 || publicMemberships.length > 0) && (
+        <section className="py-14 bg-sand/40 border-t border-border-light">
+          <Container>
+            <div className="text-center max-w-xl mx-auto mb-10">
+              <span className="text-xs uppercase font-bold tracking-widest text-accent mb-2 block">
+                Recurring Loyalty & Memberships
+              </span>
+              <h2 className="font-display text-2xl sm:text-3xl text-ink uppercase tracking-wide">
+                VIP Memberships & Prepaid Packages
+              </h2>
+              <p className="text-xs sm:text-sm text-muted mt-2">
+                Long-term privileges, bundled discounts, and complimentary treatments. Inquire at our studio reception.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {publicPackages.map((pkg) => (
+                <Card key={pkg.id || pkg._id} className="p-6 flex flex-col justify-between border-accent/20 bg-white">
+                  <div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider block w-fit mb-2">
+                      Prepaid Pack
+                    </span>
+                    <h3 className="font-display text-xl text-ink">{pkg.name?.en}</h3>
+                    <p className="text-xs text-muted mt-1">{pkg.description?.en}</p>
+                    <div className="mt-4 pt-3 border-t border-border-light flex justify-between items-baseline">
+                      <span className="text-xs text-muted">{pkg.sessions} sessions · {pkg.validityDays} days</span>
+                      <span className="font-display text-2xl text-ink">₹{pkg.price}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-border-light text-[11px] text-muted text-center italic">
+                    Enroll at studio reception
+                  </div>
+                </Card>
+              ))}
+
+              {publicMemberships.map((plan) => (
+                <Card key={plan.id || plan._id} className="p-6 flex flex-col justify-between border-amber-300 bg-amber-50/20">
+                  <div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 uppercase tracking-wider block w-fit mb-2">
+                      VIP Club
+                    </span>
+                    <h3 className="font-display text-xl text-ink">{plan.name?.en}</h3>
+                    <p className="text-xs text-muted mt-1">{plan.description?.en}</p>
+                    <div className="mt-4 pt-3 border-t border-amber-200 flex justify-between items-baseline">
+                      <span className="text-xs text-muted">{plan.durationDays} days validity</span>
+                      <span className="font-display text-2xl text-amber-900">₹{plan.price}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-amber-200 text-[11px] text-muted text-center italic">
+                    Enroll at studio reception
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
     </>
   );
 }

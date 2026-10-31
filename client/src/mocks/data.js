@@ -600,3 +600,108 @@ export const mockPayments = [
     },
   },
 ];
+
+
+export const mockPackages = [
+  {
+    id: 'pkg-1',
+    _id: 'pkg-1',
+    name: { en: 'Executive 5x Haircut Pack', hi: 'एग्जीक्यूटिव 5x हेयरकट पैक' },
+    description: {
+      en: 'Prepay for 5 haircuts and save ₹250.',
+      hi: '5 हेयरकट का अग्रिम भुगतान करें और ₹250 बचाएं।',
+    },
+    serviceIds: ['srv-1'],
+    sessions: 5,
+    price: 1750,
+    validityDays: 90,
+    isActive: true,
+  },
+  {
+    id: 'pkg-2',
+    _id: 'pkg-2',
+    name: { en: 'Gentleman Grooming 3x Combo', hi: 'जेंटलमैन ग्रूमिंग 3x कॉम्बो' },
+    description: {
+      en: '3 full haircut + beard styling sessions.',
+      hi: '3 संपूर्ण हेयरकट + दाढ़ी स्टाइलिंग सत्र।',
+    },
+    serviceIds: ['srv-3'],
+    sessions: 3,
+    price: 2400,
+    validityDays: 120,
+    isActive: true,
+  },
+];
+
+export const mockMembershipPlans = [
+  {
+    id: 'plan-1',
+    _id: 'plan-1',
+    name: { en: 'Black Card VIP Club', hi: 'ब्लैक कार्ड वीआईपी क्लब' },
+    description: {
+      en: '20% off all styling and complimentary beard styling.',
+      hi: 'सभी स्टाइलिंग पर 20% की छूट और मानार्थ दाढ़ी स्टाइलिंग।',
+    },
+    price: 1499,
+    durationDays: 30,
+    benefits: [
+      { type: 'discount_percent', value: 20, serviceIds: [] },
+      { type: 'free_service', value: 0, serviceIds: ['srv-4'] },
+    ],
+    isActive: true,
+  },
+];
+
+export const mockCustomerWallet = {
+  walletToken: 'mock-pass-token-777',
+  birthday: '1995-11-15T00:00:00.000Z',
+  packages: [
+    {
+      id: 'cust-pkg-1',
+      _id: 'cust-pkg-1',
+      packageName: { en: 'Executive 5x Haircut Pack', hi: 'एग्जीक्यूटिव 5x हेयरकट पैक' },
+      sessionsTotal: 5,
+      sessionsUsed: 2,
+      sessionsRemaining: 3,
+      pricePaid: 1750,
+      paymentMethod: 'upi',
+      expiresAt: '2027-01-31T23:59:59.000Z',
+      status: 'active',
+    },
+  ],
+  membership: {
+    id: 'cust-mem-1',
+    _id: 'cust-mem-1',
+    planName: { en: 'Black Card VIP Club', hi: 'ब्लैक कार्ड वीआईपी क्लब' },
+    pricePaid: 1499,
+    paymentMethod: 'card',
+    endsAt: '2026-12-01T23:59:59.000Z',
+    benefits: [
+      { type: 'discount_percent', value: 20, serviceIds: [] },
+      { type: 'free_service', value: 0, serviceIds: ['srv-4'] },
+    ],
+    status: 'active',
+  },
+  loyalty: {
+    enabled: true,
+    mode: 'stamps',
+    balance: 8,
+    stampsForReward: 10,
+    isRewardReady: false,
+    rewardDefinition: {
+      type: 'free_service',
+      value: 0,
+    },
+    totalEarned: 18,
+    totalRedeemed: 10,
+    history: [
+      {
+        _id: 'lh-1',
+        type: 'earn',
+        amount: 1,
+        notes: 'Haircut appointment',
+        createdAt: '2026-10-25T10:00:00.000Z',
+      },
+    ],
+  },
+};

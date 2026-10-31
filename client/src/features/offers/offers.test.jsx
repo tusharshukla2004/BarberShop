@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { HelmetProvider } from 'react-helmet-async';
+import { baseApi } from '@/app/baseApi';
 import uiReducer from '@/features/ui/uiSlice';
 import bookingDraftReducer, {
   applyOffer,
@@ -47,7 +48,10 @@ function renderWithStore(ui) {
     reducer: {
       ui: uiReducer,
       bookingDraft: bookingDraftReducer,
+      [baseApi.reducerPath]: baseApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(baseApi.middleware),
   });
 
   return {

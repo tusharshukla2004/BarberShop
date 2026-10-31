@@ -28,6 +28,7 @@ import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { selectIsOwner } from '@/features/auth/authSlice';
 import { addToast } from '@/features/ui/uiSlice';
+import CustomerWalletSection from '@/features/wallet/CustomerWalletSection';
 
 export default function AdminCustomerDetailPage() {
   const { id } = useParams();
@@ -338,6 +339,13 @@ export default function AdminCustomerDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Customer Wallet, Prepaid Packages & Loyalty */}
+            <CustomerWalletSection
+              customerId={id}
+              customerPhone={customer.phone}
+              customerName={customer.name}
+            />
 
             {/* Main Content: Notes & Profile Form and Visit History */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

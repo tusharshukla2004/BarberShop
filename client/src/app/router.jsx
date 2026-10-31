@@ -14,6 +14,7 @@ const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const OffersPage = lazy(() => import('@/pages/OffersPage'));
 const FaqPage = lazy(() => import('@/pages/FaqPage'));
 const PublicQueuePage = lazy(() => import('@/pages/PublicQueuePage'));
+const PublicWalletPage = lazy(() => import('@/pages/public/PublicWalletPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 // Admin portal route views (lazy-loaded chunks)
@@ -28,6 +29,7 @@ const AdminCustomersPage = lazy(() => import('@/pages/admin/AdminCustomersPage')
 const AdminCustomerDetailPage = lazy(() => import('@/pages/admin/AdminCustomerDetailPage'));
 const AdminReportsPage = lazy(() => import('@/pages/admin/AdminReportsPage'));
 const AdminPaymentsPage = lazy(() => import('@/pages/admin/AdminPaymentsPage'));
+const AdminPackagesPlansPage = lazy(() => import('@/pages/admin/AdminPackagesPlansPage'));
 const AdminOffersPage = lazy(() => import('@/pages/admin/AdminOffersPage'));
 const AdminFaqsPage = lazy(() => import('@/pages/admin/AdminFaqsPage'));
 const AdminServicesPage = lazy(() => import('@/pages/admin/AdminServicesPage'));
@@ -77,6 +79,7 @@ export function AppRouter() {
             <Route path="/admin/customers/:id" element={<AdminCustomerDetailPage />} />
             <Route path="/admin/reports" element={<AdminReportsPage />} />
             <Route path="/admin/payments" element={<AdminPaymentsPage />} />
+            <Route path="/admin/packages-plans" element={<AdminPackagesPlansPage />} />
             <Route path="/admin/offers" element={<AdminOffersPage />} />
             <Route path="/admin/faqs" element={<AdminFaqsPage />} />
             <Route path="/admin/services" element={<AdminServicesPage />} />
@@ -90,6 +93,7 @@ export function AppRouter() {
         {/* Public Storefront Routes */}
         <Route element={<PageShell />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/wallet/:token" element={<PublicWalletPage />} />
           <Route path="/queue" element={<PublicQueuePage />} />
           <Route path="/offers" element={<OffersPage />} />
           <Route path="/faq" element={<FaqPage />} />

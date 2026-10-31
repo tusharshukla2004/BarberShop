@@ -9,6 +9,8 @@ import {
   User,
   Scissors,
   FileText,
+  Crown,
+  Sparkles,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import DataTable from '@/components/admin/DataTable';
@@ -25,7 +27,14 @@ import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { useGetSettingsQuery } from '@/features/settings/settingsApi';
 import { WhatsAppActionMenu } from '@/features/booking/admin/WhatsAppActions';
 import { CompactCustomerCard } from '@/features/customers/CompactCustomerCard';
-import { useAppDispatch } from '@/app/hooks';
+import {
+  useGetCustomerWalletQuery,
+  useConsumePackageSessionMutation,
+  useReversePackageSessionMutation,
+  useRedeemLoyaltyRewardMutation,
+} from '@/features/wallet/walletApi';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { selectIsOwner } from '@/features/auth/authSlice';
 import { addToast } from '@/features/ui/uiSlice';
 
 export default function AdminBookingsPage() {
@@ -441,6 +450,15 @@ export default function AdminBookingsPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Package, Membership & Loyalty Perks in Drawer */}
+                <BookingWalletBenefits
+                  booking={detailBooking}
+                  onBenefitUpdated={() => {
+                    refetch();
+                    setDetailBooking(null);
+                  }}
+                />
               </div>
             </div>
 
@@ -606,6 +624,195 @@ function RescheduleDialog({ booking, isRescheduling, onClose, onConfirm }) {
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+
+function BookingWalletBenefits({ booking, onBenefitUpdated }) {
+  const dispatch = useAppDispatch();
+  const isOwner = useAppSelector(selectIsOwner);
+  const { data: wallet = {} } = useGetCustomerWalletQuery(booking.customerId, {
+    skip: !booking.customerId,
+  });
+
+  const [consumeSession, { isLoading: isConsuming }] = useConsumePackageSessionMutation();
+  const [reverseSession, { isLoading: isReversing }] = useReversePackageSessionMutation();
+  const [redeemReward, { isLoading: isRedeeming }] = useRedeemLoyaltyRewardMutation();
+
+  if (!booking.customerId) return null;
+
+  const activePackages = (wallet.packages || []).filter(
+    (p) => p.status === 'active' && p.sessionsRemaining > 0
+  );
+  const eligiblePackage = activePackages.find(
+    (p) => !p.serviceIds || p.serviceIds.length === 0 || p.serviceIds.includes(booking.serviceId)
+  );
+
+  const activeMembership = wallet.membership;
+  const loyalty = wallet.loyalty || { balance: 0, stampsForReward: 10 };
+  const isLoyaltyReady = (loyalty.balance || 0) >= (loyalty.stampsForReward || 10);
+
+  const appliedType = booking.appliedBenefitType || 'none';
+
+  const handleApplyPackageSession = async () => {
+    if (!eligiblePackage) return;
+    try {
+      await consumeSession({
+        customerId: booking.customerId,
+        customerPackageId: eligiblePackage.id || eligiblePackage._id,
+        bookingId: booking.id || booking._id,
+        serviceId: booking.serviceId,
+      }).unwrap();
+      dispatch(
+        addToast({
+          type: 'success',
+          message: 'Package session applied! Booking price set to ₹0.',
+        })
+      );
+      onBenefitUpdated?.();
+    } catch (err) {
+      dispatch(
+        addToast({
+          type: 'error',
+          message: err?.message || 'Failed to apply package session.',
+        })
+      );
+    }
+  };
+
+  const handleReversePackageSession = async () => {
+    const custPkgId = booking.appliedBenefitDetails?.customerPackageId;
+    if (!custPkgId) return;
+    try {
+      await reverseSession({
+        customerId: booking.customerId,
+        customerPackageId: custPkgId,
+        bookingId: booking.id || booking._id,
+        reason: 'Staff reversed applied package session from booking drawer',
+      }).unwrap();
+      dispatch(addToast({ type: 'success', message: 'Package session reversed.' }));
+      onBenefitUpdated?.();
+    } catch (err) {
+      dispatch(addToast({ type: 'error', message: err?.message || 'Failed to reverse session.' }));
+    }
+  };
+
+  const handleRedeemLoyalty = async () => {
+    try {
+      await redeemReward({
+        customerId: booking.customerId,
+        bookingId: booking.id || booking._id,
+        stampsToRedeem: loyalty.stampsForReward || 10,
+        notes: `Free haircut redeemed on booking #${booking.id || booking._id}`,
+      }).unwrap();
+      dispatch(
+        addToast({
+          type: 'success',
+          message: 'Loyalty reward redeemed! Booking price set to ₹0.',
+        })
+      );
+      onBenefitUpdated?.();
+    } catch (err) {
+      dispatch(addToast({ type: 'error', message: err?.message || 'Failed to redeem reward.' }));
+    }
+  };
+
+  return (
+    <div className="p-3.5 rounded-lg border border-accent/30 bg-accent/5 space-y-2.5 text-xs">
+      <div className="flex justify-between items-center border-b border-accent/20 pb-1.5">
+        <span className="font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5" /> Package, Membership & Loyalty Perks
+        </span>
+        <span className="text-[11px] font-mono text-muted">
+          Current Price: <strong className="text-ink">₹{booking.priceAtBooking ?? 0}</strong>
+        </span>
+      </div>
+
+      {appliedType === 'package' ? (
+        <div className="p-2 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 flex justify-between items-center">
+          <div>
+            <span className="font-bold block">✓ Package Session Applied (100% Free)</span>
+            <span className="text-[10px] text-emerald-700">Service price adjusted to ₹0</span>
+          </div>
+          {isOwner && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReversePackageSession}
+              disabled={isReversing}
+              className="text-[10px] h-6 px-2 text-red-600 hover:bg-red-50 border-red-200"
+            >
+              Reverse Session
+            </Button>
+          )}
+        </div>
+      ) : appliedType === 'loyalty_reward' ? (
+        <div className="p-2 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 flex justify-between items-center">
+          <div>
+            <span className="font-bold block">✓ Free Loyalty Reward Redeemed</span>
+            <span className="text-[10px] text-emerald-700">10 visit stamps consumed</span>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {eligiblePackage && (
+            <div className="flex justify-between items-center p-2 rounded bg-white border border-border-light">
+              <div>
+                <span className="font-bold text-ink block">{eligiblePackage.packageName?.en || 'Package'}</span>
+                <span className="text-[10px] text-muted">
+                  {eligiblePackage.sessionsRemaining} sessions left · Price becomes ₹0
+                </span>
+              </div>
+              <Button
+                size="sm"
+                onClick={handleApplyPackageSession}
+                disabled={isConsuming}
+                className="text-[10px] h-7 px-2.5 bg-primary text-white"
+              >
+                Apply 1 Session
+              </Button>
+            </div>
+          )}
+
+          {activeMembership && (
+            <div className="p-2 rounded bg-amber-50/70 border border-amber-200 flex justify-between items-center text-amber-950">
+              <div>
+                <span className="font-bold flex items-center gap-1">
+                  <Crown className="w-3.5 h-3.5 text-amber-600" />
+                  VIP Member ({activeMembership.planName?.en})
+                </span>
+                <span className="text-[10px] text-amber-800">
+                  Perk automatically applies based on precedence
+                </span>
+              </div>
+            </div>
+          )}
+
+          {isLoyaltyReady && (
+            <div className="flex justify-between items-center p-2 rounded bg-emerald-50 border border-emerald-200">
+              <div>
+                <span className="font-bold text-emerald-900 block">10 Loyalty Stamps Ready</span>
+                <span className="text-[10px] text-emerald-700">Eligible for 1 free haircut reward</span>
+              </div>
+              <Button
+                size="sm"
+                onClick={handleRedeemLoyalty}
+                disabled={isRedeeming}
+                className="text-[10px] h-7 px-2.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                Redeem Reward
+              </Button>
+            </div>
+          )}
+
+          {!eligiblePackage && !activeMembership && !isLoyaltyReady && (
+            <div className="text-[11px] text-muted text-center py-1">
+              No active package sessions or loyalty rewards available for this customer.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

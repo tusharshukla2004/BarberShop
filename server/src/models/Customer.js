@@ -96,6 +96,20 @@ const customerSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    walletToken: {
+      type: String,
+      default: null,
+      sparse: true,
+      index: true,
+    },
+    birthday: {
+      type: Date,
+      default: null,
+    },
+    birthdayGreetingSentYear: {
+      type: Number,
+      default: null,
+    },
     isDeleted: {
       type: Boolean,
       default: false,

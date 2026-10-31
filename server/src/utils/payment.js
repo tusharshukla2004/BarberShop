@@ -234,3 +234,4 @@ export function checkRefundEligibility({ booking, settings = {}, customNow = new
     hoursBeforeAppointment: Math.round(hoursBefore * 10) / 10,
   };
 }
+

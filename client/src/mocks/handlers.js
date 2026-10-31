@@ -11,6 +11,9 @@ import {
   mockOffers,
   mockFaqs,
   mockPayments,
+  mockPackages,
+  mockMembershipPlans,
+  mockCustomerWallet,
 } from './data';
 
 // In-memory reactive collections for the MSW dev/test session
@@ -25,6 +28,9 @@ const dynamicQueue = [...mockQueueEntries];
 const dynamicOffers = [...mockOffers];
 const dynamicFaqs = [...mockFaqs];
 const dynamicPayments = [...mockPayments];
+const dynamicPackages = [...mockPackages];
+const dynamicMembershipPlans = [...mockMembershipPlans];
+const dynamicCustomerWallets = { '60d5ec49f1b2c8b1f8e4e1a1': { ...mockCustomerWallet } };
 
 let currentUser = {
   id: 'admin-1',
@@ -1387,6 +1393,263 @@ export const handlers = [
       data: {
         success: true,
         booking,
+      },
+    });
+  }),
+
+  // ==========================================
+  // Packages, Memberships & Wallet Handlers
+  // ==========================================
+  http.get('*/api/packages', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: dynamicPackages.filter((p) => p.isActive) });
+  }),
+
+  http.get('*/api/memberships', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: dynamicMembershipPlans.filter((m) => m.isActive) });
+  }),
+
+  http.get('*/api/wallet/:token', async ({ params }) => {
+    await delay(30);
+    const { token } = params;
+    return HttpResponse.json({
+      success: true,
+      data: {
+        customerName: 'Sameer Verma',
+        walletToken: token,
+        packages: mockCustomerWallet.packages,
+        membership: mockCustomerWallet.membership,
+        loyalty: mockCustomerWallet.loyalty,
+        shop: {
+          name: 'Modern Mane Luxury Barber Studio',
+          phone: '919876543210',
+        },
+      },
+    });
+  }),
+
+  http.get('*/api/admin/packages', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: dynamicPackages });
+  }),
+
+  http.post('*/api/admin/packages', async ({ request }) => {
+    const body = await request.json();
+    const newPkg = { id: `pkg-${Date.now()}`, ...body, isActive: true };
+    dynamicPackages.unshift(newPkg);
+    return HttpResponse.json({ success: true, data: newPkg }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/packages/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const idx = dynamicPackages.findIndex((p) => p.id === id);
+    if (idx !== -1) {
+      dynamicPackages[idx] = { ...dynamicPackages[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicPackages[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Package not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/packages/:id', async ({ params }) => {
+    const { id } = params;
+    const idx = dynamicPackages.findIndex((p) => p.id === id);
+    if (idx !== -1) {
+      dynamicPackages.splice(idx, 1);
+    }
+    return HttpResponse.json({ success: true, data: null });
+  }),
+
+  http.get('*/api/admin/memberships', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: dynamicMembershipPlans });
+  }),
+
+  http.post('*/api/admin/memberships', async ({ request }) => {
+    const body = await request.json();
+    const newPlan = { id: `plan-${Date.now()}`, ...body, isActive: true };
+    dynamicMembershipPlans.unshift(newPlan);
+    return HttpResponse.json({ success: true, data: newPlan }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/memberships/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const idx = dynamicMembershipPlans.findIndex((p) => p.id === id);
+    if (idx !== -1) {
+      dynamicMembershipPlans[idx] = { ...dynamicMembershipPlans[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicMembershipPlans[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Plan not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/memberships/:id', async ({ params }) => {
+    const { id } = params;
+    const idx = dynamicMembershipPlans.findIndex((p) => p.id === id);
+    if (idx !== -1) {
+      dynamicMembershipPlans.splice(idx, 1);
+    }
+    return HttpResponse.json({ success: true, data: null });
+  }),
+
+  http.get('*/api/admin/customers/:id/wallet', async ({ params }) => {
+    await delay(30);
+    const { id } = params;
+    const wallet = dynamicCustomerWallets[id] || {
+      ...mockCustomerWallet,
+      packages: [...mockCustomerWallet.packages],
+      membership: mockCustomerWallet.membership ? { ...mockCustomerWallet.membership } : null,
+      loyalty: { ...mockCustomerWallet.loyalty },
+    };
+    return HttpResponse.json({ success: true, data: wallet });
+  }),
+
+  http.post('*/api/admin/customers/:id/packages', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const pkg = dynamicPackages.find((p) => p.id === body.packageId) || mockPackages[0];
+    const customerPkg = {
+      id: `cust-pkg-${Date.now()}`,
+      customerId: id,
+      packageId: pkg.id,
+      packageName: pkg.name,
+      sessionsTotal: pkg.sessions,
+      sessionsUsed: 0,
+      sessionsRemaining: pkg.sessions,
+      pricePaid: body.amountPaid || pkg.price,
+      paymentMethod: body.paymentMethod || 'cash',
+      expiresAt: new Date(Date.now() + pkg.validityDays * 86400000).toISOString(),
+      status: 'active',
+    };
+    if (!dynamicCustomerWallets[id]) {
+      dynamicCustomerWallets[id] = { ...mockCustomerWallet, packages: [] };
+    }
+    dynamicCustomerWallets[id].packages.unshift(customerPkg);
+    return HttpResponse.json({ success: true, data: customerPkg }, { status: 201 });
+  }),
+
+  http.post('*/api/admin/customers/:id/memberships', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const plan = dynamicMembershipPlans.find((p) => p.id === body.planId) || mockMembershipPlans[0];
+    const membership = {
+      id: `cust-mem-${Date.now()}`,
+      customerId: id,
+      planId: plan.id,
+      planName: plan.name,
+      pricePaid: body.amountPaid || plan.price,
+      paymentMethod: body.paymentMethod || 'cash',
+      endsAt: new Date(Date.now() + plan.durationDays * 86400000).toISOString(),
+      benefits: plan.benefits,
+      status: 'active',
+    };
+    if (!dynamicCustomerWallets[id]) {
+      dynamicCustomerWallets[id] = { ...mockCustomerWallet };
+    }
+    dynamicCustomerWallets[id].membership = membership;
+    return HttpResponse.json({ success: true, data: membership }, { status: 201 });
+  }),
+
+  http.post('*/api/admin/customers/:id/consume-session', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const wallet = dynamicCustomerWallets[id] || mockCustomerWallet;
+    const pkg = wallet.packages.find((p) => p.id === body.customerPackageId);
+    if (pkg && pkg.sessionsRemaining > 0) {
+      pkg.sessionsUsed++;
+      pkg.sessionsRemaining = Math.max(0, pkg.sessionsTotal - pkg.sessionsUsed);
+      if (pkg.sessionsRemaining === 0) pkg.status = 'exhausted';
+      return HttpResponse.json({ success: true, data: pkg });
+    }
+    return HttpResponse.json({ success: false, error: 'No sessions available' }, { status: 400 });
+  }),
+
+  http.post('*/api/admin/customers/:id/loyalty/adjust', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const wallet = dynamicCustomerWallets[id] || mockCustomerWallet;
+    wallet.loyalty.balance += body.amount || 1;
+    wallet.loyalty.totalEarned += body.amount || 1;
+    return HttpResponse.json({ success: true, data: wallet.loyalty });
+  }),
+
+  http.post('*/api/admin/customers/:id/loyalty/redeem', async ({ params }) => {
+    const { id } = params;
+    const wallet = dynamicCustomerWallets[id] || mockCustomerWallet;
+    wallet.loyalty.balance = Math.max(0, wallet.loyalty.balance - 10);
+    wallet.loyalty.totalRedeemed += 10;
+    return HttpResponse.json({ success: true, data: wallet.loyalty });
+  }),
+
+  http.get('*/api/admin/wallet/expiring', async () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        expiringPackages: [
+          {
+            id: 'exp-pkg-1',
+            packageName: { en: '5x Grooming Pack' },
+            sessionsRemaining: 2,
+            expiresAt: new Date(Date.now() + 3 * 86400000).toISOString(),
+            customerId: { name: 'Arjun Verma', phone: '9876543210' },
+          },
+        ],
+        expiringMemberships: [],
+      },
+    });
+  }),
+
+  http.get('*/api/admin/customers/due-for-visit', async () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        thresholdDays: 28,
+        customers: [
+          {
+            id: 'cust-due-1',
+            name: 'Vikram Mehta',
+            phone: '9876543210',
+            lastVisitAgo: '4 weeks ago',
+            daysSinceVisit: 32,
+            stats: { completedVisits: 4 },
+          },
+        ],
+        total: 1,
+      },
+    });
+  }),
+
+  http.get('*/api/admin/customers/upcoming-birthdays', async () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        upcomingBirthdays: [
+          {
+            id: 'cust-bday-1',
+            name: 'Karan Johar',
+            phone: '9812345678',
+            birthdayFormatted: 'Nov 05',
+            daysUntilBirthday: 5,
+            alreadySentThisYear: false,
+          },
+        ],
+        total: 1,
+      },
+    });
+  }),
+
+  http.get('*/api/admin/reports/wallet', async () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        packageSalesCount: 12,
+        packageSalesRevenue: 28500,
+        membershipSalesCount: 8,
+        membershipSalesRevenue: 11992,
+        sessionRedemptionsCount: 34,
+        outstandingSessionLiability: 14200,
+        loyaltyRewardsGiven: 6,
       },
     });
   }),

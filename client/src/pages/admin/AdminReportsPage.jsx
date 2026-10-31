@@ -36,6 +36,7 @@ import {
   useGetSourcesReportQuery,
 } from '@/features/reports/reportsApi';
 import { useGetOffersReportQuery } from '@/features/offers/offersApi';
+import { useGetWalletReportQuery } from '@/features/wallet/walletApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { selectCurrentUser, selectIsOwner } from '@/features/auth/authSlice';
@@ -127,6 +128,10 @@ export default function AdminReportsPage() {
   const { data: noShowsData = [] } = useGetNoShowsReportQuery(queryParams);
   const { data: sourcesData = [] } = useGetSourcesReportQuery(queryParams);
   const { data: offersData = [] } = useGetOffersReportQuery(queryParams);
+  const { data: walletData = {} } = useGetWalletReportQuery(
+    { from: effectiveFrom, to: effectiveTo },
+    { skip: !isOwner }
+  );
 
   const { data: barbersList = [] } = useGetBarbersQuery();
 
@@ -445,6 +450,7 @@ export default function AdminReportsPage() {
           { id: 'offers', label: 'Offers Performance' },
           { id: 'noshows', label: 'No-Shows Log' },
           { id: 'sources', label: 'Booking Sources' },
+          { id: 'wallet', label: 'Packages & Loyalty' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -919,6 +925,73 @@ export default function AdminReportsPage() {
                 </table>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 8: Packages, Memberships & Loyalty Analytics */}
+      {activeTab === 'wallet' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-card border border-border shadow-xs space-y-1">
+              <span className="text-xs text-muted uppercase font-bold tracking-wider">Package Sales Revenue</span>
+              <div className="font-display text-2xl text-ink">
+                ₹{(walletData.packageSalesRevenue || 0).toLocaleString('en-IN')}
+              </div>
+              <span className="text-xs text-muted">
+                {walletData.packageSalesCount || 0} packages sold
+              </span>
+            </div>
+
+            <div className="bg-white p-5 rounded-card border border-border shadow-xs space-y-1">
+              <span className="text-xs text-muted uppercase font-bold tracking-wider">Membership Revenue</span>
+              <div className="font-display text-2xl text-amber-700">
+                ₹{(walletData.membershipSalesRevenue || 0).toLocaleString('en-IN')}
+              </div>
+              <span className="text-xs text-muted">
+                {walletData.membershipSalesCount || 0} active subscriptions
+              </span>
+            </div>
+
+            <div className="bg-white p-5 rounded-card border border-border shadow-xs space-y-1">
+              <span className="text-xs text-muted uppercase font-bold tracking-wider">Sessions Redeemed</span>
+              <div className="font-display text-2xl text-primary">
+                {walletData.sessionRedemptionsCount || 0}
+              </div>
+              <span className="text-xs text-muted">Prepaid cuts completed</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-card border border-border shadow-xs space-y-1">
+              <span className="text-xs text-muted uppercase font-bold tracking-wider">Unredeemed Liability</span>
+              <div className="font-display text-2xl text-ink">
+                ₹{(walletData.outstandingSessionLiability || 0).toLocaleString('en-IN')}
+              </div>
+              <span className="text-xs text-muted">Prepaid sessions outstanding</span>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 rounded-card border border-border shadow-xs space-y-3">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-display text-lg uppercase tracking-wide text-ink">Loyalty Rewards Summary</h3>
+                <p className="text-xs text-muted">Digital stamp card reward redemptions during period</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleExportCSV('wallet')}
+                className="text-xs"
+              >
+                Export Wallet CSV
+              </Button>
+            </div>
+
+            <div className="p-4 rounded-lg bg-surface/50 border border-border-light flex justify-between items-center text-sm">
+              <span className="text-ink font-semibold">Total Complimentary Rewards Redeemed (10 Stamps):</span>
+              <span className="font-display text-xl text-emerald-700 font-bold">
+                {walletData.loyaltyRewardsGiven || 0} rewards
+              </span>
+            </div>
           </div>
         </div>
       )}

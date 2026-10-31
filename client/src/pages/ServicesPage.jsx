@@ -10,6 +10,10 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import QueryState from '@/components/common/QueryState';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
+import {
+  useGetPublicPackagesQuery,
+  useGetPublicMembershipsQuery,
+} from '@/features/wallet/walletApi';
 import { useAppDispatch } from '@/app/hooks';
 import { selectService, setBookingStep } from '@/features/booking/bookingDraftSlice';
 import { formatPrice } from '@/lib/formatters';
@@ -18,6 +22,8 @@ export default function ServicesPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { data: services = [], isLoading, isError, error, refetch } = useGetServicesQuery();
+  const { data: publicPackages = [] } = useGetPublicPackagesQuery();
+  const { data: publicMemberships = [] } = useGetPublicMembershipsQuery();
 
   const [activeCategory, setActiveCategory] = useState('All');
 
@@ -143,6 +149,60 @@ export default function ServicesPage() {
           </QueryState>
         </Container>
       </Section>
+
+      {/* Prepaid Packages & VIP Memberships Display-Only Section */}
+      {(publicPackages.length > 0 || publicMemberships.length > 0) && (
+        <Section tone="sand" className="py-12 border-t border-border-light">
+          <Container>
+            <SectionHeading
+              eyebrow="Repeat Privilege"
+              title="PREPAID PACKAGES & VIP CLUBS"
+              description="Enjoy bundled savings and year-round grooming privileges. Available for enrollment at our studio."
+              align="center"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+              {publicPackages.map((pkg) => (
+                <Card key={pkg.id || pkg._id} className="p-6 flex flex-col justify-between border-accent/20 bg-white">
+                  <div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider block w-fit mb-2">
+                      Prepaid Bundle
+                    </span>
+                    <h3 className="font-display text-xl text-ink">{pkg.name?.en}</h3>
+                    <p className="text-xs text-muted mt-1">{pkg.description?.en}</p>
+                    <div className="mt-4 pt-3 border-t border-border-light flex justify-between items-baseline">
+                      <span className="text-xs text-muted">{pkg.sessions} sessions · {pkg.validityDays} days</span>
+                      <span className="font-display text-2xl text-ink">₹{pkg.price}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-border-light text-[11px] text-muted text-center italic">
+                    Available for purchase at studio reception
+                  </div>
+                </Card>
+              ))}
+
+              {publicMemberships.map((plan) => (
+                <Card key={plan.id || plan._id} className="p-6 flex flex-col justify-between border-amber-300 bg-amber-50/20">
+                  <div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 uppercase tracking-wider block w-fit mb-2">
+                      VIP Club Plan
+                    </span>
+                    <h3 className="font-display text-xl text-ink">{plan.name?.en}</h3>
+                    <p className="text-xs text-muted mt-1">{plan.description?.en}</p>
+                    <div className="mt-4 pt-3 border-t border-amber-200 flex justify-between items-baseline">
+                      <span className="text-xs text-muted">{plan.durationDays} days access</span>
+                      <span className="font-display text-2xl text-amber-900">₹{plan.price}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-amber-200 text-[11px] text-muted text-center italic">
+                    Available for enrollment at studio reception
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
     </>
   );
 }

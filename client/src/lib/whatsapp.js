@@ -146,6 +146,9 @@ export const KNOWN_PLACEHOLDERS = [
   'reviewLink',
   'cancelPolicy',
   'tokenNumber',
+  'lastVisitAgo',
+  'bookingLink',
+  'walletLink',
 ];
 
 /**

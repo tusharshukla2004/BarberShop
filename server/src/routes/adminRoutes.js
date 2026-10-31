@@ -59,7 +59,32 @@ import {
   getNoShowsReport,
   getSourcesReport,
   getOffersReport,
+  getWalletReport,
 } from '../controllers/reportController.js';
+import {
+  listPackages,
+  createPackage,
+  updatePackage,
+  deletePackage,
+  listMembershipPlans,
+  createMembershipPlan,
+  updateMembershipPlan,
+  deleteMembershipPlan,
+  getCustomerWallet,
+  sellPackageToCustomer,
+  sellMembershipToCustomer,
+  consumePackageSession,
+  reversePackageSession,
+  reverseMembershipBenefit,
+  adjustLoyaltyStamps,
+  redeemLoyaltyReward,
+  reverseLoyaltyHistory,
+  generateWalletToken,
+  revokeWalletToken,
+  getExpiringWalletItemsList,
+  getDueForVisitCustomers,
+  getUpcomingBirthdays,
+} from '../controllers/walletController.js';
 import {
   listAdminOffers,
   createOffer,
@@ -115,6 +140,20 @@ import {
   updateFaqSchema,
   reorderFaqsSchema,
 } from '../schemas/faq.schema.js';
+import {
+  packageSchema,
+  updatePackageSchema,
+  membershipPlanSchema,
+  updateMembershipPlanSchema,
+  sellPackageSchema,
+  sellMembershipSchema,
+  consumeSessionSchema,
+  reverseSessionSchema,
+  reverseMembershipSchema,
+  adjustLoyaltySchema,
+  redeemRewardSchema,
+  reverseLoyaltySchema,
+} from '../schemas/wallet.schema.js';
 
 const router = Router();
 
@@ -211,5 +250,50 @@ router.post(
   refundPayment
 );
 router.patch('/bookings/:id/mark-paid', markPaidAtShop);
+
+// Packages & Membership Plans Management (Owner Only for modifications)
+router.get('/packages', listPackages);
+router.post('/packages', requireRole('owner'), validate(packageSchema), createPackage);
+router.put('/packages/:id', requireRole('owner'), validate(updatePackageSchema), updatePackage);
+router.delete('/packages/:id', requireRole('owner'), deletePackage);
+
+router.get('/memberships', listMembershipPlans);
+router.post('/memberships', requireRole('owner'), validate(membershipPlanSchema), createMembershipPlan);
+router.put('/memberships/:id', requireRole('owner'), validate(updateMembershipPlanSchema), updateMembershipPlan);
+router.delete('/memberships/:id', requireRole('owner'), deleteMembershipPlan);
+
+// Customer Wallet & Benefit Redemptions
+router.get('/customers/due-for-visit', getDueForVisitCustomers);
+router.get('/customers/upcoming-birthdays', getUpcomingBirthdays);
+router.get('/customers/:id/wallet', getCustomerWallet);
+router.post('/customers/:id/packages', validate(sellPackageSchema), sellPackageToCustomer);
+router.post('/customers/:id/memberships', validate(sellMembershipSchema), sellMembershipToCustomer);
+router.post('/customers/:id/consume-session', validate(consumeSessionSchema), consumePackageSession);
+router.post(
+  '/customers/:id/reverse-session',
+  requireRole('owner'),
+  validate(reverseSessionSchema),
+  reversePackageSession
+);
+router.post(
+  '/customers/:id/reverse-membership',
+  requireRole('owner'),
+  validate(reverseMembershipSchema),
+  reverseMembershipBenefit
+);
+router.post('/customers/:id/loyalty/adjust', validate(adjustLoyaltySchema), adjustLoyaltyStamps);
+router.post('/customers/:id/loyalty/redeem', validate(redeemRewardSchema), redeemLoyaltyReward);
+router.post(
+  '/customers/:id/loyalty/reverse',
+  requireRole('owner'),
+  validate(reverseLoyaltySchema),
+  reverseLoyaltyHistory
+);
+router.post('/customers/:id/wallet-token', generateWalletToken);
+router.delete('/customers/:id/wallet-token', revokeWalletToken);
+
+// Expiring wallet items & Wallet Reports
+router.get('/wallet/expiring', getExpiringWalletItemsList);
+router.get('/reports/wallet', requireRole('owner'), getWalletReport);
 
 export default router;

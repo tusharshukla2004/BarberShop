@@ -22,6 +22,11 @@ import {
   verifyPayment,
   handlePaymentWebhook,
 } from '../controllers/paymentController.js';
+import {
+  getPublicPackages,
+  getPublicMemberships,
+  getPublicWalletByToken,
+} from '../controllers/walletController.js';
 import { validate } from '../middleware/validate.js';
 import {
   createBookingSchema,
@@ -84,6 +89,11 @@ router.post('/queue/join', bookingLimiter, validate(joinPublicQueueSchema), join
 router.get('/offers', getPublicOffers);
 router.post('/offers/validate', validate(validateOfferCodeSchema), validateOfferCode);
 router.get('/faqs', getPublicFaqs);
+
+// Packages, Memberships & Public Customer Wallet Pass
+router.get('/packages', getPublicPackages);
+router.get('/memberships', getPublicMemberships);
+router.get('/wallet/:token', getPublicWalletByToken);
 
 // Online Payments & Deposits (Razorpay)
 router.post(

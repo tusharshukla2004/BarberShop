@@ -12,6 +12,7 @@ import {
   recalculateCustomerStats,
 } from '../services/customerService.js';
 import { cleanExpiredHolds } from '../services/slotHoldService.js';
+import { addLoyaltyStamps } from '../services/walletService.js';
 
 /**
  * Finds a document by either custom id string or MongoDB ObjectId
@@ -367,6 +368,23 @@ export async function adminUpdateBooking(req, res, next) {
           booking.customerId = cust._id;
           await booking.save();
           await recalculateCustomerStats(cust._id);
+        }
+      } catch {}
+    }
+
+    // Award loyalty stamps on completion if loyalty program is enabled
+    if (booking.status === 'completed' && booking.customerId) {
+      try {
+        const settings = await Settings.findOne().lean();
+        if (settings?.loyaltySettings?.loyaltyEnabled) {
+          const stampsPerBooking = settings.loyaltySettings.stampsPerBooking || 1;
+          await addLoyaltyStamps({
+            customerId: booking.customerId,
+            bookingId: booking._id,
+            stampsCount: stampsPerBooking,
+            notes: `Completed appointment #${booking._id}`,
+            actor: req.user?.email || 'staff',
+          });
         }
       } catch {}
     }

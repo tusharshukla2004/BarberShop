@@ -150,3 +150,59 @@ export function calculatePaymentBreakdown(bookings = [], payments = []) {
 
 export const BOOKING_SOURCES = ['online_booking', 'walk_in', 'admin_created'];
 
+/**
+ * Metric 8: Packages, Memberships & Loyalty Analytics
+ * @param {Object} params
+ * @param {Array<Object>} [params.customerPackages]
+ * @param {Array<Object>} [params.customerMemberships]
+ * @param {Array<Object>} [params.loyaltyAccounts]
+ * @returns {Object}
+ */
+export function calculateWalletMetrics({
+  customerPackages = [],
+  customerMemberships = [],
+  loyaltyAccounts = [],
+} = {}) {
+  let packageSalesCount = customerPackages.length;
+  let packageSalesRevenue = 0;
+  let sessionRedemptionsCount = 0;
+  let outstandingSessionLiability = 0;
+
+  customerPackages.forEach((p) => {
+    packageSalesRevenue += p.pricePaid || 0;
+    sessionRedemptionsCount += p.sessionsUsed || 0;
+    if (p.status === 'active' && (!p.expiresAt || new Date(p.expiresAt) > new Date())) {
+      const remaining = Math.max(0, (p.sessionsTotal || 0) - (p.sessionsUsed || 0));
+      const unitValue = p.sessionsTotal > 0 ? (p.pricePaid || 0) / p.sessionsTotal : 0;
+      outstandingSessionLiability += remaining * unitValue;
+    }
+  });
+
+  let membershipSalesCount = customerMemberships.length;
+  let membershipSalesRevenue = 0;
+  customerMemberships.forEach((m) => {
+    membershipSalesRevenue += m.pricePaid || 0;
+  });
+
+  let loyaltyRewardsGiven = 0;
+  loyaltyAccounts.forEach((acc) => {
+    if (Array.isArray(acc.history)) {
+      acc.history.forEach((h) => {
+        if (h.type === 'redeem' && !h.reversed) {
+          loyaltyRewardsGiven++;
+        }
+      });
+    }
+  });
+
+  return {
+    packageSalesCount,
+    packageSalesRevenue: Math.round(packageSalesRevenue),
+    membershipSalesCount,
+    membershipSalesRevenue: Math.round(membershipSalesRevenue),
+    sessionRedemptionsCount,
+    outstandingSessionLiability: Math.round(outstandingSessionLiability),
+    loyaltyRewardsGiven,
+  };
+}
+
