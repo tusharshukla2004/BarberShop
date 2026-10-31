@@ -71,13 +71,21 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Right (Desktop): Contact Us Button */}
-          <div className="hidden lg:flex items-center gap-3">
+          {/* Right (Desktop): Admin Dashboard & Contact Us Buttons */}
+          <div className="hidden lg:flex items-center gap-2.5">
+            <Button
+              to="/admin"
+              variant="outline"
+              size="sm"
+              className="border-white/30 text-white hover:bg-white/10 hover:border-white font-medium text-xs tracking-wider uppercase px-3.5"
+            >
+              Admin Dashboard
+            </Button>
             <Button
               to="/contact"
               variant="secondary"
               size="sm"
-              className="bg-white text-ink border-white hover:bg-white/90"
+              className="bg-white text-ink border-white hover:bg-white/90 text-xs tracking-wider uppercase px-4"
             >
               Contact us
             </Button>

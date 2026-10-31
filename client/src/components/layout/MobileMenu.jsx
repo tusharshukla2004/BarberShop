@@ -145,7 +145,17 @@ export function MobileMenu() {
         </nav>
 
         {/* Contact info & CTA */}
-        <div className="mt-8 pt-8 border-t border-border-dark flex flex-col gap-6">
+        <div className="mt-8 pt-8 border-t border-border-dark flex flex-col gap-4">
+          <Button
+            to="/admin"
+            variant="outline"
+            size="lg"
+            className="w-full text-center border-white/30 text-white hover:bg-white/10 tracking-wider uppercase text-xs font-semibold"
+            onClick={() => dispatch(closeMobileMenu())}
+          >
+            Admin Dashboard
+          </Button>
+
           <Button
             to={siteConfig.cta.href}
             variant="primary"
