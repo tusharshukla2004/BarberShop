@@ -80,7 +80,7 @@ export default function StepDetails({
       phone: formData.phone,
       email: formData.email,
       serviceId: draft.serviceId || 'srv-1',
-      barberId: draft.barberId === 'any' ? barbers[0]?.id || 'barb-1' : draft.barberId,
+      barberId: draft.barberId && draft.barberId !== 'any' ? draft.barberId : '',
       date: draft.date,
       startTime: draft.startTime,
       endTime: draft.endTime || draft.startTime,

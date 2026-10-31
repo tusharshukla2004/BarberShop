@@ -12,7 +12,7 @@ export const createBookingSchema = z.object({
       ),
     email: z.string().email('Please enter a valid email address').optional().or(z.literal('')),
     serviceId: z.string().min(1, 'Service is required'),
-    barberId: z.string().min(1, 'Barber is required'),
+    barberId: z.string().optional().default(''),
     date: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),

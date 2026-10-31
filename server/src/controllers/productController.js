@@ -95,3 +95,4 @@ export async function deleteProduct(req, res, next) {
     return next(error);
   }
 }
+

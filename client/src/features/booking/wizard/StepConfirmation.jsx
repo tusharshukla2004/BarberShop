@@ -27,20 +27,39 @@ export default function StepConfirmation({ booking, onReset }) {
     ? `BK-${booking.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()}`
     : 'BK-RES892';
 
-  // Resolve service & barber details if selected
-  const service = services.find(
-    (s) => s.id === booking.serviceId || s.id === booking.service
-  );
-  const barber = barbers.find(
-    (b) => b.id === booking.barberId || b.id === booking.barber
+  // Resolve service & barber details ONLY if explicitly chosen by user
+  const isSpecificBarber = Boolean(
+    booking.barberId &&
+      booking.barberId !== 'any' &&
+      booking.barberId !== 'unassigned' &&
+      booking.barberId !== ''
   );
 
-  const serviceName =
-    booking.serviceName || service?.name || (booking.serviceId ? 'Custom Grooming' : '');
-  const barberName =
-    booking.barberName ||
-    barber?.name ||
-    (booking.barberId === 'any' ? 'First Available Master Barber' : '');
+  const isSpecificService = Boolean(
+    booking.serviceId &&
+      booking.serviceId !== 'general-request' &&
+      booking.serviceId !== ''
+  );
+
+  const service = isSpecificService
+    ? services.find((s) => s.id === booking.serviceId || s.id === booking.service)
+    : null;
+
+  const barber = isSpecificBarber
+    ? barbers.find((b) => b.id === booking.barberId || b.id === booking.barber)
+    : null;
+
+  const serviceName = service
+    ? service.name
+    : booking.serviceName && isSpecificService
+    ? booking.serviceName
+    : '';
+
+  const barberName = barber
+    ? barber.name
+    : booking.barberName && isSpecificBarber
+    ? booking.barberName
+    : '';
 
   const serviceSnippet = serviceName ? ` for ${serviceName}` : '';
   const barberSnippet = barberName ? ` with ${barberName}` : '';

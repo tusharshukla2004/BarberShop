@@ -70,28 +70,32 @@ export async function createBooking(req, res, next) {
     const { customerName, phone, email, serviceId, barberId, date, startTime, endTime, notes } =
       req.body;
 
-    // 1. Barber existence check
-    const barber = await findByIdOrCustom(Barber, barberId);
-    if (!barber) {
-      return sendError(res, 404, 'Selected barber was not found', 'NOT_FOUND');
-    }
+    let barberIdStr = '';
 
-    // 2. Conflict check before insert
-    const barberIdStr = barber.id || barber._id.toString();
-    const existingConflict = await Booking.findOne({
-      barberId: { $in: [barberId, barberIdStr] },
-      date,
-      startTime,
-      status: { $in: ['pending', 'confirmed'] },
-    });
+    // 1. Barber existence check (only if specific barber chosen)
+    if (barberId && barberId !== 'any' && barberId !== 'unassigned') {
+      const barber = await findByIdOrCustom(Barber, barberId);
+      if (!barber) {
+        return sendError(res, 404, 'Selected barber was not found', 'NOT_FOUND');
+      }
+      barberIdStr = barber.id || barber._id.toString();
 
-    if (existingConflict) {
-      return sendError(
-        res,
-        409,
-        'This slot is already booked. Please choose an alternate slot or barber.',
-        'CONFLICT'
-      );
+      // 2. Conflict check before insert
+      const existingConflict = await Booking.findOne({
+        barberId: { $in: [barberId, barberIdStr] },
+        date,
+        startTime,
+        status: { $in: ['pending', 'confirmed'] },
+      });
+
+      if (existingConflict) {
+        return sendError(
+          res,
+          409,
+          'This slot is already booked. Please choose an alternate slot or barber.',
+          'CONFLICT'
+        );
+      }
     }
 
     // 3. Create booking
@@ -116,7 +120,7 @@ export async function createBooking(req, res, next) {
 
 export async function createBookingRequest(req, res, next) {
   try {
-    const { name, phone, dateTime, email, service, notes } = req.body;
+    const { name, phone, dateTime, email, service, barberId, notes } = req.body;
 
     // Quick booking request created from Hero section
     // Extracts date and time if parsable, else stores raw in notes
@@ -136,16 +140,16 @@ export async function createBookingRequest(req, res, next) {
       }
     }
 
-    // Find first active barber or assign default
-    const barber = await Barber.findOne({ isActive: true });
-    const barberId = barber ? barber.id || barber._id.toString() : 'barb-1';
+    // Do NOT auto-assign a barber when the customer has not selected one
+    const assignedBarberId =
+      barberId && barberId !== 'any' && barberId !== 'unassigned' ? barberId : '';
 
     const booking = await Booking.create({
       customerName: name,
       phone,
       email: email || '',
-      serviceId: service || 'general-request',
-      barberId,
+      serviceId: service || '',
+      barberId: assignedBarberId,
       date: parsedDate,
       startTime: parsedTime,
       endTime: parsedTime,

@@ -24,7 +24,7 @@ const bookingSchema = new mongoose.Schema(
     },
     barberId: {
       type: String,
-      required: [true, 'Barber ID is required'],
+      default: '',
       index: true,
     },
     date: {

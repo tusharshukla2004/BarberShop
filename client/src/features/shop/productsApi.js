@@ -66,3 +66,4 @@ export const {
   useUpdateProductMutation,
   useDeleteProductMutation,
 } = productsApi;
+

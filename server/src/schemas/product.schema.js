@@ -17,3 +17,4 @@ export const productSchema = z.object({
   inStock: z.boolean().optional().default(true),
   order: z.coerce.number().optional().default(0),
 });
+

@@ -49,10 +49,13 @@ export default function BookAppointmentPage() {
 
   const handleBookingSuccess = (response) => {
     const booking = response.data || response;
+    const isSpecificBarber = Boolean(
+      draft.barberId && draft.barberId !== 'any' && draft.barberId !== 'unassigned'
+    );
     const completeBooking = {
       ...booking,
       serviceId: booking.serviceId || draft.serviceId,
-      barberId: booking.barberId || draft.barberId,
+      barberId: isSpecificBarber ? booking.barberId || draft.barberId : '',
     };
     dispatch(setConfirmedBooking(completeBooking));
     dispatch(
