@@ -317,7 +317,12 @@ async function seedDatabase() {
 }
 
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
+const isDirectCall =
+  process.argv[1] &&
+  (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/').replace(/^\/+/, '')}` ||
+    import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/')));
+
+if (isDirectCall) {
   seedDatabase();
 }
 
