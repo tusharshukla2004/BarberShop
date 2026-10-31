@@ -110,6 +110,7 @@ export async function createBooking(req, res, next) {
       endTime: endTime || startTime,
       status: 'confirmed',
       notes: notes || '',
+      whatsappConsent: Boolean(req.body.whatsappConsent),
     });
 
     return sendSuccess(res, booking, 201, 'Booking confirmed successfully!');
@@ -120,7 +121,7 @@ export async function createBooking(req, res, next) {
 
 export async function createBookingRequest(req, res, next) {
   try {
-    const { name, phone, dateTime, email, service, barberId, notes } = req.body;
+    const { name, phone, dateTime, email, service, barberId, notes, whatsappConsent } = req.body;
 
     // Quick booking request created from Hero section
     // Extracts date and time if parsable, else stores raw in notes
@@ -155,6 +156,7 @@ export async function createBookingRequest(req, res, next) {
       endTime: parsedTime,
       status: 'pending',
       notes: `Requested at: ${dateTime}. ${notes || ''}`.trim(),
+      whatsappConsent: Boolean(whatsappConsent),
     });
 
     return sendSuccess(
@@ -256,6 +258,138 @@ export async function adminCancelBooking(req, res, next) {
     await booking.save();
 
     return sendSuccess(res, booking, 200, 'Booking cancelled.');
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function recordNotification(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { type, channel = 'whatsapp_link' } = req.body;
+
+    const booking = await findByIdOrCustom(Booking, id);
+    if (!booking) {
+      return sendError(res, 404, 'Booking not found', 'NOT_FOUND');
+    }
+
+    const now = new Date();
+    const staffName = req.user?.name || req.user?.email || 'staff';
+
+    if (type === 'confirmation') {
+      booking.confirmationSentAt = now;
+    } else if (type === 'reminder') {
+      booking.reminderSentAt = now;
+    } else if (type === 'review_request') {
+      booking.reviewRequestSentAt = now;
+    }
+
+    if (!Array.isArray(booking.notifications)) {
+      booking.notifications = [];
+    }
+
+    booking.notifications.push({
+      type,
+      channel,
+      sentAt: now,
+      by: staffName,
+    });
+
+    await booking.save();
+    return sendSuccess(res, booking, 200, 'Notification recorded successfully');
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getReminders(req, res, next) {
+  try {
+    const hours = req.query.hours ? parseInt(req.query.hours, 10) : 3;
+    const day = req.query.day || 'today';
+
+    // Calculate current time and dates in Asia/Kolkata
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const todayStr = formatter.format(now); // "YYYY-MM-DD"
+
+    const tomorrowDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrowStr = formatter.format(tomorrowDate);
+
+    const targetDate = day === 'tomorrow' ? tomorrowStr : todayStr;
+
+    // Filter by confirmed bookings for target date
+    const query = {
+      date: targetDate,
+      status: 'confirmed',
+    };
+
+    // Role guard: if logged-in user is a barber, filter by their barberId
+    if (req.user && req.user.role === 'barber') {
+      const barberFilter = req.user.barberId || req.user.id || req.user._id?.toString();
+      query.barberId = barberFilter;
+    }
+
+    const bookings = await Booking.find(query).lean();
+
+    // Attach services and barbers names
+    const services = await Service.find().lean();
+    const barbers = await Barber.find().lean();
+
+    const serviceMap = new Map(services.map((s) => [s.id || s._id.toString(), s.name]));
+    const barberMap = new Map(barbers.map((b) => [b.id || b._id.toString(), b.name]));
+
+    let reminders = bookings.map((b) => ({
+      ...b,
+      id: b._id.toString(),
+      serviceName: serviceMap.get(b.serviceId) || 'Custom Grooming',
+      barberName: barberMap.get(b.barberId) || 'Any Available',
+    }));
+
+    // If day === 'today' and hours filter is applied (and not 0 or all day)
+    if (day === 'today' && hours > 0 && hours < 24) {
+      const [currH, currM] = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })
+        .format(now)
+        .split(':')
+        .map(Number);
+      const currentMinutes = currH * 60 + currM;
+      const windowEndMinutes = currentMinutes + hours * 60;
+
+      reminders = reminders.filter((b) => {
+        const match = b.startTime.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!match) return true;
+        let h = parseInt(match[1], 10);
+        const m = parseInt(match[2], 10);
+        const p = match[3].toUpperCase();
+        if (p === 'PM' && h < 12) h += 12;
+        if (p === 'AM' && h === 12) h = 0;
+        const slotMinutes = h * 60 + m;
+
+        // Keep if slot is within next N hours (or within past 30 mins)
+        return slotMinutes >= currentMinutes - 30 && slotMinutes <= windowEndMinutes;
+      });
+    }
+
+    // Sort: Unsent first, then by startTime; Sent at the bottom
+    reminders.sort((a, b) => {
+      const aSent = Boolean(a.reminderSentAt);
+      const bSent = Boolean(b.reminderSentAt);
+      if (aSent !== bSent) {
+        return aSent ? 1 : -1;
+      }
+      return a.startTime.localeCompare(b.startTime);
+    });
+
+    return sendSuccess(res, reminders);
   } catch (error) {
     return next(error);
   }

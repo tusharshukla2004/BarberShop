@@ -34,6 +34,8 @@ import {
   adminListBookings,
   adminUpdateBooking,
   adminCancelBooking,
+  recordNotification,
+  getReminders,
 } from '../controllers/bookingController.js';
 import {
   serviceSchema,
@@ -42,7 +44,11 @@ import {
   settingsSchema,
 } from '../schemas/content.schema.js';
 import { productSchema } from '../schemas/product.schema.js';
-import { updateBookingSchema } from '../schemas/booking.schema.js';
+import {
+  updateBookingSchema,
+  recordNotificationSchema,
+  getRemindersQuerySchema,
+} from '../schemas/booking.schema.js';
 
 const router = Router();
 
@@ -53,7 +59,15 @@ router.use(authenticate, requireRole('owner', 'barber'));
 router.get('/bookings', adminListBookings);
 router.patch('/bookings/:id', validate(updateBookingSchema), adminUpdateBooking);
 router.patch('/bookings/:id/status', adminUpdateBooking);
+router.patch(
+  '/bookings/:id/notifications',
+  validate(recordNotificationSchema),
+  recordNotification
+);
 router.delete('/bookings/:id', adminCancelBooking);
+
+// Reminders (Today / Tomorrow upcoming sessions)
+router.get('/reminders', validate(getRemindersQuerySchema), getReminders);
 
 // Services management
 router.post('/services', validate(serviceSchema), createService);

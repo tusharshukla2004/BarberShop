@@ -50,6 +50,7 @@ export const siteConfig = {
     zoom: 15,
   },
   phone: '+91 98765 43210',
+  whatsapp: '+91 98765 43210',
   email: 'hello@modernmane.in',
   hours: [
     { days: 'Monday – Friday', time: '9:00 AM – 8:30 PM' },

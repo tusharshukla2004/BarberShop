@@ -19,6 +19,7 @@ const loadInitialDraft = () => {
     email: '',
     notes: '',
     agreedToPolicy: false,
+    whatsappConsent: false,
     confirmedBooking: null,
   };
 
@@ -92,6 +93,7 @@ export const bookingDraftSlice = createSlice({
       state.email = '';
       state.notes = '';
       state.agreedToPolicy = false;
+      state.whatsappConsent = false;
       state.confirmedBooking = null;
       if (typeof window !== 'undefined') {
         try {

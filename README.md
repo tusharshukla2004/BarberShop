@@ -125,12 +125,13 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 ### Protected Admin Portal
 - `/admin/login` — Secure admin sign-in.
 - `/admin` — Executive overview dashboard (KPI counts, today's bookings timeline, next appointments, barber status).
-- `/admin/bookings` — Filterable roster, date picker, status dropdown with optimistic updates, reschedule dialog, and detail slide-over.
+- `/admin/bookings` — Filterable roster, date picker, status dropdown with optimistic updates, reschedule dialog, detail slide-over, and WhatsApp action menu with consent badges.
+- `/admin/reminders` — Today's and Tomorrow's 1-tap WhatsApp reminders with 60s auto-refresh polling, status tracking ("Not sent" vs "Sent at HH:mm by Staff"), and sent-row sinking.
 - `/admin/services` — Full CRUD for grooming treatments and prices.
 - `/admin/barbers` — Barber profile and weekly schedule management.
 - `/admin/gallery` — Portfolio image management.
 - `/admin/reviews` — Customer review moderation and approvals.
-- `/admin/settings` — Shop operating hours, holidays, and policies.
+- `/admin/settings` — Shop operating hours, holidays, policies, shop WhatsApp number, Google Review link, and live Hinglish message template previews.
 
 ---
 

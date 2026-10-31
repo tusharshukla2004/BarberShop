@@ -134,6 +134,35 @@ export const bookingApi = baseApi.injectEndpoints({
       transformErrorResponse: normalizeError,
       invalidatesTags: ['Booking', 'Slots'],
     }),
+
+    // Admin: Get Reminders
+    getReminders: builder.query({
+      query: (params = {}) => {
+        const search = new URLSearchParams();
+        if (params.hours) search.append('hours', params.hours);
+        if (params.day) search.append('day', params.day);
+        const queryStr = search.toString();
+        return queryStr ? `/admin/reminders?${queryStr}` : '/admin/reminders';
+      },
+      transformResponse: (response) => response?.data || [],
+      transformErrorResponse: normalizeError,
+      providesTags: ['Booking'],
+    }),
+
+    // Admin: Record Notification
+    recordNotification: builder.mutation({
+      query: ({ id, type, channel = 'whatsapp_link' }) => ({
+        url: `/admin/bookings/${id}/notifications`,
+        method: 'PATCH',
+        body: { type, channel },
+      }),
+      transformResponse: (response) => response?.data || response,
+      transformErrorResponse: normalizeError,
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Booking', id },
+        { type: 'Booking', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
@@ -145,6 +174,8 @@ export const {
   useUpdateBookingMutation,
   useUpdateBookingStatusMutation,
   useCancelBookingMutation,
+  useGetRemindersQuery,
+  useRecordNotificationMutation,
 } = bookingApi;
 
 export default bookingApi;

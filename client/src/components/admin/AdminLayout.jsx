@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
   Calendar,
+  Bell,
   Scissors,
   Users,
   Image,
@@ -33,6 +34,7 @@ export default function AdminLayout() {
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/bookings', label: 'Bookings', icon: Calendar },
+    { to: '/admin/reminders', label: 'Reminders', icon: Bell },
     ...(isOwner
       ? [
           { to: '/admin/services', label: 'Services', icon: Scissors },

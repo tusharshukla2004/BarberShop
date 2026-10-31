@@ -51,6 +51,48 @@ const bookingSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    whatsappConsent: {
+      type: Boolean,
+      default: false,
+    },
+    confirmationSentAt: {
+      type: Date,
+      default: null,
+    },
+    reminderSentAt: {
+      type: Date,
+      default: null,
+    },
+    reviewRequestSentAt: {
+      type: Date,
+      default: null,
+    },
+    notifications: {
+      type: [
+        new mongoose.Schema(
+          {
+            type: {
+              type: String,
+              required: true,
+            },
+            channel: {
+              type: String,
+              default: 'whatsapp_link',
+            },
+            sentAt: {
+              type: Date,
+              default: Date.now,
+            },
+            by: {
+              type: String,
+              default: 'staff',
+            },
+          },
+          { _id: true }
+        ),
+      ],
+      default: [],
+    },
   },
   {
     timestamps: true,

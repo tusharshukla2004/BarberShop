@@ -22,6 +22,7 @@ const bookingDetailsSchema = z.object({
     ),
   email: z.string().email('Please enter a valid email address').optional().or(z.literal('')),
   notes: z.string().max(500).optional(),
+  whatsappConsent: z.boolean().optional().default(false),
   agreedToPolicy: z.literal(true, {
     errorMap: () => ({ message: 'You must agree to the appointment policy to proceed' }),
   }),
@@ -68,6 +69,7 @@ export default function StepDetails({
       phone: draft.phone || '',
       email: draft.email || '',
       notes: draft.notes || '',
+      whatsappConsent: draft.whatsappConsent || false,
       agreedToPolicy: draft.agreedToPolicy || false,
     },
   });
@@ -85,6 +87,7 @@ export default function StepDetails({
       startTime: draft.startTime,
       endTime: draft.endTime || draft.startTime,
       notes: formData.notes,
+      whatsappConsent: Boolean(formData.whatsappConsent),
     };
 
     try {
@@ -198,8 +201,22 @@ export default function StepDetails({
                 />
               </div>
 
-              {/* Policy Checkbox */}
+              {/* WhatsApp Opt-in Checkbox */}
               <div className="pt-2">
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    {...register('whatsappConsent')}
+                    className="h-4 w-4 rounded border-border-light text-accent focus:ring-accent accent-accent"
+                  />
+                  <span className="text-xs text-ink/85 font-medium">
+                    Send me booking updates on WhatsApp
+                  </span>
+                </label>
+              </div>
+
+              {/* Policy Checkbox */}
+              <div className="pt-1">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"

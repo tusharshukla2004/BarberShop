@@ -79,6 +79,18 @@ export const settingsSchema = z.object({
       .optional(),
     holidays: z.array(z.string()).optional(),
     slotLengthMinutes: z.number().int().min(15).max(120).optional(),
+    whatsappNumber: z.string().optional(),
+    googleReviewLink: z.string().optional(),
+    messageTemplates: z
+      .object({
+        confirmation: z.string().optional(),
+        reminder: z.string().optional(),
+        reschedule: z.string().optional(),
+        cancellation: z.string().optional(),
+        review_request: z.string().optional(),
+        running_late: z.string().optional(),
+      })
+      .optional(),
     policies: z.record(z.any()).optional(),
   }),
 });

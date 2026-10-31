@@ -19,6 +19,7 @@ const ProtectedRoute = lazy(() => import('@/features/admin/ProtectedRoute'));
 const AdminLayout = lazy(() => import('@/components/admin/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const AdminBookingsPage = lazy(() => import('@/pages/admin/AdminBookingsPage'));
+const AdminRemindersPage = lazy(() => import('@/pages/admin/AdminRemindersPage'));
 const AdminServicesPage = lazy(() => import('@/pages/admin/AdminServicesPage'));
 const AdminBarbersPage = lazy(() => import('@/pages/admin/AdminBarbersPage'));
 const AdminGalleryPage = lazy(() => import('@/pages/admin/AdminGalleryPage'));
@@ -60,6 +61,7 @@ export function AppRouter() {
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
+            <Route path="/admin/reminders" element={<AdminRemindersPage />} />
             <Route path="/admin/services" element={<AdminServicesPage />} />
             <Route path="/admin/barbers" element={<AdminBarbersPage />} />
             <Route path="/admin/gallery" element={<AdminGalleryPage />} />

@@ -170,7 +170,66 @@ _Requires `httpOnly` cookie or `Authorization: Bearer <token>` with `owner` or `
 - **`PUT /api/admin/reviews/:id`**: Moderate/approve review.
 - **`DELETE /api/admin/reviews/:id`**: Delete review.
 - **`GET /api/admin/settings`**: Get shop configuration.
-- **`PUT /api/admin/settings`**: Update shop hours, holidays, and policies.
+- **`PUT /api/admin/settings`**: Update shop hours, holidays, policies, `whatsappNumber`, `googleReviewLink`, and `messageTemplates`.
+- **`GET /api/admin/reminders?hours=3&day=today|tomorrow`**: List confirmed bookings in window for 1-tap reminders.
+- **`PATCH /api/admin/bookings/:id/notifications`**: Log notification sent event (`type`, `channel: 'whatsapp_link'`).
+
+---
+
+## Notification Service Architecture & Extending Channels
+
+Customer communications are abstracted via a channel registry pattern located in `server/src/services/notifications/index.js`. This allows the current free click-to-chat `wa.me` links to be complemented or replaced by automated providers in the future without changing business logic or controllers.
+
+### Unified Invocation
+```javascript
+import { notify } from './services/notifications/index.js';
+
+// Sends via specified or default channel ('whatsapp_link')
+const result = await notify(booking, 'reminder', {
+  channel: 'whatsapp_link',
+  actorId: req.user._id,
+  actorName: req.user.name,
+  settings
+});
+```
+
+### Supported Channels
+- **`whatsapp_link`** (Implemented): Normalizes Indian phone numbers, renders template tokens, produces valid `wa.me/<phone>?text=...` deep links, and logs delivery history to `booking.notifications`.
+- **`whatsapp_cloud`** (Stub): Throws `NotImplementedError`. Ready for Meta WhatsApp Business Cloud API.
+- **`email`** (Stub): Throws `NotImplementedError`. Ready for Nodemailer / SendGrid / AWS SES.
+
+### How to Add a New Automated Channel
+
+1. Open `server/src/services/notifications/index.js`.
+2. Define your channel handler adhering to the standard contract:
+   ```javascript
+   const myNewChannel = async (booking, type, context = {}) => {
+     // 1. Format payload / template
+     const template = context.settings?.messageTemplates?.[type];
+     // 2. Call external provider SDK / HTTP API
+     const response = await externalProvider.send({
+       to: booking.customerPhone,
+       message: template
+     });
+     // 3. Return receipt metadata
+     return {
+       channel: 'my_channel',
+       type,
+       success: true,
+       providerMessageId: response.id
+     };
+   };
+   ```
+3. Register the channel in `NOTIFICATION_CHANNELS`:
+   ```javascript
+   export const NOTIFICATION_CHANNELS = {
+     whatsapp_link: sendWhatsAppLink,
+     whatsapp_cloud: sendWhatsAppCloud,
+     email: sendEmailNotification,
+     my_channel: myNewChannel,
+   };
+   ```
+4. Configure environment variables in `.env` and `.env.example`.
 
 ---
 

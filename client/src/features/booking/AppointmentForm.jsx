@@ -53,6 +53,7 @@ export function AppointmentForm({ className = '' }) {
       dateTime: draft.dateTime || '',
       serviceId: draft.serviceId || '',
       barberId: draft.barberId || '',
+      whatsappConsent: draft.whatsappConsent || false,
     },
   });
 
@@ -61,6 +62,9 @@ export function AppointmentForm({ className = '' }) {
     if (draft.email) setValue('email', draft.email);
     if (draft.phone) setValue('phone', draft.phone);
     if (draft.dateTime) setValue('dateTime', draft.dateTime);
+    if (typeof draft.whatsappConsent === 'boolean') {
+      setValue('whatsappConsent', draft.whatsappConsent);
+    }
   }, [draft, setValue]);
 
   const onSubmit = async (data) => {
@@ -226,6 +230,16 @@ export function AppointmentForm({ className = '' }) {
           </span>
         )}
       </div>
+
+      {/* WhatsApp Consent Checkbox */}
+      <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-white/90 hover:text-white pt-0.5">
+        <input
+          type="checkbox"
+          className="h-3.5 w-3.5 rounded border-white/30 text-accent focus:ring-accent bg-black/40 accent-[#f9a55a]"
+          {...register('whatsappConsent')}
+        />
+        <span>Send me booking updates on WhatsApp</span>
+      </label>
 
       {/* Post-submit Callout */}
       {isSuccess && (

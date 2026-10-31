@@ -19,6 +19,7 @@ export const createBookingSchema = z.object({
     startTime: z.string().min(1, 'Start time is required'),
     endTime: z.string().optional(),
     notes: z.string().max(500).optional(),
+    whatsappConsent: z.boolean().optional().default(false),
   }),
 });
 
@@ -36,6 +37,7 @@ export const createBookingRequestSchema = z.object({
     email: z.string().email().optional().or(z.literal('')),
     service: z.string().optional(),
     notes: z.string().max(500).optional(),
+    whatsappConsent: z.boolean().optional().default(false),
   }),
 });
 
@@ -63,5 +65,33 @@ export const getSlotsQuerySchema = z.object({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Valid date YYYY-MM-DD is required'),
     barberId: z.string().min(1, 'Barber ID is required'),
     serviceId: z.string().optional(),
+  }),
+});
+
+export const recordNotificationSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, 'Booking ID is required'),
+  }),
+  body: z.object({
+    type: z.enum([
+      'confirmation',
+      'reminder',
+      'reschedule',
+      'cancellation',
+      'review_request',
+      'running_late',
+      'custom',
+    ]),
+    channel: z
+      .enum(['whatsapp_link', 'whatsapp_cloud', 'email', 'sms'])
+      .default('whatsapp_link')
+      .optional(),
+  }),
+});
+
+export const getRemindersQuerySchema = z.object({
+  query: z.object({
+    hours: z.coerce.number().min(1).max(48).default(3).optional(),
+    day: z.enum(['today', 'tomorrow']).default('today').optional(),
   }),
 });

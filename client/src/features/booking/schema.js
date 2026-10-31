@@ -45,6 +45,7 @@ export const appointmentRequestSchema = z.object({
     }, 'Appointment time cannot be in the past'),
   serviceId: z.string().optional(),
   barberId: z.string().optional(),
+  whatsappConsent: z.boolean().optional().default(false),
 });
 
 export default appointmentRequestSchema;

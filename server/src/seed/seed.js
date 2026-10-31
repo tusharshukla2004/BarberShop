@@ -6,7 +6,7 @@ import { Service } from '../models/Service.js';
 import { Barber } from '../models/Barber.js';
 import { GalleryItem } from '../models/GalleryItem.js';
 import { Review } from '../models/Review.js';
-import { Settings } from '../models/Settings.js';
+import { Settings, DEFAULT_MESSAGE_TEMPLATES } from '../models/Settings.js';
 import { Booking } from '../models/Booking.js';
 import { Product } from '../models/Product.js';
 
@@ -229,6 +229,9 @@ const seedSettings = {
   ],
   holidays: ['2026-12-25', '2027-01-01', '2026-08-15'],
   slotLengthMinutes: 30,
+  whatsappNumber: '919876543210',
+  googleReviewLink: 'https://g.page/r/modern-mane-reviews',
+  messageTemplates: { ...DEFAULT_MESSAGE_TEMPLATES },
   policies: {
     cancellationGraceMinutes: 120,
     advanceBookingDays: 30,
@@ -487,6 +490,7 @@ async function seedDatabase() {
         endTime: '10:45 AM',
         status: 'confirmed',
         notes: 'Requested low scissor taper fade',
+        whatsappConsent: true,
       },
     ]);
     // eslint-disable-next-line no-console

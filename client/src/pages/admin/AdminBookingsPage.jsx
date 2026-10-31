@@ -22,6 +22,8 @@ import {
 } from '@/features/booking/bookingApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
+import { useGetSettingsQuery } from '@/features/settings/settingsApi';
+import { WhatsAppActionMenu } from '@/features/booking/admin/WhatsAppActions';
 import { useAppDispatch } from '@/app/hooks';
 import { addToast } from '@/features/ui/uiSlice';
 
@@ -30,6 +32,7 @@ export default function AdminBookingsPage() {
   const { data: bookings = [], isLoading, isError, error, refetch } = useGetBookingsQuery();
   const { data: barbers = [] } = useGetBarbersQuery();
   const { data: services = [] } = useGetServicesQuery();
+  const { data: settings = {} } = useGetSettingsQuery();
 
   const [updateBookingStatus] = useUpdateBookingStatusMutation();
   const [updateBooking, { isLoading: isRescheduling }] = useUpdateBookingMutation();
@@ -131,6 +134,19 @@ export default function AdminBookingsPage() {
           <option value="cancelled">Cancelled</option>
           <option value="no_show">No Show</option>
         </select>
+      ),
+    },
+    {
+      key: 'whatsapp',
+      label: 'WhatsApp',
+      render: (val, row) => (
+        <WhatsAppActionMenu
+          booking={row}
+          settings={settings}
+          serviceName={serviceMap[row.serviceId]}
+          barberName={barberMap[row.barberId]}
+          variant="dropdown"
+        />
       ),
     },
     {
@@ -350,6 +366,74 @@ export default function AdminBookingsPage() {
                     </div>
                   </div>
                 )}
+
+                {/* WhatsApp Communication & History Card */}
+                <div className="p-3.5 rounded-lg bg-[#25D366]/5 border border-[#25D366]/30 space-y-3">
+                  <span className="text-[11px] font-bold text-[#128C7E] uppercase tracking-wider block border-b border-[#25D366]/20 pb-1.5">
+                    WhatsApp Communication & Updates
+                  </span>
+
+                  <WhatsAppActionMenu
+                    booking={detailBooking}
+                    settings={settings}
+                    serviceName={serviceMap[detailBooking.serviceId]}
+                    barberName={barberMap[detailBooking.barberId]}
+                    variant="buttons"
+                  />
+
+                  {/* Delivery Timestamps */}
+                  <div className="pt-2 border-t border-[#25D366]/20 text-[11px] space-y-1 text-ink/70">
+                    <div className="flex justify-between">
+                      <span>Confirmation:</span>
+                      <span className="font-medium text-ink">
+                        {detailBooking.confirmationSentAt
+                          ? new Date(detailBooking.confirmationSentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          : 'Not sent'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Reminder:</span>
+                      <span className="font-medium text-ink">
+                        {detailBooking.reminderSentAt
+                          ? new Date(detailBooking.reminderSentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          : 'Not sent'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Review Request:</span>
+                      <span className="font-medium text-ink">
+                        {detailBooking.reviewRequestSentAt
+                          ? new Date(detailBooking.reviewRequestSentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          : 'Not sent'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Notification History Log */}
+                  {Array.isArray(detailBooking.notifications) && detailBooking.notifications.length > 0 && (
+                    <div className="pt-2 border-t border-[#25D366]/20">
+                      <span className="text-[10px] uppercase font-bold text-muted block mb-1">
+                        Notification Log ({detailBooking.notifications.length})
+                      </span>
+                      <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
+                        {detailBooking.notifications.map((notif, idx) => (
+                          <div
+                            key={notif._id || idx}
+                            className="text-[10px] p-1.5 rounded bg-white border border-border-light flex items-center justify-between"
+                          >
+                            <span className="font-semibold text-ink capitalize">
+                              {notif.type?.replace('_', ' ')}
+                            </span>
+                            <span className="text-muted">
+                              {new Date(notif.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}{' '}
+                              by {notif.by || 'staff'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

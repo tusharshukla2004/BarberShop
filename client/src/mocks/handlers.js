@@ -421,6 +421,61 @@ export const handlers = [
     dynamicSettings = { ...dynamicSettings, ...body };
     return HttpResponse.json({ success: true, data: dynamicSettings });
   }),
+
+  // Admin Reminders
+  http.get('*/api/admin/reminders', async ({ request }) => {
+    await delay(50);
+    const url = new URL(request.url);
+    const _day = url.searchParams.get('day') || 'today';
+
+    const reminders = dynamicBookings
+      .filter((b) => b.status === 'confirmed')
+      .map((b) => ({
+        ...b,
+        serviceName: dynamicServices.find((s) => s.id === b.serviceId)?.name || 'Custom Grooming',
+        barberName: dynamicBarbers.find((bar) => bar.id === b.barberId)?.name || 'Master Barber',
+      }));
+
+    reminders.sort((a, b) => {
+      const aSent = Boolean(a.reminderSentAt);
+      const bSent = Boolean(b.reminderSentAt);
+      if (aSent !== bSent) return aSent ? 1 : -1;
+      return a.startTime.localeCompare(b.startTime);
+    });
+
+    return HttpResponse.json({ success: true, data: reminders });
+  }),
+
+  // Admin Booking Notifications
+  http.patch('*/api/admin/bookings/:id/notifications', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const { type, channel = 'whatsapp_link' } = body;
+    await delay(50);
+
+    const booking = dynamicBookings.find((b) => b.id === id);
+    if (!booking) {
+      return HttpResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
+    }
+
+    const now = new Date().toISOString();
+    if (type === 'confirmation') booking.confirmationSentAt = now;
+    if (type === 'reminder') booking.reminderSentAt = now;
+    if (type === 'review_request') booking.reviewRequestSentAt = now;
+
+    if (!Array.isArray(booking.notifications)) {
+      booking.notifications = [];
+    }
+
+    booking.notifications.push({
+      type,
+      channel,
+      sentAt: now,
+      by: currentUser.name || 'Owner',
+    });
+
+    return HttpResponse.json({ success: true, data: booking });
+  }),
 ];
 
 export default handlers;

@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import MapView from '@/components/common/MapView';
 import { siteConfig } from '@/config/site';
+import { normalizeIndianPhone, buildWhatsAppLink } from '@/lib/whatsapp';
 import { useSendContactMessageMutation } from '@/features/contact/contactApi';
 import { useAppDispatch } from '@/app/hooks';
 import { addToast } from '@/features/ui/uiSlice';
@@ -70,9 +71,22 @@ export default function ContactPage() {
     }
   };
 
-  const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
-    'Hello Sovereign Barbershop, I would like to inquire about appointments.'
-  )}`;
+  const phone = normalizeIndianPhone(siteConfig.whatsapp) || '919876543210';
+  const whatsappUrl = buildWhatsAppLink(
+    phone,
+    `Hello ${siteConfig.name}, I would like to inquire about appointments and grooming services.`
+  );
+
+  const handleWhatsAppClick = () => {
+    if (typeof window !== 'undefined' && window.dataLayer && Array.isArray(window.dataLayer)) {
+      window.dataLayer.push({ event: 'whatsapp_click', channel: 'contact_page' });
+    } else if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'whatsapp_click', {
+        event_category: 'engagement',
+        event_label: 'contact_page',
+      });
+    }
+  };
 
   return (
     <>
@@ -151,6 +165,7 @@ export default function ContactPage() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleWhatsAppClick}
                   className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-lg bg-[#25D366] text-white font-semibold text-sm hover:bg-[#1EBE5D] transition-colors shadow-sm"
                 >
                   <MessageSquare className="w-5 h-5" />

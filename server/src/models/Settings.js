@@ -8,6 +8,33 @@ const shopHourSchema = new mongoose.Schema(
   { _id: false }
 );
 
+export const DEFAULT_MESSAGE_TEMPLATES = {
+  confirmation:
+    'Namaste {name}! Aapka appointment {shopName} me confirm ho gaya hai.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\n📍 Address: {address}\n🗺️ Maps: {mapsLink}\n\nKisi bhi change ke liye hume yahan WhatsApp par reply karein. See you soon!',
+  reminder:
+    'Namaste {name}! Yeh ek friendly reminder hai ki aapka grooming session {shopName} par scheduled hai.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n\nKripya 5 minute pehle pahuchein. Agar koi change chahiye toh please bataiye!',
+  reschedule:
+    'Namaste {name}! Aapka {shopName} ka appointment naye samay par reschedule kar diya gaya hai.\n\n📅 Nayi Date: {date}\n⏰ Naya Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\nShukriya! Hum aapka intezar karenge.',
+  cancellation:
+    'Namaste {name}! Aapka booking (Ref: {bookingRef}) {shopName} par cancel kar diya gaya hai.\n\nNaye appointment ke liye aap kabhi bhi humari website par visit kar sakte hain ya hume yahan message karein. Shukriya!',
+  review_request:
+    'Namaste {name}! {shopName} visit karne ke liye bohot shukriya! Ummeed hai aapko hamara service aur cut pasand aaya.\n\nAapka feedback hamare liye bohot keemti hai. Kripya 1 minute nikaal kar apna review zaroor dein:\n⭐ {reviewLink}\n\nHave a great day ahead!',
+  running_late:
+    'Namaste {name}! {shopName} se update: aaj chair thodi busy hone ke karan aapka slot lagbhag 10-15 minute late ho sakta hai. Asuvidha ke liye khed hai. Hum jaldi hi aapko attend karenge!',
+};
+
+const messageTemplatesSchema = new mongoose.Schema(
+  {
+    confirmation: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.confirmation },
+    reminder: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.reminder },
+    reschedule: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.reschedule },
+    cancellation: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.cancellation },
+    review_request: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.review_request },
+    running_late: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.running_late },
+  },
+  { _id: false }
+);
+
 const settingsSchema = new mongoose.Schema(
   {
     shopHours: {
@@ -27,6 +54,20 @@ const settingsSchema = new mongoose.Schema(
       default: 30,
       min: 15,
       max: 120,
+    },
+    whatsappNumber: {
+      type: String,
+      default: '919876543210',
+      trim: true,
+    },
+    googleReviewLink: {
+      type: String,
+      default: 'https://g.page/r/modern-mane-reviews',
+      trim: true,
+    },
+    messageTemplates: {
+      type: messageTemplatesSchema,
+      default: () => ({ ...DEFAULT_MESSAGE_TEMPLATES }),
     },
     policies: {
       cancellationGraceMinutes: { type: Number, default: 120 },

@@ -18,10 +18,13 @@ import { downloadCalendarEvent } from '@/lib/calendar';
 import { formatPrice } from '@/lib/formatters';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
+import { useGetSettingsQuery } from '@/features/settings/settingsApi';
+import { buildWhatsAppLink, renderTemplate } from '@/lib/whatsapp';
 
 export default function StepConfirmation({ booking, onReset }) {
   const { data: services = [] } = useGetServicesQuery();
   const { data: barbers = [] } = useGetBarbersQuery();
+  const { data: settings = {} } = useGetSettingsQuery();
 
   const refCode = booking?.id
     ? `BK-${booking.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()}`
@@ -80,6 +83,26 @@ export default function StepConfirmation({ booking, onReset }) {
     `Hey, I just booked my grooming appointment at ${siteConfig.name}${serviceSnippet}${barberSnippet} on ${booking.date} at ${booking.startTime}! Ref: ${refCode}`
   );
   const whatsappShareUrl = `https://wa.me/?text=${whatsappShareText}`;
+
+  // Shop WhatsApp click-to-chat URL
+  const shopNumber = settings.whatsappNumber || siteConfig.whatsapp;
+  const defaultConfirmationTpl =
+    settings.messageTemplates?.confirmation ||
+    'Namaste {name}! Aapka appointment {shopName} me confirm ho gaya hai.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\n📍 Address: {address}\n\nSee you soon!';
+
+  const confirmationMessage = renderTemplate(defaultConfirmationTpl, {
+    name: booking.customerName,
+    date: booking.date,
+    time: booking.startTime,
+    service: serviceName,
+    barber: barberName,
+    shopName: siteConfig.name,
+    address: siteConfig.address,
+    mapsLink: siteConfig.mapsLink || '',
+    bookingRef: refCode,
+  });
+
+  const shopWhatsAppUrl = shopNumber ? buildWhatsAppLink(shopNumber, confirmationMessage) : null;
 
   return (
     <div className="max-w-2xl mx-auto space-y-8 text-center">
@@ -181,8 +204,20 @@ export default function StepConfirmation({ booking, onReset }) {
         </div>
       </Card>
 
-      {/* Action Buttons: Add to Calendar & WhatsApp Share */}
+      {/* Action Buttons: Confirm on WhatsApp, Add to Calendar & WhatsApp Share */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        {shopWhatsAppUrl && (
+          <a
+            href={shopWhatsAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:scale-[1.02]"
+          >
+            <MessageSquare className="w-4 h-4 fill-current" />
+            Confirm on WhatsApp
+          </a>
+        )}
+
         <Button
           type="button"
           variant="outline"
@@ -198,9 +233,9 @@ export default function StepConfirmation({ booking, onReset }) {
           href={whatsappShareUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md border border-border-light bg-card text-ink hover:bg-neutral-100 text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
         >
-          <MessageSquare className="w-4 h-4" />
+          <MessageSquare className="w-4 h-4 text-emerald-600" />
           Share on WhatsApp
         </a>
       </div>

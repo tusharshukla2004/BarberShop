@@ -11,7 +11,9 @@ import {
   Twitter,
   Youtube,
   Clock,
+  MessageSquare,
 } from 'lucide-react';
+import { normalizeIndianPhone, buildWhatsAppLink } from '@/lib/whatsapp';
 
 /**
  * Global site footer matching reference architecture
@@ -34,6 +36,23 @@ export function Footer() {
     { label: 'Location & Contact', href: '/contact' },
     { label: 'Design System', href: '/design-system' },
   ];
+
+  const phone = normalizeIndianPhone(siteConfig.whatsapp) || '919876543210';
+  const whatsappUrl = buildWhatsAppLink(
+    phone,
+    `Hello ${siteConfig.name}, I would like to inquire about appointments and services.`
+  );
+
+  const handleWhatsAppClick = () => {
+    if (typeof window !== 'undefined' && window.dataLayer && Array.isArray(window.dataLayer)) {
+      window.dataLayer.push({ event: 'whatsapp_click', channel: 'footer' });
+    } else if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'whatsapp_click', {
+        event_category: 'engagement',
+        event_label: 'footer',
+      });
+    }
+  };
 
   return (
     <footer className="w-full bg-white text-ink border-t border-border-light">
@@ -125,7 +144,7 @@ export function Footer() {
               ))}
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 flex flex-col gap-2">
               <Button
                 to={siteConfig.cta.href}
                 variant="primary"
@@ -134,6 +153,17 @@ export function Footer() {
               >
                 Reserve now
               </Button>
+
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleWhatsAppClick}
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-pill bg-[#25D366] text-white font-semibold text-xs uppercase tracking-wider hover:bg-[#1EBE5D] transition-colors shadow-sm"
+              >
+                <MessageSquare className="h-4 w-4" />
+                Chat on WhatsApp
+              </a>
             </div>
           </div>
         </div>
