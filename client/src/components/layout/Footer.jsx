@@ -24,10 +24,11 @@ export function Footer() {
 
   const menuLinks = [
     { label: 'Home', href: '/' },
-    { label: 'About', href: '/about' },
-    { label: 'Gallery', href: '/gallery' },
+    { label: 'Services', href: '/services' },
+    { label: 'Offers', href: '/offers' },
     { label: 'Shop', href: '/shop' },
-    { label: 'Barbers', href: '/barbers' },
+    { label: 'Gallery', href: '/gallery' },
+    { label: 'FAQ', href: '/faq' },
   ];
 
   const quickLinks = [

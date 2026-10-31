@@ -58,7 +58,23 @@ import {
   getCustomersReport,
   getNoShowsReport,
   getSourcesReport,
+  getOffersReport,
 } from '../controllers/reportController.js';
+import {
+  listAdminOffers,
+  createOffer,
+  getOfferById,
+  updateOffer,
+  deleteOffer,
+  duplicateOffer,
+} from '../controllers/offerController.js';
+import {
+  listAdminFaqs,
+  createFaq,
+  updateFaq,
+  deleteFaq,
+  reorderFaqs,
+} from '../controllers/faqController.js';
 import {
   serviceSchema,
   barberSchema,
@@ -83,6 +99,15 @@ import {
   updateQueueEntrySchema,
 } from '../schemas/queue.schema.js';
 import { reportQuerySchema } from '../schemas/report.schema.js';
+import {
+  createOfferSchema,
+  updateOfferSchema,
+} from '../schemas/offer.schema.js';
+import {
+  createFaqSchema,
+  updateFaqSchema,
+  reorderFaqsSchema,
+} from '../schemas/faq.schema.js';
 
 const router = Router();
 
@@ -124,6 +149,22 @@ router.get('/reports/peak-hours', validate(reportQuerySchema), getPeakHoursRepor
 router.get('/reports/customers', validate(reportQuerySchema), getCustomersReport);
 router.get('/reports/no-shows', validate(reportQuerySchema), getNoShowsReport);
 router.get('/reports/sources', validate(reportQuerySchema), getSourcesReport);
+router.get('/reports/offers', validate(reportQuerySchema), getOffersReport);
+
+// Offers management
+router.get('/offers', listAdminOffers);
+router.post('/offers', validate(createOfferSchema), createOffer);
+router.get('/offers/:id', getOfferById);
+router.put('/offers/:id', validate(updateOfferSchema), updateOffer);
+router.delete('/offers/:id', deleteOffer);
+router.post('/offers/:id/duplicate', duplicateOffer);
+
+// FAQs management
+router.get('/faqs', listAdminFaqs);
+router.post('/faqs', validate(createFaqSchema), createFaq);
+router.put('/faqs/:id', validate(updateFaqSchema), updateFaq);
+router.delete('/faqs/:id', deleteFaq);
+router.patch('/faqs/reorder', validate(reorderFaqsSchema), reorderFaqs);
 
 // Services management
 router.post('/services', validate(serviceSchema), createService);

@@ -20,6 +20,7 @@ export const createBookingSchema = z.object({
     endTime: z.string().optional(),
     notes: z.string().max(500).optional(),
     whatsappConsent: z.boolean().optional().default(false),
+    promoCode: z.string().trim().optional(),
   }),
 });
 
@@ -38,6 +39,7 @@ export const createBookingRequestSchema = z.object({
     service: z.string().optional(),
     notes: z.string().max(500).optional(),
     whatsappConsent: z.boolean().optional().default(false),
+    promoCode: z.string().trim().optional(),
   }),
 });
 

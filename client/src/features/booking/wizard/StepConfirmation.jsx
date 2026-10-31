@@ -196,6 +196,30 @@ export default function StepConfirmation({ booking, onReset }) {
           </div>
         </div>
 
+        {/* Pricing & Discount summary if applied */}
+        {booking.priceAtBooking !== undefined && (
+          <div className="p-3.5 rounded-lg bg-neutral-50 border border-border-light text-xs space-y-1.5">
+            {booking.originalPrice && booking.discountAmount > 0 && (
+              <div className="flex justify-between text-muted">
+                <span>Original Price:</span>
+                <span>{formatPrice(booking.originalPrice)}</span>
+              </div>
+            )}
+            {booking.discountAmount > 0 && (
+              <div className="flex justify-between text-emerald-700 font-medium">
+                <span>
+                  Promo Discount {booking.promoCode ? `(${booking.promoCode})` : ''}:
+                </span>
+                <span>-{formatPrice(booking.discountAmount)}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-bold text-ink text-sm pt-1 border-t border-border-light/60">
+              <span>Total Due at Studio:</span>
+              <span className="text-accent">{formatPrice(booking.priceAtBooking)}</span>
+            </div>
+          </div>
+        )}
+
         <div className="pt-4 border-t border-border-light flex items-start gap-2.5 text-xs text-muted">
           <MapPin className="w-4 h-4 text-accent shrink-0 mt-0.5" />
           <span>

@@ -50,6 +50,8 @@ export const baseApi = createApi({
     'Queue',
     'QueueStatus',
     'Reports',
+    'Offers',
+    'Faqs',
   ],
   endpoints: () => ({}),
 });

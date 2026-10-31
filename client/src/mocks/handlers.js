@@ -8,6 +8,8 @@ import {
   mockBookings,
   mockCustomers,
   mockQueueEntries,
+  mockOffers,
+  mockFaqs,
 } from './data';
 
 // In-memory reactive collections for the MSW dev/test session
@@ -19,6 +21,8 @@ let dynamicSettings = { ...mockSettings };
 const dynamicBookings = [...mockBookings];
 const dynamicCustomers = [...mockCustomers];
 const dynamicQueue = [...mockQueueEntries];
+const dynamicOffers = [...mockOffers];
+const dynamicFaqs = [...mockFaqs];
 
 let currentUser = {
   id: 'admin-1',
@@ -939,6 +943,240 @@ export const handlers = [
         { source: 'admin_created', label: 'Admin Created', count: 3, completedCount: 2, percentage: 10.7, revenue: 1550 },
       ],
     });
+  }),
+
+  // Public Offers
+  http.get('*/api/offers', async () => {
+    await delay(30);
+    const active = dynamicOffers.filter((o) => o.isActive);
+    return HttpResponse.json({ success: true, data: active });
+  }),
+
+  // Validate Offer Code
+  http.post('*/api/offers/validate', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    const { code, serviceIds = [] } = body;
+    const cleanCode = (code || '').trim().toUpperCase();
+
+    const offer = dynamicOffers.find(
+      (o) => (o.promoCode || '').toUpperCase() === cleanCode && o.isActive
+    );
+
+    if (!offer) {
+      return HttpResponse.json({
+        success: true,
+        data: {
+          valid: false,
+          isValid: false,
+          reason: 'Promo code is invalid, expired, or inactive.',
+          discountAmount: 0,
+          finalPrice: 0,
+        },
+      });
+    }
+
+    // Check service restriction
+    if (
+      Array.isArray(offer.appliesToServiceIds) &&
+      offer.appliesToServiceIds.length > 0 &&
+      serviceIds.length > 0
+    ) {
+      const match = serviceIds.some((sId) => offer.appliesToServiceIds.includes(sId));
+      if (!match) {
+        return HttpResponse.json({
+          success: true,
+          data: {
+            valid: false,
+            isValid: false,
+            reason: 'Promo code is not applicable to the selected services.',
+            discountAmount: 0,
+            finalPrice: 0,
+          },
+        });
+      }
+    }
+
+    const services = dynamicServices.filter((s) => serviceIds.includes(s.id));
+    const grossPrice = services.reduce((sum, s) => sum + s.price, 0) || 500;
+
+    let discountAmount = 0;
+    if (offer.type === 'percent') {
+      discountAmount = Math.round((grossPrice * offer.value) / 100);
+    } else {
+      discountAmount = Math.min(grossPrice, offer.value);
+    }
+
+    const finalPrice = Math.max(0, grossPrice - discountAmount);
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        valid: true,
+        isValid: true,
+        offer,
+        originalPrice: grossPrice,
+        discountAmount,
+        finalPrice,
+      },
+    });
+  }),
+
+  // Admin Offers List
+  http.get('*/api/admin/offers', async () => {
+    await delay(40);
+    return HttpResponse.json({ success: true, data: dynamicOffers });
+  }),
+
+  // Admin Create Offer
+  http.post('*/api/admin/offers', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    const newOffer = {
+      id: `off-${Date.now()}`,
+      _id: `off-${Date.now()}`,
+      ...body,
+      promoCode: (body.promoCode || '').toUpperCase(),
+      usedCount: 0,
+      statusBadge: 'Live',
+    };
+    dynamicOffers.unshift(newOffer);
+    return HttpResponse.json({ success: true, data: newOffer }, { status: 201 });
+  }),
+
+  // Admin Update Offer
+  http.put('*/api/admin/offers/:id', async ({ params, request }) => {
+    await delay(50);
+    const { id } = params;
+    const body = await request.json();
+    const index = dynamicOffers.findIndex((o) => o.id === id || o._id === id);
+    if (index === -1) {
+      return HttpResponse.json({ success: false, error: 'Offer not found' }, { status: 404 });
+    }
+    dynamicOffers[index] = { ...dynamicOffers[index], ...body };
+    return HttpResponse.json({ success: true, data: dynamicOffers[index] });
+  }),
+
+  // Admin Delete Offer
+  http.delete('*/api/admin/offers/:id', async ({ params }) => {
+    await delay(50);
+    const { id } = params;
+    const index = dynamicOffers.findIndex((o) => o.id === id || o._id === id);
+    if (index !== -1) {
+      dynamicOffers.splice(index, 1);
+    }
+    return HttpResponse.json({ success: true, data: null });
+  }),
+
+  // Admin Duplicate Offer
+  http.post('*/api/admin/offers/:id/duplicate', async ({ params }) => {
+    await delay(50);
+    const { id } = params;
+    const original = dynamicOffers.find((o) => o.id === id || o._id === id);
+    if (!original) {
+      return HttpResponse.json({ success: false, error: 'Offer not found' }, { status: 404 });
+    }
+    const clone = {
+      ...original,
+      id: `off-${Date.now()}`,
+      _id: `off-${Date.now()}`,
+      title: {
+        en: `Copy of ${original.title.en}`,
+        hi: original.title.hi ? `प्रतिलिपि: ${original.title.hi}` : '',
+      },
+      promoCode: original.promoCode ? `${original.promoCode}_COPY` : '',
+      isActive: false,
+      usedCount: 0,
+      statusBadge: 'Inactive',
+    };
+    dynamicOffers.unshift(clone);
+    return HttpResponse.json({ success: true, data: clone }, { status: 201 });
+  }),
+
+  // Reports: Offers Performance
+  http.get('*/api/admin/reports/offers', async () => {
+    await delay(40);
+    const reportData = dynamicOffers.map((o) => ({
+      offerId: o.id || o._id,
+      title: o.title?.en || 'Offer',
+      promoCode: o.promoCode || 'N/A',
+      type: o.type,
+      value: o.value,
+      usesInPeriod: o.usedCount || 0,
+      totalDiscountGiven: (o.usedCount || 0) * (o.value || 100),
+      revenueGenerated: (o.usedCount || 0) * 500,
+      totalLifetimeUses: o.usedCount || 0,
+    }));
+    return HttpResponse.json({ success: true, data: reportData });
+  }),
+
+  // Public FAQs
+  http.get('*/api/faqs', async () => {
+    await delay(30);
+    const published = dynamicFaqs.filter((f) => f.isPublished);
+    const grouped = published.reduce((acc, f) => {
+      acc[f.category] = acc[f.category] || [];
+      acc[f.category].push(f);
+      return acc;
+    }, {});
+    return HttpResponse.json({ success: true, data: { faqs: published, grouped } });
+  }),
+
+  // Admin FAQs List
+  http.get('*/api/admin/faqs', async () => {
+    await delay(40);
+    return HttpResponse.json({ success: true, data: dynamicFaqs });
+  }),
+
+  // Admin Create FAQ
+  http.post('*/api/admin/faqs', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    const newFaq = {
+      id: `faq-${Date.now()}`,
+      _id: `faq-${Date.now()}`,
+      ...body,
+      order: dynamicFaqs.length + 1,
+    };
+    dynamicFaqs.push(newFaq);
+    return HttpResponse.json({ success: true, data: newFaq }, { status: 201 });
+  }),
+
+  // Admin Update FAQ
+  http.put('*/api/admin/faqs/:id', async ({ params, request }) => {
+    await delay(50);
+    const { id } = params;
+    const body = await request.json();
+    const index = dynamicFaqs.findIndex((f) => f.id === id || f._id === id);
+    if (index === -1) {
+      return HttpResponse.json({ success: false, error: 'FAQ not found' }, { status: 404 });
+    }
+    dynamicFaqs[index] = { ...dynamicFaqs[index], ...body };
+    return HttpResponse.json({ success: true, data: dynamicFaqs[index] });
+  }),
+
+  // Admin Delete FAQ
+  http.delete('*/api/admin/faqs/:id', async ({ params }) => {
+    await delay(50);
+    const { id } = params;
+    const index = dynamicFaqs.findIndex((f) => f.id === id || f._id === id);
+    if (index !== -1) {
+      dynamicFaqs.splice(index, 1);
+    }
+    return HttpResponse.json({ success: true, data: null });
+  }),
+
+  // Admin Reorder FAQs
+  http.patch('*/api/admin/faqs/reorder', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    const { orders = [] } = body;
+    orders.forEach(({ id, order }) => {
+      const item = dynamicFaqs.find((f) => f.id === id || f._id === id);
+      if (item) item.order = order;
+    });
+    dynamicFaqs.sort((a, b) => a.order - b.order);
+    return HttpResponse.json({ success: true, data: dynamicFaqs });
   }),
 ];
 

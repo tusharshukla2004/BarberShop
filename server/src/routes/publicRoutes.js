@@ -15,6 +15,8 @@ import {
   getPublicQueueStatus,
   joinPublicQueue,
 } from '../controllers/queueController.js';
+import { getPublicOffers, validateOfferCode } from '../controllers/offerController.js';
+import { getPublicFaqs } from '../controllers/faqController.js';
 import { validate } from '../middleware/validate.js';
 import {
   createBookingSchema,
@@ -24,6 +26,7 @@ import {
 import { reviewSchema } from '../schemas/content.schema.js';
 import { contactSchema } from '../schemas/contact.schema.js';
 import { joinPublicQueueSchema } from '../schemas/queue.schema.js';
+import { validateOfferCodeSchema } from '../schemas/offer.schema.js';
 import { bookingLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
@@ -67,5 +70,10 @@ router.post(
 // Walk-in queue
 router.get('/queue/status', getPublicQueueStatus);
 router.post('/queue/join', bookingLimiter, validate(joinPublicQueueSchema), joinPublicQueue);
+
+// Offers & FAQs
+router.get('/offers', getPublicOffers);
+router.post('/offers/validate', validate(validateOfferCodeSchema), validateOfferCode);
+router.get('/faqs', getPublicFaqs);
 
 export default router;

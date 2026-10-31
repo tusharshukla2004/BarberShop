@@ -155,3 +155,4 @@ if (process.argv[1]?.includes('seedDemoBookings')) {
       process.exit(1);
     });
 }
+

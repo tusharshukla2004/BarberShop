@@ -3,7 +3,9 @@ import { Booking } from '../models/Booking.js';
 import { Barber } from '../models/Barber.js';
 import { Service } from '../models/Service.js';
 import { Settings } from '../models/Settings.js';
+import { Offer } from '../models/Offer.js';
 import { calculateSlots } from '../utils/slots.js';
+import { validateAndCalculateDiscount } from '../utils/offers.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import {
   findOrCreateCustomer,
@@ -101,11 +103,48 @@ export async function createBooking(req, res, next) {
       }
     }
 
-    // Resolve price at booking
-    let priceAtBooking = 0;
+    // Resolve price at booking and validate promo code
+    let originalPrice = 0;
     if (serviceId) {
       const srv = await findByIdOrCustom(Service, serviceId);
-      if (srv) priceAtBooking = srv.price || 0;
+      if (srv) originalPrice = srv.price || 0;
+    }
+    let priceAtBooking = originalPrice;
+    let discountAmount = 0;
+    let appliedOfferId = null;
+    let cleanPromoCode = '';
+
+    if (req.body.promoCode) {
+      cleanPromoCode = req.body.promoCode.trim().toUpperCase();
+      const offer = await Offer.findOne({ promoCode: cleanPromoCode });
+      if (offer) {
+        const discountCalc = validateAndCalculateDiscount({
+          offer,
+          serviceIds: [serviceId],
+          totalPrice: originalPrice,
+          dateStr: date,
+          nowDate: new Date(),
+        });
+
+        if (discountCalc.isValid) {
+          // Atomically increment usedCount while respecting usageLimit
+          const updateFilter = { _id: offer._id };
+          if (typeof offer.usageLimit === 'number' && offer.usageLimit > 0) {
+            updateFilter.usedCount = { $lt: offer.usageLimit };
+          }
+          const updatedOffer = await Offer.findOneAndUpdate(
+            updateFilter,
+            { $inc: { usedCount: 1 } },
+            { new: true }
+          );
+
+          if (updatedOffer) {
+            appliedOfferId = offer._id;
+            discountAmount = discountCalc.discountAmount;
+            priceAtBooking = discountCalc.finalPrice;
+          }
+        }
+      }
     }
 
     // Resolve or create customer profile
@@ -130,6 +169,10 @@ export async function createBooking(req, res, next) {
       phone,
       email: email || '',
       customerId,
+      originalPrice,
+      discountAmount,
+      appliedOfferId,
+      promoCode: cleanPromoCode,
       priceAtBooking,
       serviceId,
       barberId: barberIdStr,

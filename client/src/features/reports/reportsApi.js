@@ -98,3 +98,4 @@ export const {
   useGetNoShowsReportQuery,
   useGetSourcesReportQuery,
 } = reportsApi;
+

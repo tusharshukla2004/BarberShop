@@ -11,6 +11,8 @@ const BarbersPage = lazy(() => import('@/pages/BarbersPage'));
 const BookAppointmentPage = lazy(() => import('@/pages/BookAppointmentPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
+const OffersPage = lazy(() => import('@/pages/OffersPage'));
+const FaqPage = lazy(() => import('@/pages/FaqPage'));
 const PublicQueuePage = lazy(() => import('@/pages/PublicQueuePage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
@@ -25,6 +27,8 @@ const AdminRemindersPage = lazy(() => import('@/pages/admin/AdminRemindersPage')
 const AdminCustomersPage = lazy(() => import('@/pages/admin/AdminCustomersPage'));
 const AdminCustomerDetailPage = lazy(() => import('@/pages/admin/AdminCustomerDetailPage'));
 const AdminReportsPage = lazy(() => import('@/pages/admin/AdminReportsPage'));
+const AdminOffersPage = lazy(() => import('@/pages/admin/AdminOffersPage'));
+const AdminFaqsPage = lazy(() => import('@/pages/admin/AdminFaqsPage'));
 const AdminServicesPage = lazy(() => import('@/pages/admin/AdminServicesPage'));
 const AdminBarbersPage = lazy(() => import('@/pages/admin/AdminBarbersPage'));
 const AdminGalleryPage = lazy(() => import('@/pages/admin/AdminGalleryPage'));
@@ -71,6 +75,8 @@ export function AppRouter() {
             <Route path="/admin/customers" element={<AdminCustomersPage />} />
             <Route path="/admin/customers/:id" element={<AdminCustomerDetailPage />} />
             <Route path="/admin/reports" element={<AdminReportsPage />} />
+            <Route path="/admin/offers" element={<AdminOffersPage />} />
+            <Route path="/admin/faqs" element={<AdminFaqsPage />} />
             <Route path="/admin/services" element={<AdminServicesPage />} />
             <Route path="/admin/barbers" element={<AdminBarbersPage />} />
             <Route path="/admin/gallery" element={<AdminGalleryPage />} />
@@ -83,6 +89,8 @@ export function AppRouter() {
         <Route element={<PageShell />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/queue" element={<PublicQueuePage />} />
+          <Route path="/offers" element={<OffersPage />} />
+          <Route path="/faq" element={<FaqPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/shop" element={<ShopPage />} />

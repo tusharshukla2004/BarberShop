@@ -1,15 +1,16 @@
-import { useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Calendar, Clock, User, Scissors, ShieldAlert } from 'lucide-react';
+import { Calendar, Clock, User, Scissors, ShieldAlert, Tag, Check, AlertCircle, X } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { formatPrice } from '@/lib/formatters';
 import { useCreateBookingMutation } from '@/features/booking/bookingApi';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
+import { useGetPublicOffersQuery, useValidateOfferCodeMutation } from '@/features/offers/offersApi';
 
 const bookingDetailsSchema = z.object({
   customerName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -36,14 +37,32 @@ export default function StepDetails({
   onBack,
 }) {
   const [createBooking, { isLoading }] = useCreateBookingMutation();
+  const [validateOfferCode, { isLoading: isValidatingPromo }] = useValidateOfferCodeMutation();
 
   const { data: services = [] } = useGetServicesQuery();
   const { data: barbers = [] } = useGetBarbersQuery();
+  const { data: publicOffers = [] } = useGetPublicOffersQuery();
+
+  const [promoInput, setPromoInput] = useState(draft.promoCode || '');
+  const [promoError, setPromoError] = useState('');
+  const [promoSuccess, setPromoSuccess] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState(
+    draft.appliedOffer
+      ? {
+          code: draft.promoCode || draft.appliedOffer.promoCode,
+          discountAmount: draft.discountAmount || 0,
+          offer: draft.appliedOffer,
+        }
+      : null
+  );
+  const [limitExceededRetry, setLimitExceededRetry] = useState(false);
 
   const selectedService = useMemo(
     () => services.find((s) => s.id === draft.serviceId),
     [services, draft.serviceId]
   );
+
+  const originalPrice = selectedService?.price || 0;
 
   const selectedBarber = useMemo(() => {
     if (!draft.barberId || draft.barberId === 'any') {
@@ -57,6 +76,87 @@ export default function StepDetails({
       }
     );
   }, [barbers, draft.barberId]);
+
+  // Filter applicable offers for suggestions
+  const suggestedOffers = useMemo(() => {
+    return publicOffers.filter((o) => {
+      if (!o.isActive) return false;
+      if (Array.isArray(o.appliesToServiceIds) && o.appliesToServiceIds.length > 0) {
+        return o.appliesToServiceIds.includes(draft.serviceId);
+      }
+      return true;
+    });
+  }, [publicOffers, draft.serviceId]);
+
+  // Auto-validate if initial offer came from draft navigation
+  useEffect(() => {
+    if (draft.promoCode && !appliedPromo && draft.serviceId) {
+      applyPromoCode(draft.promoCode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft.serviceId]);
+
+  const applyPromoCode = async (codeToApply) => {
+    const cleanCode = (codeToApply || promoInput).trim().toUpperCase();
+    if (!cleanCode) {
+      setPromoError('Please enter a promo code');
+      return;
+    }
+
+    setPromoError('');
+    setPromoSuccess('');
+
+    try {
+      const res = await validateOfferCode({
+        code: cleanCode,
+        serviceIds: draft.serviceId ? [draft.serviceId] : [],
+        date: draft.date,
+      }).unwrap();
+
+      if (res.valid || res.isValid) {
+        const discount = res.discountAmount || 0;
+        const promoData = {
+          code: cleanCode,
+          discountAmount: discount,
+          offer: res.offer,
+        };
+        setAppliedPromo(promoData);
+        setPromoSuccess(
+          `Offer applied! You save ${formatPrice(discount)} on this appointment.`
+        );
+        setPromoInput(cleanCode);
+        onSaveDraft({
+          appliedOffer: res.offer,
+          promoCode: cleanCode,
+          discountAmount: discount,
+        });
+      } else {
+        setAppliedPromo(null);
+        setPromoError(res.reason || 'Invalid promo code for this booking.');
+        onSaveDraft({
+          appliedOffer: null,
+          promoCode: '',
+          discountAmount: 0,
+        });
+      }
+    } catch (err) {
+      setAppliedPromo(null);
+      setPromoError(err.message || 'Failed to validate promo code. Please try again.');
+    }
+  };
+
+  const removePromoCode = () => {
+    setAppliedPromo(null);
+    setPromoInput('');
+    setPromoError('');
+    setPromoSuccess('');
+    setLimitExceededRetry(false);
+    onSaveDraft({
+      appliedOffer: null,
+      promoCode: '',
+      discountAmount: 0,
+    });
+  };
 
   const {
     register,
@@ -74,8 +174,12 @@ export default function StepDetails({
     },
   });
 
-  const onSubmit = async (formData) => {
+  const onSubmit = async (formData, bypassPromo = false) => {
     onSaveDraft(formData);
+
+    const activePromoCode = bypassPromo
+      ? undefined
+      : appliedPromo?.code || draft.promoCode || undefined;
 
     const payload = {
       customerName: formData.customerName,
@@ -88,19 +192,28 @@ export default function StepDetails({
       endTime: draft.endTime || draft.startTime,
       notes: formData.notes,
       whatsappConsent: Boolean(formData.whatsappConsent),
+      promoCode: activePromoCode,
     };
 
     try {
       const res = await createBooking(payload).unwrap();
       onSuccess(res);
     } catch (err) {
-      if (err.status === 409 || err.code === 'CONFLICT' || err.data?.error?.code === 'CONFLICT') {
+      if (err.data?.code === 'USAGE_LIMIT_REACHED' || err.data?.error?.code === 'USAGE_LIMIT_REACHED') {
+        setLimitExceededRetry(true);
+        setPromoError(
+          'This offer just reached its usage limit concurrently. You can still confirm your appointment at the standard price.'
+        );
+      } else if (err.status === 409 || err.code === 'CONFLICT' || err.data?.error?.code === 'CONFLICT') {
         onConflict('That slot was just taken. Please pick another slot.');
       } else {
         onConflict(err.message || 'An error occurred while confirming your reservation.');
       }
     }
   };
+
+  const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
+  const finalPrice = Math.max(0, originalPrice - discountAmount);
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -117,7 +230,7 @@ export default function StepDetails({
         {/* Form Details (Left) */}
         <div className="lg:col-span-7">
           <Card tone="light" className="p-6 sm:p-8 border border-border-light shadow-sm">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+            <form onSubmit={handleSubmit((data) => onSubmit(data, false))} className="space-y-5" noValidate>
               {/* Full Name */}
               <div>
                 <label
@@ -168,38 +281,142 @@ export default function StepDetails({
                   htmlFor="booking-email"
                   className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
                 >
-                  Email Address <span className="text-muted text-[10px] lowercase">(optional)</span>
+                  Email Address <span className="text-muted font-normal">(Optional)</span>
                 </label>
                 <input
                   id="booking-email"
                   type="email"
-                  placeholder="e.g. vikram@example.com"
+                  placeholder="vikram@example.com"
                   {...register('email')}
-                  className={`w-full px-4 py-2.5 rounded-md bg-card border text-sm text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent ${
-                    errors.email ? 'border-red-500' : 'border-border-light'
-                  }`}
+                  className="w-full px-4 py-2.5 rounded-md bg-card border border-border-light text-sm text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent"
                 />
                 {errors.email && (
                   <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
                 )}
               </div>
 
-              {/* Notes */}
+              {/* Special Notes */}
               <div>
                 <label
                   htmlFor="booking-notes"
                   className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
                 >
-                  Special Notes or Style Requests
+                  Grooming Notes & Preferences <span className="text-muted font-normal">(Optional)</span>
                 </label>
                 <textarea
                   id="booking-notes"
-                  rows={3}
-                  placeholder="e.g. Low skin taper fade, beard sculpting, or complimentary espresso preference..."
+                  rows={2}
+                  placeholder="Preferred fade level, beard balm allergy, or specific styling requests..."
                   {...register('notes')}
                   className="w-full px-4 py-2.5 rounded-md bg-card border border-border-light text-sm text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent resize-none"
                 />
               </div>
+
+              {/* Promo Code Section */}
+              <div className="pt-2 border-t border-border-light/60">
+                <label htmlFor="promo-code-input" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1.5 flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-accent" />
+                  Have a Promo Code?
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="promo-code-input"
+                    type="text"
+                    value={promoInput}
+                    onChange={(e) => {
+                      setPromoInput(e.target.value);
+                      setPromoError('');
+                    }}
+                    placeholder="Enter promo code (e.g. FESTIVE20)"
+                    disabled={Boolean(appliedPromo)}
+                    className="flex-1 px-4 py-2 rounded-md bg-card border border-border-light text-sm text-ink placeholder-muted uppercase font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-60"
+                  />
+                  {appliedPromo ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={removePromoCode}
+                      className="text-red-600 border-red-300 hover:bg-red-50 text-xs px-3"
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Remove
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={() => applyPromoCode(promoInput)}
+                      disabled={isValidatingPromo || !promoInput.trim()}
+                      className="text-xs uppercase font-semibold px-4"
+                    >
+                      {isValidatingPromo ? 'Checking...' : 'Apply'}
+                    </Button>
+                  )}
+                </div>
+
+                {promoSuccess && (
+                  <p className="mt-1.5 text-xs text-emerald-600 font-medium flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
+                    {promoSuccess}
+                  </p>
+                )}
+
+                {promoError && (
+                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    {promoError}
+                  </p>
+                )}
+
+                {/* Offer suggestions */}
+                {!appliedPromo && suggestedOffers.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-[11px] text-muted mb-1.5">Applicable Offers:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {suggestedOffers.map((off) => (
+                        <button
+                          key={off.id || off._id}
+                          type="button"
+                          onClick={() => {
+                            if (off.promoCode) {
+                              setPromoInput(off.promoCode);
+                              applyPromoCode(off.promoCode);
+                            }
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-accent/10 hover:bg-accent/20 border border-accent/25 text-[11px] font-mono font-medium text-ink transition-colors cursor-pointer"
+                        >
+                          <Tag className="w-3 h-3 text-accent" />
+                          <span>{off.promoCode}</span>
+                          <span className="text-muted font-sans">
+                            ({off.type === 'percent' ? `${off.value}% Off` : `₹${off.value} Off`})
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Concurrent usage limit fallback retry banner */}
+              {limitExceededRetry && (
+                <div className="p-3 rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-xs flex flex-col gap-2">
+                  <p className="font-medium">
+                    Would you like to book without the promo discount at standard pricing?
+                  </p>
+                  <Button
+                    type="button"
+                    variant="accent"
+                    size="sm"
+                    disabled={isLoading}
+                    onClick={handleSubmit((data) => onSubmit(data, true))}
+                    className="self-start text-xs font-semibold uppercase"
+                  >
+                    Proceed without Discount
+                  </Button>
+                </div>
+              )}
 
               {/* WhatsApp Opt-in Checkbox & Privacy Note */}
               <div className="pt-2 space-y-1">
@@ -312,15 +529,32 @@ export default function StepDetails({
               </div>
             </div>
 
-            {/* Total */}
-            <div className="pt-4 border-t border-border-dark flex items-center justify-between">
-              <div>
-                <p className="text-xs text-on-dark-muted">Total Due at Studio</p>
-                <p className="text-[11px] text-accent">Zero upfront deposit required</p>
+            {/* Pricing Breakdown */}
+            <div className="pt-4 border-t border-border-dark space-y-2">
+              <div className="flex items-center justify-between text-xs text-on-dark-muted">
+                <span>Original Service Price</span>
+                <span className="font-semibold text-white">{formatPrice(originalPrice)}</span>
               </div>
-              <span className="font-display text-2xl text-white">
-                {selectedService ? formatPrice(selectedService.price) : '₹850'}
-              </span>
+
+              {discountAmount > 0 && (
+                <div className="flex items-center justify-between text-xs text-emerald-400 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Tag className="w-3 h-3" />
+                    Promo Discount ({appliedPromo?.code})
+                  </span>
+                  <span>-{formatPrice(discountAmount)}</span>
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-border-dark/60 flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-on-dark-muted font-semibold uppercase">Total Due at Studio</p>
+                  <p className="text-[11px] text-accent">Zero upfront deposit required</p>
+                </div>
+                <span className="font-display text-2xl text-white">
+                  {formatPrice(finalPrice)}
+                </span>
+              </div>
             </div>
           </Card>
         </div>

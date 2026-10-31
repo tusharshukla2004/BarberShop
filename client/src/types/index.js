@@ -97,6 +97,40 @@
  * @property {string} name - Display name
  * @property {string} email - Email address
  * @property {'admin' | 'staff' | 'client'} role - Permission level
+ *
+ * @typedef {Object} BilingualString
+ * @property {string} en - English text
+ * @property {string} [hi] - Hindi text
+ *
+ * @typedef {'percent' | 'flat' | 'free_addon' | 'combo' | 'info'} OfferType
+ *
+ * @typedef {Object} Offer
+ * @property {string} id - Unique identifier
+ * @property {BilingualString} title - Bilingual promotional title
+ * @property {BilingualString} [description] - Bilingual description
+ * @property {string} [imageUrl] - Visual banner URL
+ * @property {OfferType} type - Discount algorithm type
+ * @property {number} value - Numeric discount amount or percent
+ * @property {string[]} [appliesToServiceIds] - Service restrictions
+ * @property {string} startsAt - ISO timestamp start date
+ * @property {string} endsAt - ISO timestamp expiration date
+ * @property {boolean} isActive - Active toggle
+ * @property {boolean} showOnHome - Home page carousel toggle
+ * @property {string} [promoCode] - Alphanumeric coupon code
+ * @property {number|null} [usageLimit] - Total allowed redemptions
+ * @property {number} [usedCount] - Realized redemptions
+ * @property {number[]} [daysOfWeek] - Valid days (0=Sun, 6=Sat)
+ * @property {'Live' | 'Scheduled' | 'Expired' | 'Inactive'} [statusBadge] - Lifecycle badge
+ *
+ * @typedef {'Booking' | 'Pricing' | 'Services' | 'Policies' | 'Other'} FaqCategory
+ *
+ * @typedef {Object} FAQ
+ * @property {string} id - Unique identifier
+ * @property {BilingualString} question - Bilingual question text
+ * @property {BilingualString} answer - Bilingual answer explanation
+ * @property {FaqCategory} category - Topic classification
+ * @property {number} order - Visual sorting sequence
+ * @property {boolean} isPublished - Public display toggle
  */
 
 export {};

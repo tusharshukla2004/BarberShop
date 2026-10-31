@@ -20,6 +20,9 @@ const loadInitialDraft = () => {
     notes: '',
     agreedToPolicy: false,
     whatsappConsent: false,
+    appliedOffer: null,
+    promoCode: '',
+    discountAmount: 0,
     confirmedBooking: null,
   };
 
@@ -80,6 +83,17 @@ export const bookingDraftSlice = createSlice({
       state.confirmedBooking = action.payload;
       state.currentStep = 5;
     },
+    applyOffer: (state, action) => {
+      const { offer, promoCode, discountAmount } = action.payload || {};
+      state.appliedOffer = offer || null;
+      state.promoCode = (promoCode || offer?.promoCode || '').toUpperCase();
+      state.discountAmount = discountAmount || 0;
+    },
+    removeOffer: (state) => {
+      state.appliedOffer = null;
+      state.promoCode = '';
+      state.discountAmount = 0;
+    },
     clearBookingDraft: (state) => {
       state.currentStep = 1;
       state.serviceId = '';
@@ -94,6 +108,9 @@ export const bookingDraftSlice = createSlice({
       state.notes = '';
       state.agreedToPolicy = false;
       state.whatsappConsent = false;
+      state.appliedOffer = null;
+      state.promoCode = '';
+      state.discountAmount = 0;
       state.confirmedBooking = null;
       if (typeof window !== 'undefined') {
         try {
@@ -112,6 +129,8 @@ export const {
   selectService,
   selectBarber,
   selectSlot,
+  applyOffer,
+  removeOffer,
   setConfirmedBooking,
   clearBookingDraft,
 } = bookingDraftSlice.actions;

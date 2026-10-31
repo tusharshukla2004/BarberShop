@@ -103,3 +103,4 @@ export function calculatePeriodDelta(currentVal = 0, previousVal = 0) {
  *   3. `admin_created`: Scheduled directly by staff from admin portal (`source: 'admin'`)
  */
 export const BOOKING_SOURCES = ['online_booking', 'walk_in', 'admin_created'];
+

@@ -29,6 +29,18 @@ const STATUS_CONFIG = {
     label: 'Inactive',
     classes: 'bg-zinc-100 text-zinc-600 border-zinc-200',
   },
+  live: {
+    label: 'Live',
+    classes: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  },
+  scheduled: {
+    label: 'Scheduled',
+    classes: 'bg-sky-100 text-sky-800 border-sky-200',
+  },
+  expired: {
+    label: 'Expired',
+    classes: 'bg-amber-100 text-amber-800 border-amber-200',
+  },
 };
 
 export default function StatusBadge({ status }) {

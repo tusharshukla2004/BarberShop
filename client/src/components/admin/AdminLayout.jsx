@@ -15,6 +15,8 @@ import {
   ExternalLink,
   Clock,
   BarChart3,
+  Tag,
+  HelpCircle,
 } from 'lucide-react';
 import { useAppSelector } from '@/app/hooks';
 import { selectCurrentUser, selectIsOwner } from '@/features/auth/authSlice';
@@ -44,6 +46,8 @@ export default function AdminLayout() {
       ? [
           { to: '/admin/services', label: 'Services', icon: Scissors },
           { to: '/admin/barbers', label: 'Barbers', icon: Users },
+          { to: '/admin/offers', label: 'Offers', icon: Tag },
+          { to: '/admin/faqs', label: 'FAQs', icon: HelpCircle },
           { to: '/admin/gallery', label: 'Gallery', icon: Image },
           { to: '/admin/reviews', label: 'Reviews', icon: Star },
           { to: '/admin/settings', label: 'Settings', icon: Settings },

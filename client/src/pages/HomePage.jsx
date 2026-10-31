@@ -1,5 +1,6 @@
 import { Seo } from '@/components/common/Seo';
 import { Hero } from '@/features/home/Hero';
+import { HomeOfferBanner } from '@/features/offers/HomeOfferBanner';
 import { LiveQueueCard } from '@/features/queue/LiveQueueCard';
 import { Container } from '@/components/ui';
 import { ServiceLocationSection } from '@/features/home/ServiceLocationSection';
@@ -27,6 +28,9 @@ export function HomePage() {
         canonical="/"
         includeSchema={true}
       />
+
+      {/* Dismissible Promotional Offer Banner */}
+      <HomeOfferBanner />
 
       {/* Hero with Appointment Request Card and Fluid Headline */}
       <Hero />

@@ -2,6 +2,7 @@ import { Booking } from '../models/Booking.js';
 import { Barber } from '../models/Barber.js';
 import { Service } from '../models/Service.js';
 import { Customer } from '../models/Customer.js';
+import { Offer } from '../models/Offer.js';
 import { getKolkataCurrentDateAndMinutes, timeToMinutes } from '../utils/slots.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import {
@@ -894,6 +895,96 @@ export async function getSourcesReport(req, res, next) {
           { key: 'completedCount', label: 'Completed' },
           { key: 'percentage', label: 'Share (%)' },
           { key: 'revenue', label: 'Revenue (INR)' },
+        ],
+        result
+      );
+    }
+
+    return sendSuccess(res, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/admin/reports/offers
+ */
+export async function getOffersReport(req, res, next) {
+  try {
+    const { from, to, barberId, format } = resolveReportParams(req);
+    const cacheKey = `offers:${from}:${to}:${barberId}`;
+
+    if (format !== 'csv') {
+      const cached = getCached(cacheKey);
+      if (cached) return sendSuccess(res, cached);
+    }
+
+    const matchQuery = { date: { $gte: from, $lte: to } };
+    if (barberId) matchQuery.barberId = barberId;
+
+    const [bookings, offers] = await Promise.all([
+      Booking.find(matchQuery).lean(),
+      Offer.find().lean(),
+    ]);
+
+    const offerMap = new Map();
+    for (const o of offers) {
+      const oId = o.id || o._id.toString();
+      offerMap.set(oId, {
+        offerId: oId,
+        title: o.title?.en || 'Promotional Offer',
+        promoCode: o.promoCode || 'N/A',
+        type: o.type,
+        value: o.value,
+        usesInPeriod: 0,
+        totalDiscountGiven: 0,
+        revenueGenerated: 0,
+        totalLifetimeUses: o.usedCount || 0,
+      });
+    }
+
+    for (const b of bookings) {
+      if (b.appliedOfferId) {
+        const oId = b.appliedOfferId.toString();
+        if (!offerMap.has(oId)) {
+          offerMap.set(oId, {
+            offerId: oId,
+            title: b.promoCode ? `Promo ${b.promoCode}` : 'Promotional Offer',
+            promoCode: b.promoCode || 'N/A',
+            type: 'percent',
+            value: 0,
+            usesInPeriod: 0,
+            totalDiscountGiven: 0,
+            revenueGenerated: 0,
+            totalLifetimeUses: 1,
+          });
+        }
+        const item = offerMap.get(oId);
+        item.usesInPeriod++;
+        item.totalDiscountGiven += b.discountAmount || 0;
+        if (b.status === 'completed') {
+          item.revenueGenerated += b.priceAtBooking || 0;
+        }
+      }
+    }
+
+    const result = Array.from(offerMap.values()).sort((a, b) => b.usesInPeriod - a.usesInPeriod);
+
+    setCached(cacheKey, result);
+
+    if (format === 'csv') {
+      return sendCSVResponse(
+        res,
+        `offers-performance-${from}-to-${to}`,
+        [
+          { key: 'title', label: 'Offer Title' },
+          { key: 'promoCode', label: 'Promo Code' },
+          { key: 'type', label: 'Discount Type' },
+          { key: 'value', label: 'Value' },
+          { key: 'usesInPeriod', label: 'Uses in Period' },
+          { key: 'totalDiscountGiven', label: 'Discount Given (INR)' },
+          { key: 'revenueGenerated', label: 'Revenue Generated (INR)' },
+          { key: 'totalLifetimeUses', label: 'Total Lifetime Uses' },
         ],
         result
       );

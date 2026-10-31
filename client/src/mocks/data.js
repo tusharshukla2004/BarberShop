@@ -388,3 +388,150 @@ export const mockQueueEntries = [
 
 export const joinTeamBgImage =
   'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';
+
+export const mockOffers = [
+  {
+    id: 'off-1',
+    _id: 'off-1',
+    title: { en: 'Festival Grooming 20% Off', hi: 'त्योहार ग्रूमिंग 20% छूट' },
+    description: {
+      en: 'Get 20% off on premium haircuts and beard styling packages.',
+      hi: 'प्रीमियम हेयरकट और दाढ़ी स्टाइलिंग पर 20% की छूट प्राप्त करें।',
+    },
+    imageUrl: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80',
+    type: 'percent',
+    value: 20,
+    appliesToServiceIds: [],
+    startsAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+    endsAt: new Date(Date.now() + 30 * 86400000).toISOString(),
+    isActive: true,
+    showOnHome: true,
+    promoCode: 'FESTIVE20',
+    usageLimit: 100,
+    usedCount: 14,
+    daysOfWeek: [],
+    statusBadge: 'Live',
+  },
+  {
+    id: 'off-2',
+    _id: 'off-2',
+    title: { en: 'Welcome Gentleman Flat ₹100 Off', hi: 'वेलकम जेंटलमैन ₹100 छूट' },
+    description: {
+      en: 'Flat ₹100 off on your first grooming session with code WELCOME100.',
+      hi: 'कोड WELCOME100 के साथ अपने पहले ग्रूमिंग सत्र पर ₹100 की फ्लैट छूट।',
+    },
+    imageUrl: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=600&q=80',
+    type: 'flat',
+    value: 100,
+    appliesToServiceIds: [],
+    startsAt: new Date(Date.now() - 14 * 86400000).toISOString(),
+    endsAt: new Date(Date.now() + 60 * 86400000).toISOString(),
+    isActive: true,
+    showOnHome: true,
+    promoCode: 'WELCOME100',
+    usageLimit: null,
+    usedCount: 38,
+    daysOfWeek: [],
+    statusBadge: 'Live',
+  },
+  {
+    id: 'off-3',
+    _id: 'off-3',
+    title: { en: 'Signature Combo Grooming Saver', hi: 'सिग्नेचर कॉम्बो सेवर' },
+    description: {
+      en: 'Special package discount when booking Haircut + Beard trim combo.',
+      hi: 'हेयरकट + दाढ़ी ट्रिम कॉम्बो बुक करने पर विशेष छूट।',
+    },
+    imageUrl: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=600&q=80',
+    type: 'combo',
+    value: 150,
+    appliesToServiceIds: ['srv-1', 'srv-3'],
+    startsAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+    endsAt: new Date(Date.now() + 90 * 86400000).toISOString(),
+    isActive: true,
+    showOnHome: false,
+    promoCode: 'COMBO150',
+    usageLimit: 50,
+    usedCount: 9,
+    daysOfWeek: [1, 2, 3, 4],
+    statusBadge: 'Live',
+  },
+];
+
+export const mockFaqs = [
+  {
+    id: 'faq-1',
+    _id: 'faq-1',
+    question: {
+      en: 'Do I need an appointment or can I walk in?',
+      hi: 'क्या मुझे अपॉइंटमेंट की आवश्यकता है या मैं सीधे आ सकता हूँ?',
+    },
+    answer: {
+      en: 'Both! You can book in advance for guaranteed zero-wait chair time, or visit us directly and join our digital walk-in queue.',
+      hi: 'दोनों! आप कुर्सी पर शून्य प्रतीक्षा के लिए पहले से बुक कर सकते हैं, या सीधे आकर हमारी डिजिटल कतार में शामिल हो सकते हैं।',
+    },
+    category: 'Booking',
+    order: 1,
+    isPublished: true,
+  },
+  {
+    id: 'faq-2',
+    _id: 'faq-2',
+    question: {
+      en: 'Can I choose my favorite barber?',
+      hi: 'क्या मैं अपने पसंदीदा नाई को चुन सकता हूँ?',
+    },
+    answer: {
+      en: 'Absolutely. During booking or upon joining the queue, you can choose any preferred barber or select "Any Available" for the earliest slot.',
+      hi: 'बिल्कुल। बुकिंग के दौरान या कतार में शामिल होते समय, आप अपनी पसंद का नाई चुन सकते हैं या जल्द से जल्द स्लॉट के लिए "कोई भी उपलब्ध" चुन सकते हैं।',
+    },
+    category: 'Services',
+    order: 1,
+    isPublished: true,
+  },
+  {
+    id: 'faq-3',
+    _id: 'faq-3',
+    question: {
+      en: 'What payment methods are accepted?',
+      hi: 'कौन से भुगतान के तरीके स्वीकार किए जाते हैं?',
+    },
+    answer: {
+      en: 'We accept UPI (Google Pay, PhonePe, Paytm), cash, cards, and digital wallets at checkout.',
+      hi: 'हम चेकआउट पर UPI (गूगल पे, फोनपे, पेटीएम), नकद, कार्ड और डिजिटल वॉलेट स्वीकार करते हैं।',
+    },
+    category: 'Pricing',
+    order: 1,
+    isPublished: true,
+  },
+  {
+    id: 'faq-4',
+    _id: 'faq-4',
+    question: {
+      en: 'What is your cancellation and reschedule policy?',
+      hi: 'आपकी रद्दीकरण और पुनर्निर्धारण नीति क्या है?',
+    },
+    answer: {
+      en: 'You can reschedule or cancel free of charge up to 2 hours before your scheduled appointment time via WhatsApp link or by calling us.',
+      hi: 'आप अपने निर्धारित समय से 2 घंटे पहले तक व्हाट्सएप लिंक या हमें कॉल करके नि:शुल्क पुनर्निर्धारित या रद्द कर सकते हैं।',
+    },
+    category: 'Policies',
+    order: 1,
+    isPublished: true,
+  },
+  {
+    id: 'faq-5',
+    _id: 'faq-5',
+    question: {
+      en: 'What sanitization and hygiene measures do you follow?',
+      hi: 'आप स्वच्छता के क्या उपाय अपनाते हैं?',
+    },
+    answer: {
+      en: 'All blades are single-use, scissors and clippers are sanitized in barbicide between every client, and disposable neck strips are used for every service.',
+      hi: 'सभी ब्लेड सिंगल-यूज़ हैं, कैंची और क्लिपर्स हर ग्राहक के बीच कीटाणुरहित किए जाते हैं, और हर सेवा के लिए डिस्पोजेबल नेक स्ट्रिप्स का उपयोग किया जाता है।',
+    },
+    category: 'Other',
+    order: 1,
+    isPublished: true,
+  },
+];

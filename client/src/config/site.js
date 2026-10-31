@@ -67,9 +67,11 @@ export const siteConfig = {
   navLinks: [
     { label: 'Home', href: '/' },
     { label: 'Services', href: '/services' },
-    { label: 'About us', href: '/about' },
-    { label: 'Gallery', href: '/gallery' },
+    { label: 'Offers', href: '/offers' },
     { label: 'Shop', href: '/shop' },
+    { label: 'Gallery', href: '/gallery' },
+    { label: 'FAQ', href: '/faq' },
+    { label: 'About us', href: '/about' },
   ],
   cta: {
     label: 'Contact us',

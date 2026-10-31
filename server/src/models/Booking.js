@@ -23,6 +23,28 @@ const bookingSchema = new mongoose.Schema(
       default: null,
       index: true,
     },
+    originalPrice: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    discountAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    appliedOfferId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Offer',
+      default: null,
+      index: true,
+    },
+    promoCode: {
+      type: String,
+      default: '',
+      trim: true,
+      uppercase: true,
+    },
     priceAtBooking: {
       type: Number,
       default: 0,

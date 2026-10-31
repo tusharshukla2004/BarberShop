@@ -119,7 +119,9 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 - `/services` — Services & Pricing breakdown grouped by category.
 - `/gallery` — Portfolio gallery with category filters and keyboard-accessible fullscreen Lightbox.
 - `/barbers` — Master craftsmen profiles with direct booking links.
-- `/book` — Complete 4-step booking wizard with real-time slot selection, 409 conflict detection, and `.ics` calendar generation.
+- `/offers` — Promotional offers and seasonal campaigns with coupon copy-to-clipboard, validity windows, and 1-click booking integration with auto-applied discounts.
+- `/faq` — Accessible accordion FAQ organized by topic (Booking, Pricing, Services, Policies, Other) with real-time keyword search and WhatsApp direct help.
+- `/book` — Complete 4-step booking wizard with real-time slot selection, promo code validation, discount breakdown line items, 409 conflict detection, and `.ics` calendar generation.
 - `/about` — Shop heritage story, brand values, client policies, and accessible FAQ accordion.
 - `/contact` — Studio location details, interactive tinted map, opening hours, WhatsApp chat, and message form.
 
@@ -130,7 +132,9 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 - `/admin/reminders` — Today's and Tomorrow's 1-tap WhatsApp reminders with 60s auto-refresh polling, status tracking ("Not sent" vs "Sent at HH:mm by Staff"), and sent-row sinking.
 - `/admin/customers` — Client directory with search, repeat no-show flags, visit counters, lifetime spend, and manual customer creation.
 - `/admin/customers/:id` — Individual customer dossier with editable barber notes, tags, preferred barber, visit history timeline, and WhatsApp quick actions (message, rebooking nudge).
-- `/admin/reports` — Executive analytics & business intelligence: date presets (Today, 7d, 30d, This/Last Month, Custom), barber filter, period-over-period delta KPI cards, Recharts bookings/revenue timeline with screen-reader table fallback, services breakdown, barber productivity, peak-hours heatmap, no-shows log, acquisition sources, and Excel-compatible UTF-8 BOM CSV exports.
+- `/admin/reports` — Executive analytics & business intelligence: date presets (Today, 7d, 30d, This/Last Month, Custom), barber filter, period-over-period delta KPI cards, Recharts bookings/revenue timeline with screen-reader table fallback, services breakdown, barber productivity, peak-hours heatmap, offers campaign performance, no-shows log, acquisition sources, and Excel-compatible UTF-8 BOM CSV exports.
+- `/admin/offers` — Bilingual promotional offers CRUD with validity dates, discount models (percent, flat, combo, free add-on), promo codes, atomic usage limit enforcement, status badges (Live, Scheduled, Expired, Inactive), live customer preview, and 1-click duplicate action.
+- `/admin/faqs` — Customer help questions and answers with bilingual English/Hindi inputs, topic categorization, and bulk drag/reorder sequencing.
 - `/admin/services` — Full CRUD for grooming treatments and prices.
 - `/admin/barbers` — Barber profile and weekly schedule management.
 - `/admin/gallery` — Portfolio image management.
@@ -144,13 +148,13 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 Run all test suites and linting with single commands:
 
 ```bash
-# Run both Client & Server Vitest suites (84 total tests)
+# Run both Client & Server Vitest suites (158 total tests)
 npm test
 
-# Run Client Vitest suite individually (62 tests)
+# Run Client Vitest suite individually (87 tests)
 npm run test:client
 
-# Run Server Vitest suite individually (22 tests)
+# Run Server Vitest suite individually (71 tests)
 npm run test:server
 
 # Run ESLint quality checks (0 warnings, 0 errors)
