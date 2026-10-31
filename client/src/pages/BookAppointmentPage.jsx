@@ -49,7 +49,12 @@ export default function BookAppointmentPage() {
 
   const handleBookingSuccess = (response) => {
     const booking = response.data || response;
-    dispatch(setConfirmedBooking(booking));
+    const completeBooking = {
+      ...booking,
+      serviceId: booking.serviceId || draft.serviceId,
+      barberId: booking.barberId || draft.barberId,
+    };
+    dispatch(setConfirmedBooking(completeBooking));
     dispatch(
       addToast({
         type: 'success',

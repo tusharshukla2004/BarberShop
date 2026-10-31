@@ -6,6 +6,7 @@ import { PageShell } from '@/components/layout/PageShell';
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const ServicesPage = lazy(() => import('@/pages/ServicesPage'));
 const GalleryPage = lazy(() => import('@/pages/GalleryPage'));
+const ShopPage = lazy(() => import('@/pages/ShopPage'));
 const BarbersPage = lazy(() => import('@/pages/BarbersPage'));
 const BookAppointmentPage = lazy(() => import('@/pages/BookAppointmentPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
@@ -72,6 +73,7 @@ export function AppRouter() {
           <Route path="/" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/shop" element={<ShopPage />} />
           <Route path="/barbers" element={<BarbersPage />} />
           <Route path="/book" element={<BookAppointmentPage />} />
           <Route path="/about" element={<AboutPage />} />

@@ -67,8 +67,8 @@ export const siteConfig = {
     { label: 'Home', href: '/' },
     { label: 'Services', href: '/services' },
     { label: 'About us', href: '/about' },
-    { label: 'News', href: '/gallery' },
-    { label: 'Shop', href: '/services' },
+    { label: 'Gallery', href: '/gallery' },
+    { label: 'Shop', href: '/shop' },
   ],
   cta: {
     label: 'Contact us',

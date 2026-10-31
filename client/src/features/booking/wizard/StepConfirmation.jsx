@@ -1,21 +1,55 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Calendar, MessageSquare, ArrowRight, MapPin, Clock, Scissors, User } from 'lucide-react';
+import {
+  CheckCircle2,
+  Calendar,
+  MessageSquare,
+  MapPin,
+  Clock,
+  Scissors,
+  User,
+  Phone,
+  Sparkles,
+} from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { siteConfig } from '@/config/site';
 import { downloadCalendarEvent } from '@/lib/calendar';
+import { formatPrice } from '@/lib/formatters';
+import { useGetServicesQuery } from '@/features/services/servicesApi';
+import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
 
 export default function StepConfirmation({ booking, onReset }) {
-  const refCode = (
-    booking?.id ? `BK-${booking.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()}` : 'BK-RES892'
+  const { data: services = [] } = useGetServicesQuery();
+  const { data: barbers = [] } = useGetBarbersQuery();
+
+  const refCode = booking?.id
+    ? `BK-${booking.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()}`
+    : 'BK-RES892';
+
+  // Resolve service & barber details if selected
+  const service = services.find(
+    (s) => s.id === booking.serviceId || s.id === booking.service
   );
+  const barber = barbers.find(
+    (b) => b.id === booking.barberId || b.id === booking.barber
+  );
+
+  const serviceName =
+    booking.serviceName || service?.name || (booking.serviceId ? 'Custom Grooming' : '');
+  const barberName =
+    booking.barberName ||
+    barber?.name ||
+    (booking.barberId === 'any' ? 'First Available Master Barber' : '');
+
+  const serviceSnippet = serviceName ? ` for ${serviceName}` : '';
+  const barberSnippet = barberName ? ` with ${barberName}` : '';
 
   const handleDownloadCalendar = () => {
     downloadCalendarEvent({
-      title: 'Sovereign Barbershop Appointment',
-      description: `Grooming reservation for ${booking.customerName || 'Client'}. Reference: ${refCode}`,
-      location: `${siteConfig.location.address}, ${siteConfig.location.city}`,
+      title: `${siteConfig.name}${serviceSnippet}${barberSnippet}`,
+      description: `Grooming reservation for ${booking.customerName || 'Client'}${serviceSnippet}${barberSnippet}. Reference: ${refCode}`,
+      location: siteConfig.address,
       date: booking.date,
       startTime: booking.startTime,
       endTime: booking.endTime || booking.startTime,
@@ -24,7 +58,7 @@ export default function StepConfirmation({ booking, onReset }) {
   };
 
   const whatsappShareText = encodeURIComponent(
-    `Hey, I just booked my grooming appointment at Sovereign Barbershop on ${booking.date} at ${booking.startTime}! Ref: ${refCode}`
+    `Hey, I just booked my grooming appointment at ${siteConfig.name}${serviceSnippet}${barberSnippet} on ${booking.date} at ${booking.startTime}! Ref: ${refCode}`
   );
   const whatsappShareUrl = `https://wa.me/?text=${whatsappShareText}`;
 
@@ -62,6 +96,29 @@ export default function StepConfirmation({ booking, onReset }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-ink">
+          {serviceName && (
+            <div className="flex items-start gap-3">
+              <Sparkles className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[11px] text-muted uppercase font-semibold">Service</p>
+                <p className="font-semibold text-ink">
+                  {serviceName}
+                  {service?.price ? ` • ${formatPrice(service.price)}` : ''}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {barberName && (
+            <div className="flex items-start gap-3">
+              <Scissors className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[11px] text-muted uppercase font-semibold">Barber</p>
+                <p className="font-semibold text-ink">{barberName}</p>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-start gap-3">
             <Calendar className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <div>
@@ -74,7 +131,9 @@ export default function StepConfirmation({ booking, onReset }) {
             <Clock className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <div>
               <p className="text-[11px] text-muted uppercase font-semibold">Time Slot</p>
-              <p className="font-semibold">{booking.startTime} {booking.endTime ? `– ${booking.endTime}` : ''}</p>
+              <p className="font-semibold">
+                {booking.startTime} {booking.endTime ? `– ${booking.endTime}` : ''}
+              </p>
             </div>
           </div>
 
@@ -87,7 +146,7 @@ export default function StepConfirmation({ booking, onReset }) {
           </div>
 
           <div className="flex items-start gap-3">
-            <Scissors className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+            <Phone className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <div>
               <p className="text-[11px] text-muted uppercase font-semibold">Contact Phone</p>
               <p className="font-semibold">{booking.phone}</p>
@@ -98,7 +157,7 @@ export default function StepConfirmation({ booking, onReset }) {
         <div className="pt-4 border-t border-border-light flex items-start gap-2.5 text-xs text-muted">
           <MapPin className="w-4 h-4 text-accent shrink-0 mt-0.5" />
           <span>
-            {siteConfig.location.address}, {siteConfig.location.city}. Complimentary valet parking is available.
+            {siteConfig.address}. Complimentary valet parking is available.
           </span>
         </div>
       </Card>
@@ -139,8 +198,8 @@ export default function StepConfirmation({ booking, onReset }) {
 
         <span className="hidden sm:inline text-muted" aria-hidden="true">•</span>
 
-        <Link to="/" className="text-muted hover:text-ink transition-colors flex items-center gap-1">
-          Return to Home <ArrowRight className="w-3.5 h-3.5" />
+        <Link to="/" className="text-muted hover:text-ink transition-colors">
+          Return to Home
         </Link>
       </div>
     </div>
@@ -148,6 +207,19 @@ export default function StepConfirmation({ booking, onReset }) {
 }
 
 StepConfirmation.propTypes = {
-  booking: PropTypes.object.isRequired,
+  booking: PropTypes.shape({
+    id: PropTypes.string,
+    serviceId: PropTypes.string,
+    serviceName: PropTypes.string,
+    service: PropTypes.any,
+    barberId: PropTypes.string,
+    barberName: PropTypes.string,
+    barber: PropTypes.any,
+    date: PropTypes.string.isRequired,
+    startTime: PropTypes.string.isRequired,
+    endTime: PropTypes.string,
+    customerName: PropTypes.string,
+    phone: PropTypes.string,
+  }).isRequired,
   onReset: PropTypes.func.isRequired,
 };

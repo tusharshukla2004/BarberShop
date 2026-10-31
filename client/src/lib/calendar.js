@@ -1,10 +1,12 @@
+import { siteConfig } from '@/config/site';
+
 /**
  * Generates and triggers download of an iCalendar (.ics) file
  *
  * @param {Object} options
  * @param {string} options.title
  * @param {string} options.description
- * @param {string} options.location
+ * @param {string} [options.location]
  * @param {string} options.date - YYYY-MM-DD
  * @param {string} options.startTime - e.g. "10:00 AM" or "10:00"
  * @param {string} options.endTime - e.g. "10:45 AM" or "10:45"
@@ -45,12 +47,12 @@ export function downloadCalendarEvent({
 
   const dtStart = formatIcsDate(year, month, day, startT.hours, startT.minutes);
   const dtEnd = formatIcsDate(year, month, day, endT.hours, endT.minutes);
-  const uid = `${Date.now()}-${referenceNumber || 'booking'}@sovereignbarber.com`;
+  const uid = `${Date.now()}-${referenceNumber || 'booking'}@modernmane.in`;
 
   const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Sovereign Barbershop//Appointment Booking//EN',
+    `PRODID:-//${siteConfig.name}//Appointment Booking//EN`,
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
@@ -58,9 +60,9 @@ export function downloadCalendarEvent({
     `DTSTAMP:${formatIcsDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate(), 0, 0)}Z`,
     `DTSTART:${dtStart}`,
     `DTEND:${dtEnd}`,
-    `SUMMARY:${title || 'Sovereign Barbershop Appointment'}`,
+    `SUMMARY:${title || `${siteConfig.name} Appointment`}`,
     `DESCRIPTION:${description || 'Grooming reservation'}`,
-    `LOCATION:${location || '100 Feet Road, Indiranagar, Bengaluru'}`,
+    `LOCATION:${location || siteConfig.address}`,
     'STATUS:CONFIRMED',
     'END:VEVENT',
     'END:VCALENDAR',
@@ -70,7 +72,7 @@ export function downloadCalendarEvent({
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.setAttribute('download', `sovereign-appointment-${date}.ics`);
+  link.setAttribute('download', `${siteConfig.name.toLowerCase().replace(/\s+/g, '-')}-appointment-${date}.ics`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
