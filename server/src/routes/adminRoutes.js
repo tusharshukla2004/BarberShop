@@ -18,6 +18,11 @@ import {
   deleteGalleryItem,
 } from '../controllers/galleryController.js';
 import {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from '../controllers/productController.js';
+import {
   updateReview,
   deleteReview,
 } from '../controllers/reviewController.js';
@@ -36,6 +41,7 @@ import {
   galleryItemSchema,
   settingsSchema,
 } from '../schemas/content.schema.js';
+import { productSchema } from '../schemas/product.schema.js';
 import { updateBookingSchema } from '../schemas/booking.schema.js';
 
 const router = Router();
@@ -67,6 +73,11 @@ router.delete('/gallery/:id', deleteGalleryItem);
 // Reviews management
 router.put('/reviews/:id', updateReview);
 router.delete('/reviews/:id', deleteReview);
+
+// Products management
+router.post('/products', validate(productSchema), createProduct);
+router.put('/products/:id', updateProduct);
+router.delete('/products/:id', deleteProduct);
 
 // Settings management
 router.get('/settings', getSettings);

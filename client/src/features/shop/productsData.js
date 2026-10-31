@@ -9,7 +9,7 @@ export const products = [
     name: 'Matte Clay Pomade',
     category: 'Hair',
     tagline: 'High Hold • Natural Matte Finish',
-    price: 24,
+    price: 850,
     size: '100ml / 3.4 fl oz',
     scent: 'Cedarwood, Amber & Sandalwood',
     description:
@@ -29,7 +29,7 @@ export const products = [
     name: 'Organic Sandalwood Beard Oil',
     category: 'Beard',
     tagline: 'Deep Hydration • Itch Relief & Luster',
-    price: 26,
+    price: 950,
     size: '50ml / 1.7 fl oz',
     scent: 'Mysore Sandalwood & Bergamot',
     description:
@@ -50,7 +50,7 @@ export const products = [
     name: 'Traditional Straight Razor & Shave Set',
     category: 'Shave',
     tagline: 'Japanese Carbon Steel • Complete Kit',
-    price: 68,
+    price: 2450,
     size: 'Complete 4-Piece Ritual Kit',
     scent: 'Natural Sandalwood Shaving Soap',
     description:
@@ -71,7 +71,7 @@ export const products = [
     name: 'Sea Salt Texturizing Spray',
     category: 'Hair',
     tagline: 'Weightless Volume • Beach Texture',
-    price: 20,
+    price: 750,
     size: '200ml / 6.8 fl oz',
     scent: 'Eucalyptus, Sea Kelp & Citrus',
     description:
@@ -92,7 +92,7 @@ export const products = [
     name: 'Conditioning Cedarwood Beard Balm',
     category: 'Beard',
     tagline: 'Medium Sculpt • Deep Conditioning',
-    price: 22,
+    price: 800,
     size: '60g / 2.1 oz',
     scent: 'Atlas Cedar & Tobacco Leaf',
     description:
@@ -113,7 +113,7 @@ export const products = [
     name: 'Cooling Menthol Post-Shave Tonic',
     category: 'Shave',
     tagline: 'Razor Burn Defense • Pore Tightening',
-    price: 25,
+    price: 890,
     size: '120ml / 4 fl oz',
     scent: 'Menthol, Eucalyptus & Witch Hazel',
     description:
@@ -133,7 +133,7 @@ export const products = [
     name: 'Artisanal Double-Edge Safety Razor',
     category: 'Shave',
     tagline: 'Solid Brass Handle • Zero Plastic',
-    price: 42,
+    price: 1650,
     size: 'Precision Machined Weight (95g)',
     scent: 'Metallic Chrome Finish',
     description:
@@ -153,7 +153,7 @@ export const products = [
     name: 'Wild Boar Bristle Beard Brush',
     category: 'Accessories',
     tagline: 'Solid Walnut Wood • Stimulates Follicles',
-    price: 28,
+    price: 990,
     size: 'Ergonomic Palm Contour',
     scent: 'Natural Walnut Grain',
     description:
@@ -173,7 +173,7 @@ export const products = [
     name: 'Heritage Full-Grain Leather Dopp Kit',
     category: 'Accessories',
     tagline: 'Hand-Stitched Leather • Waterproof Lining',
-    price: 65,
+    price: 2800,
     size: '10" L x 5" W x 5" H',
     scent: 'Natural Tanned Leather',
     description:

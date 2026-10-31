@@ -4,6 +4,7 @@ import { getBarbers } from '../controllers/barberController.js';
 import { getGallery } from '../controllers/galleryController.js';
 import { getReviews, createReview } from '../controllers/reviewController.js';
 import { getSettings } from '../controllers/settingsController.js';
+import { getProducts, getProductById } from '../controllers/productController.js';
 import { createContactMessage } from '../controllers/contactController.js';
 import {
   getSlots,
@@ -40,6 +41,10 @@ router.post('/contact', validate(contactSchema), createContactMessage);
 
 // Settings
 router.get('/settings', getSettings);
+
+// Products
+router.get('/products', getProducts);
+router.get('/products/:id', getProductById);
 
 // Slots (supporting both /api/slots and /api/bookings/slots)
 router.get('/slots', validate(getSlotsQuerySchema), getSlots);

@@ -5,7 +5,8 @@ import PageBanner from '@/components/common/PageBanner';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
-import { products } from '@/features/shop/productsData';
+import { products as fallbackProducts } from '@/features/shop/productsData';
+import { useGetProductsQuery } from '@/features/shop/productsApi';
 import { ProductCard } from '@/features/shop/ProductCard';
 import { ProductQuickView } from '@/features/shop/ProductQuickView';
 import { CartDrawer } from '@/features/shop/CartDrawer';
@@ -20,6 +21,19 @@ export default function ShopPage() {
   const [cart, setCart] = useState([]);
 
   const categories = ['All', 'Hair', 'Beard', 'Shave', 'Accessories'];
+
+  const apiSort =
+    sortBy === 'price-low'
+      ? 'price-asc'
+      : sortBy === 'price-high'
+      ? 'price-desc'
+      : sortBy;
+
+  const { data: dbProducts } = useGetProductsQuery({
+    category: activeCategory !== 'All' ? activeCategory : undefined,
+    search: searchQuery.trim() || undefined,
+    sort: apiSort,
+  });
 
   // Add to cart handler
   const handleAddToCart = (product, quantity = 1) => {
@@ -55,9 +69,13 @@ export default function ShopPage() {
     setCart([]);
   };
 
-  // Filtered & Sorted products
+  // Filtered & Sorted products from database with fallback
   const displayedProducts = useMemo(() => {
-    let result = [...products];
+    if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
+      return dbProducts;
+    }
+
+    let result = [...fallbackProducts];
 
     if (activeCategory !== 'All') {
       result = result.filter(
@@ -86,7 +104,7 @@ export default function ShopPage() {
     }
 
     return result;
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [dbProducts, activeCategory, searchQuery, sortBy]);
 
   const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 

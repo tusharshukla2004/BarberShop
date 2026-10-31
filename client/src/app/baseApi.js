@@ -36,7 +36,7 @@ export const baseApi = createApi({
     baseUrl: getBaseUrl(),
     credentials: 'include',
   }),
-  tagTypes: ['Service', 'Barber', 'Gallery', 'Review', 'Booking', 'Settings', 'Slots'],
+  tagTypes: ['Service', 'Barber', 'Gallery', 'Review', 'Booking', 'Settings', 'Slots', 'Product'],
   endpoints: () => ({}),
 });
 

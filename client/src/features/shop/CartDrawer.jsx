@@ -31,7 +31,7 @@ export function CartDrawer({
 
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const freeShippingThreshold = 50;
+  const freeShippingThreshold = 1500;
   const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
 
   const handleCheckout = (e) => {
