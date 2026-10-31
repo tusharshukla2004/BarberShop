@@ -13,6 +13,7 @@ import Card from '@/components/ui/Card';
 import MapView from '@/components/common/MapView';
 import { siteConfig } from '@/config/site';
 import { normalizeIndianPhone, buildWhatsAppLink } from '@/lib/whatsapp';
+import { LiveQueueCard } from '@/features/queue/LiveQueueCard';
 import { useSendContactMessageMutation } from '@/features/contact/contactApi';
 import { useAppDispatch } from '@/app/hooks';
 import { addToast } from '@/features/ui/uiSlice';
@@ -142,6 +143,9 @@ export default function ContactPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Live Queue Card */}
+              <LiveQueueCard />
 
               {/* Operating Hours */}
               <div className="p-6 rounded-lg bg-card border border-border-light">

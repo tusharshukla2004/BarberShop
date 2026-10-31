@@ -114,7 +114,8 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 ## 5. Application Routes
 
 ### Public Pages
-- `/` — Editorial Home Page with Hero Appointment Request Form, Service/Map showcase, Works Slider, Testimonial Carousel, Team grid, and Closing CTA.
+- `/` — Editorial Home Page with Hero Appointment Request Form, Live Walk-in Queue Status Card, Service/Map showcase, Works Slider, Testimonial Carousel, Team grid, and Closing CTA.
+- `/queue` — Live Walk-in Queue registration portal allowing customers to join remotely from their phones and receive instant digital queue tokens.
 - `/services` — Services & Pricing breakdown grouped by category.
 - `/gallery` — Portfolio gallery with category filters and keyboard-accessible fullscreen Lightbox.
 - `/barbers` — Master craftsmen profiles with direct booking links.

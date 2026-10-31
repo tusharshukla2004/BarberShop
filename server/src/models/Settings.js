@@ -21,6 +21,8 @@ export const DEFAULT_MESSAGE_TEMPLATES = {
     'Namaste {name}! {shopName} visit karne ke liye bohot shukriya! Ummeed hai aapko hamara service aur cut pasand aaya.\n\nAapka feedback hamare liye bohot keemti hai. Kripya 1 minute nikaal kar apna review zaroor dein:\n⭐ {reviewLink}\n\nHave a great day ahead!',
   running_late:
     'Namaste {name}! {shopName} se update: aaj chair thodi busy hone ke karan aapka slot lagbhag 10-15 minute late ho sakta hai. Asuvidha ke liye khed hai. Hum jaldi hi aapko attend karenge!',
+  queue_turn_near:
+    'Namaste {name}! Aapka turn {shopName} me aane wala hai (Token #{tokenNumber}). Kripya reception/waiting area me rahein. Service: {service}. Barber: {barber}. Dekhne ke liye shukriya!',
 };
 
 const messageTemplatesSchema = new mongoose.Schema(
@@ -31,6 +33,18 @@ const messageTemplatesSchema = new mongoose.Schema(
     cancellation: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.cancellation },
     review_request: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.review_request },
     running_late: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.running_late },
+    queue_turn_near: { type: String, default: DEFAULT_MESSAGE_TEMPLATES.queue_turn_near },
+  },
+  { _id: false }
+);
+
+const queueSettingsSchema = new mongoose.Schema(
+  {
+    walkInsEnabled: { type: Boolean, default: true },
+    maxQueueLength: { type: Number, default: 20 },
+    publicQueueEnabled: { type: Boolean, default: true },
+    bufferMinutes: { type: Number, default: 5 },
+    stopAcceptingBeforeClosingMinutes: { type: Number, default: 45 },
   },
   { _id: false }
 );
@@ -68,6 +82,10 @@ const settingsSchema = new mongoose.Schema(
     messageTemplates: {
       type: messageTemplatesSchema,
       default: () => ({ ...DEFAULT_MESSAGE_TEMPLATES }),
+    },
+    queueSettings: {
+      type: queueSettingsSchema,
+      default: () => ({}),
     },
     policies: {
       cancellationGraceMinutes: { type: Number, default: 120 },

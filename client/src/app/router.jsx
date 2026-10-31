@@ -11,6 +11,7 @@ const BarbersPage = lazy(() => import('@/pages/BarbersPage'));
 const BookAppointmentPage = lazy(() => import('@/pages/BookAppointmentPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
+const PublicQueuePage = lazy(() => import('@/pages/PublicQueuePage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 // Admin portal route views (lazy-loaded chunks)
@@ -18,6 +19,7 @@ const AdminLoginPage = lazy(() => import('@/pages/admin/AdminLoginPage'));
 const ProtectedRoute = lazy(() => import('@/features/admin/ProtectedRoute'));
 const AdminLayout = lazy(() => import('@/components/admin/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminQueuePage = lazy(() => import('@/pages/admin/AdminQueuePage'));
 const AdminBookingsPage = lazy(() => import('@/pages/admin/AdminBookingsPage'));
 const AdminRemindersPage = lazy(() => import('@/pages/admin/AdminRemindersPage'));
 const AdminCustomersPage = lazy(() => import('@/pages/admin/AdminCustomersPage'));
@@ -62,6 +64,7 @@ export function AppRouter() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/queue" element={<AdminQueuePage />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
             <Route path="/admin/reminders" element={<AdminRemindersPage />} />
             <Route path="/admin/customers" element={<AdminCustomersPage />} />
@@ -77,6 +80,7 @@ export function AppRouter() {
         {/* Public Storefront Routes */}
         <Route element={<PageShell />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/queue" element={<PublicQueuePage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/shop" element={<ShopPage />} />

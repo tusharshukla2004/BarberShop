@@ -7,6 +7,7 @@ import {
   mockSettings,
   mockBookings,
   mockCustomers,
+  mockQueueEntries,
 } from './data';
 
 // In-memory reactive collections for the MSW dev/test session
@@ -17,6 +18,7 @@ const dynamicReviews = [...mockTestimonials];
 let dynamicSettings = { ...mockSettings };
 const dynamicBookings = [...mockBookings];
 const dynamicCustomers = [...mockCustomers];
+const dynamicQueue = [...mockQueueEntries];
 
 let currentUser = {
   id: 'admin-1',
@@ -606,6 +608,133 @@ export const handlers = [
       success: true,
       message: 'Customer permanently anonymized',
     });
+  }),
+
+  // Public Queue Status (Strictly anonymous, zero PII)
+  http.get('*/api/queue/status', async () => {
+    await delay(30);
+    const waiting = dynamicQueue.filter((e) => e.status === 'waiting');
+    const inService = dynamicQueue.filter((e) => e.status === 'in_service');
+    return HttpResponse.json({
+      success: true,
+      data: {
+        isOpen: true,
+        walkInsEnabled: true,
+        publicQueueEnabled: true,
+        peopleWaiting: waiting.length,
+        inServiceCount: inService.length,
+        estimatedWaitMinutes: waiting.length * 20,
+        nextAvailableTime: '11:15 AM',
+        canBeServedBeforeClosing: true,
+        reason: null,
+      },
+    });
+  }),
+
+  // Public Join Queue
+  http.post('*/api/queue/join', async ({ request }) => {
+    const body = await request.json();
+    await delay(60);
+
+    if (body.hp_field) {
+      return HttpResponse.json({ success: false, error: 'Spam detected' }, { status: 400 });
+    }
+
+    const nextToken = (dynamicQueue[dynamicQueue.length - 1]?.tokenNumber || 0) + 1;
+    const newEntry = {
+      id: `q-${Date.now()}`,
+      tokenNumber: nextToken,
+      customerName: body.customerName,
+      phone: body.phone || '',
+      serviceId: body.serviceId,
+      barberId: body.barberId || '',
+      status: 'waiting',
+      joinedAt: new Date().toISOString(),
+      estimatedStart: '11:30 AM',
+      estimatedWaitMinutes: 25,
+      source: 'public',
+      notes: body.notes || '',
+      date: new Date().toISOString().slice(0, 10),
+    };
+
+    dynamicQueue.push(newEntry);
+    return HttpResponse.json({ success: true, data: newEntry }, { status: 201 });
+  }),
+
+  // Admin Queue List & Calculations
+  http.get('*/api/admin/queue', async ({ request }) => {
+    const url = new URL(request.url);
+    const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
+    await delay(40);
+
+    const entries = dynamicQueue.filter((e) => e.date === date || !e.date);
+    const waiting = entries.filter((e) => e.status === 'waiting');
+    const inService = entries.filter((e) => e.status === 'in_service');
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        date,
+        workingBarbersCount: dynamicBarbers.filter((b) => b.isActive).length,
+        totalWaiting: waiting.length,
+        inServiceCount: inService.length,
+        prospectEstimation: {
+          estimatedStartMinutes: 660,
+          estimatedStartTime: '11:00 AM',
+          estimatedWaitMinutes: waiting.length * 20,
+          assignedBarberId: 'barb-1',
+          assignedBarberName: 'Alex Vance',
+          canBeServedBeforeClosing: true,
+          reason: null,
+        },
+        entries,
+      },
+    });
+  }),
+
+  // Admin Add Walk-In
+  http.post('*/api/admin/queue', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+
+    const nextToken = (dynamicQueue[dynamicQueue.length - 1]?.tokenNumber || 0) + 1;
+    const newEntry = {
+      id: `q-${Date.now()}`,
+      tokenNumber: nextToken,
+      customerName: body.customerName,
+      phone: body.phone || '',
+      serviceId: body.serviceId,
+      barberId: body.barberId || '',
+      status: 'waiting',
+      joinedAt: new Date().toISOString(),
+      estimatedStart: '11:15 AM',
+      estimatedWaitMinutes: 15,
+      source: body.source || 'admin',
+      notes: body.notes || '',
+      date: new Date().toISOString().slice(0, 10),
+    };
+
+    dynamicQueue.push(newEntry);
+    return HttpResponse.json({ success: true, data: newEntry }, { status: 201 });
+  }),
+
+  // Admin Update Queue Status
+  http.patch('*/api/admin/queue/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(50);
+
+    const entry = dynamicQueue.find((e) => e.id === id);
+    if (!entry) {
+      return HttpResponse.json({ success: false, error: 'Queue entry not found' }, { status: 404 });
+    }
+
+    Object.assign(entry, body);
+    if (body.status === 'called') entry.calledAt = new Date().toISOString();
+    if (body.status === 'in_service') entry.startedAt = new Date().toISOString();
+    if (body.status === 'done') entry.completedAt = new Date().toISOString();
+
+    return HttpResponse.json({ success: true, data: entry });
   }),
 ];
 

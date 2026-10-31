@@ -11,6 +11,10 @@ import {
   createBooking,
   createBookingRequest,
 } from '../controllers/bookingController.js';
+import {
+  getPublicQueueStatus,
+  joinPublicQueue,
+} from '../controllers/queueController.js';
 import { validate } from '../middleware/validate.js';
 import {
   createBookingSchema,
@@ -19,6 +23,7 @@ import {
 } from '../schemas/booking.schema.js';
 import { reviewSchema } from '../schemas/content.schema.js';
 import { contactSchema } from '../schemas/contact.schema.js';
+import { joinPublicQueueSchema } from '../schemas/queue.schema.js';
 import { bookingLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
@@ -58,5 +63,9 @@ router.post(
   validate(createBookingRequestSchema),
   createBookingRequest
 );
+
+// Walk-in queue
+router.get('/queue/status', getPublicQueueStatus);
+router.post('/queue/join', bookingLimiter, validate(joinPublicQueueSchema), joinPublicQueue);
 
 export default router;

@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ExternalLink,
+  Clock,
 } from 'lucide-react';
 import { useAppSelector } from '@/app/hooks';
 import { selectCurrentUser, selectIsOwner } from '@/features/auth/authSlice';
@@ -33,6 +34,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/admin/queue', label: 'Walk-in Queue', icon: Clock },
     { to: '/admin/bookings', label: 'Bookings', icon: Calendar },
     { to: '/admin/reminders', label: 'Reminders', icon: Bell },
     { to: '/admin/customers', label: 'Customers', icon: Users },

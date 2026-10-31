@@ -62,6 +62,11 @@ const bookingSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    source: {
+      type: String,
+      enum: ['appointment', 'walk_in', 'admin'],
+      default: 'appointment',
+    },
     whatsappConsent: {
       type: Boolean,
       default: false,

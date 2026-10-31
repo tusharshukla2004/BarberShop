@@ -1,5 +1,7 @@
 import { Seo } from '@/components/common/Seo';
 import { Hero } from '@/features/home/Hero';
+import { LiveQueueCard } from '@/features/queue/LiveQueueCard';
+import { Container } from '@/components/ui';
 import { ServiceLocationSection } from '@/features/home/ServiceLocationSection';
 import { WorksPricingSection } from '@/features/home/WorksPricingSection';
 import { TeamSection } from '@/features/barbers/TeamSection';
@@ -28,6 +30,13 @@ export function HomePage() {
 
       {/* Hero with Appointment Request Card and Fluid Headline */}
       <Hero />
+
+      {/* Live Walk-in Queue Status Card */}
+      <div className="bg-sand/40 py-4 border-b border-border">
+        <Container>
+          <LiveQueueCard />
+        </Container>
+      </div>
 
       {/* Dark Brown Section: Service Beyond Expectation + Map + Contact */}
       <ServiceLocationSection />

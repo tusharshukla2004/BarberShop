@@ -45,6 +45,11 @@ import {
   deleteCustomer,
 } from '../controllers/customerController.js';
 import {
+  getAdminQueue,
+  addWalkIn,
+  updateQueueStatus,
+} from '../controllers/queueController.js';
+import {
   serviceSchema,
   barberSchema,
   galleryItemSchema,
@@ -62,6 +67,11 @@ import {
   updateCustomerSchema,
   customerIdParamSchema,
 } from '../schemas/customer.schema.js';
+import {
+  listQueueQuerySchema,
+  addWalkInSchema,
+  updateQueueEntrySchema,
+} from '../schemas/queue.schema.js';
 
 const router = Router();
 
@@ -88,6 +98,11 @@ router.get('/customers/:id', validate(customerIdParamSchema), getCustomerById);
 router.post('/customers', validate(createCustomerSchema), createCustomer);
 router.patch('/customers/:id', validate(updateCustomerSchema), updateCustomer);
 router.delete('/customers/:id', validate(customerIdParamSchema), deleteCustomer);
+
+// Queue management
+router.get('/queue', validate(listQueueQuerySchema), getAdminQueue);
+router.post('/queue', validate(addWalkInSchema), addWalkIn);
+router.patch('/queue/:id', validate(updateQueueEntrySchema), updateQueueStatus);
 
 // Services management
 router.post('/services', validate(serviceSchema), createService);

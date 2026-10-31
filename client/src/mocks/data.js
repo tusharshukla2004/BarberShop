@@ -337,5 +337,54 @@ export const mockCustomers = [
   },
 ];
 
+export const mockQueueEntries = [
+  {
+    id: 'q-101',
+    tokenNumber: 1,
+    customerName: 'Samir Khan',
+    phone: '9876543220',
+    serviceId: 'srv-1',
+    barberId: 'barb-1',
+    status: 'in_service',
+    joinedAt: new Date(Date.now() - 25 * 60000).toISOString(),
+    startedAt: new Date(Date.now() - 10 * 60000).toISOString(),
+    estimatedStart: '10:00 AM',
+    estimatedWaitMinutes: 0,
+    source: 'admin',
+    notes: 'Classic crop cut',
+    date: new Date().toISOString().slice(0, 10),
+  },
+  {
+    id: 'q-102',
+    tokenNumber: 2,
+    customerName: 'Rohan Sharma',
+    phone: '9876543221',
+    serviceId: 'srv-2',
+    barberId: '',
+    status: 'waiting',
+    joinedAt: new Date(Date.now() - 10 * 60000).toISOString(),
+    estimatedStart: '10:30 AM',
+    estimatedWaitMinutes: 20,
+    source: 'public',
+    notes: 'Beard trim',
+    date: new Date().toISOString().slice(0, 10),
+  },
+  {
+    id: 'q-103',
+    tokenNumber: 3,
+    customerName: 'Amit Patel',
+    phone: '9876543222',
+    serviceId: 'srv-1',
+    barberId: 'barb-2',
+    status: 'waiting',
+    joinedAt: new Date(Date.now() - 5 * 60000).toISOString(),
+    estimatedStart: '11:00 AM',
+    estimatedWaitMinutes: 35,
+    source: 'admin',
+    notes: '',
+    date: new Date().toISOString().slice(0, 10),
+  },
+];
+
 export const joinTeamBgImage =
   'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';
