@@ -192,7 +192,7 @@ export default function AdminRemindersPage() {
   const executeOpenWhatsApp = (booking) => {
     const rawTemplate =
       settings?.messageTemplates?.reminder ||
-      'Namaste {name}! Yeh ek friendly reminder hai ki aapka grooming session {shopName} par scheduled hai.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n\nKripya 5 minute pehle pahuchein. Agar koi change chahiye toh please bataiye!';
+      'Hello {name}! This is a friendly reminder that your grooming session at {shopName} is scheduled.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n\nPlease arrive 5 minutes early. Let us know if you need any adjustments!';
 
     const templateData = {
       name: booking.customerName || 'Customer',
@@ -266,11 +266,11 @@ export default function AdminRemindersPage() {
             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
               <Bell className="w-5 h-5" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold font-heading text-ink tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-medium font-heading text-ink/85 tracking-tight">
               Appointment Reminders
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-ink/70 mt-1">
+          <p className="text-xs sm:text-sm text-muted mt-1">
             Send 1-tap WhatsApp reminders to upcoming confirmed clients. Auto-refreshes every 60s.
           </p>
         </div>
@@ -305,14 +305,14 @@ export default function AdminRemindersPage() {
       <Card className="p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Day Tabs */}
-          <div className="flex items-center bg-surface p-1 rounded-lg border border-border-light">
+          <div className="inline-flex items-center bg-card/60 p-1 rounded-xl border border-border-light gap-1">
             <button
               type="button"
               onClick={() => setDay('today')}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold tracking-wider uppercase transition-colors ${
+              className={`px-4 py-1.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-all ${
                 day === 'today'
-                  ? 'bg-ink text-surface shadow-sm'
-                  : 'text-ink/70 hover:text-ink'
+                  ? 'bg-white text-ink shadow-xs border border-border-light/80'
+                  : 'text-muted hover:text-ink hover:bg-white/40'
               }`}
             >
               Today&apos;s Reminders
@@ -320,10 +320,10 @@ export default function AdminRemindersPage() {
             <button
               type="button"
               onClick={() => setDay('tomorrow')}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold tracking-wider uppercase transition-colors ${
+              className={`px-4 py-1.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-all ${
                 day === 'tomorrow'
-                  ? 'bg-ink text-surface shadow-sm'
-                  : 'text-ink/70 hover:text-ink'
+                  ? 'bg-white text-ink shadow-xs border border-border-light/80'
+                  : 'text-muted hover:text-ink hover:bg-white/40'
               }`}
             >
               Tomorrow
@@ -334,11 +334,11 @@ export default function AdminRemindersPage() {
           <div className="flex items-center gap-3 flex-wrap">
             {day === 'today' && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-ink/70 font-medium">Next:</span>
+                <span className="text-xs text-muted font-medium">Next:</span>
                 <select
                   value={hours}
                   onChange={(e) => setHours(Number(e.target.value))}
-                  className="px-2.5 py-1.5 rounded bg-surface border border-border-light text-xs font-medium text-ink focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="px-2.5 py-1.5 rounded bg-white border border-border-light text-xs font-medium text-ink focus:outline-none focus:ring-1 focus:ring-accent"
                 >
                   <option value={1}>1 Hour</option>
                   <option value={2}>2 Hours</option>
@@ -352,14 +352,14 @@ export default function AdminRemindersPage() {
 
             {/* Quick Stats Badges */}
             <div className="flex items-center gap-1.5 text-xs font-medium">
-              <span className="px-2.5 py-1 rounded bg-surface border border-border-light text-ink/70">
-                Total: <strong className="text-ink">{stats.total}</strong>
+              <span className="px-2.5 py-1 rounded bg-card/60 border border-border-light text-muted">
+                Total: <span className="font-medium text-ink/85">{stats.total}</span>
               </span>
               <span className="px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-600">
-                Pending: <strong>{stats.pendingCount}</strong>
+                Pending: <span>{stats.pendingCount}</span>
               </span>
               <span className="px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600">
-                Sent: <strong>{stats.sentCount}</strong>
+                Sent: <span>{stats.sentCount}</span>
               </span>
             </div>
           </div>
@@ -373,10 +373,10 @@ export default function AdminRemindersPage() {
             <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-600 mx-auto flex items-center justify-center mb-3">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-semibold text-ink">
+            <h3 className="text-base font-medium text-ink/80">
               All caught up! No reminders due
             </h3>
-            <p className="text-xs text-ink/70 mt-1 max-w-sm mx-auto">
+            <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
               There are no confirmed bookings in this window ({day === 'today' ? `next ${hours} hours` : 'tomorrow'}).
             </p>
             {day === 'today' && hours < 24 && (
@@ -393,7 +393,7 @@ export default function AdminRemindersPage() {
           </Card>
         ) : (
           <div className="space-y-3">
-            <div className="hidden lg:grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-bold text-ink/50 uppercase tracking-wider">
+            <div className="hidden lg:grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-medium text-muted uppercase tracking-wider">
               <div className="col-span-2">Time & Slot</div>
               <div className="col-span-3">Customer</div>
               <div className="col-span-3">Service & Barber</div>
@@ -428,15 +428,15 @@ export default function AdminRemindersPage() {
                         <Clock className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="text-sm font-bold text-ink font-mono">{booking.time}</div>
-                        <div className="text-[11px] text-ink/60">{booking.date}</div>
+                        <div className="text-sm font-medium text-ink/85 font-mono">{booking.time}</div>
+                        <div className="text-[11px] text-muted">{booking.date}</div>
                       </div>
                     </div>
 
                     {/* Customer */}
                     <div className="lg:col-span-3">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-semibold text-xs sm:text-sm text-ink">
+                        <span className="font-medium text-xs sm:text-sm text-ink/85">
                           {booking.customerName}
                         </span>
                         {booking.whatsappConsent ? (
@@ -455,8 +455,8 @@ export default function AdminRemindersPage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-ink/70 font-mono mt-0.5">
-                        <Phone className="w-3 h-3 text-ink/40" />
+                      <div className="flex items-center gap-1 text-xs text-muted font-mono mt-0.5">
+                        <Phone className="w-3 h-3 text-muted/60" />
                         <span>{booking.customerPhone}</span>
                       </div>
 
@@ -470,12 +470,12 @@ export default function AdminRemindersPage() {
 
                     {/* Service & Barber */}
                     <div className="lg:col-span-3 text-xs space-y-0.5">
-                      <div className="font-medium text-ink flex items-center gap-1">
-                        <Scissors className="w-3 h-3 text-ink/50" />
+                      <div className="font-medium text-ink/80 flex items-center gap-1">
+                        <Scissors className="w-3 h-3 text-muted" />
                         <span className="truncate">{serviceName}</span>
                       </div>
-                      <div className="text-ink/60 flex items-center gap-1">
-                        <User className="w-3 h-3 text-ink/40" />
+                      <div className="text-muted flex items-center gap-1">
+                        <User className="w-3 h-3 text-muted/60" />
                         <span className="truncate">{barberName}</span>
                       </div>
                     </div>

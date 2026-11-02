@@ -1,9 +1,16 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 /**
+ * @typedef {Object} StaffUser
+ * @property {string} id
+ * @property {string} name
+ * @property {'owner' | 'barber'} role
+ * @property {string|null} [barberId]
+ * @property {boolean} [mustChangePassword]
+ *
  * @typedef {Object} AuthState
- * @property {import('@/types').AuthUser | null} user
- * @property {'guest' | 'client' | 'admin' | 'owner' | 'barber'} role
+ * @property {StaffUser | null} user
+ * @property {'guest' | 'owner' | 'barber'} role
  * @property {'idle' | 'loading' | 'authenticated' | 'unauthenticated'} status
  */
 
@@ -19,9 +26,15 @@ export const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       const { user } = action.payload;
-      state.user = user;
-      state.role = user?.role || 'client';
-      state.status = 'authenticated';
+      state.user = user ? {
+        id: user.id || user._id,
+        name: user.name,
+        role: user.role === 'barber' ? 'barber' : 'owner',
+        barberId: user.barberId || null,
+        mustChangePassword: Boolean(user.mustChangePassword),
+      } : null;
+      state.role = state.user?.role || 'guest';
+      state.status = state.user ? 'authenticated' : 'unauthenticated';
     },
     logout: (state) => {
       state.user = null;
@@ -37,32 +50,19 @@ export const authSlice = createSlice({
 export const { setCredentials, logout, setAuthLoading } = authSlice.actions;
 
 // Base Selectors
-export const selectAuthState = (state) => state.auth;
-export const selectCurrentUser = (state) => state.auth.user;
-export const selectUserRole = (state) => state.auth.role;
-export const selectAuthStatus = (state) => state.auth.status;
+export const selectAuthState = (state) => state.auth || initialState;
+export const selectCurrentUser = (state) => state.auth?.user || null;
+export const selectUserRole = (state) => state.auth?.role || 'guest';
+export const selectAuthStatus = (state) => state.auth?.status || 'idle';
 
 // Derived Selectors
 export const selectIsAuthenticated = createSelector([selectCurrentUser], (user) => Boolean(user));
-
-export const selectIsAdmin = createSelector(
-  [selectUserRole],
-  (role) => role === 'admin' || role === 'owner'
-);
-
-export const selectIsOwner = createSelector(
-  [selectUserRole],
-  (role) => role === 'owner' || role === 'admin'
-);
-
-export const selectIsBarber = createSelector(
-  [selectUserRole],
-  (role) => role === 'barber'
-);
-
+export const selectIsOwner = createSelector([selectUserRole], (role) => role === 'owner');
+export const selectIsBarber = createSelector([selectUserRole], (role) => role === 'barber');
 export const selectCanAccessAdmin = createSelector(
   [selectUserRole],
-  (role) => ['owner', 'admin', 'barber'].includes(role)
+  (role) => role === 'owner' || role === 'barber'
 );
+export const selectIsAdmin = selectCanAccessAdmin;
 
 export default authSlice.reducer;

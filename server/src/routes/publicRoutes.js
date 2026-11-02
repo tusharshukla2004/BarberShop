@@ -18,6 +18,11 @@ import {
 import { getPublicOffers, validateOfferCode } from '../controllers/offerController.js';
 import { getPublicFaqs } from '../controllers/faqController.js';
 import {
+  getManageBookingDetails,
+  manageCancelBooking,
+  manageRescheduleBooking,
+} from '../controllers/manageBookingController.js';
+import {
   createPaymentOrder,
   verifyPayment,
   handlePaymentWebhook,
@@ -27,6 +32,14 @@ import {
   getPublicMemberships,
   getPublicWalletByToken,
 } from '../controllers/walletController.js';
+import {
+  getSitemapXml,
+  getRobotsTxt,
+  getPublicAreas,
+  getAreaBySlug,
+  getPublicPosts,
+  getPostBySlug,
+} from '../controllers/seoController.js';
 import { validate } from '../middleware/validate.js';
 import {
   createBookingSchema,
@@ -81,6 +94,11 @@ router.post(
   createBookingRequest
 );
 
+// Customer self-service: Manage booking via secret tokenized link
+router.get('/bookings/manage', bookingLimiter, getManageBookingDetails);
+router.post('/bookings/manage/cancel', bookingLimiter, manageCancelBooking);
+router.post('/bookings/manage/reschedule', bookingLimiter, manageRescheduleBooking);
+
 // Walk-in queue
 router.get('/queue/status', getPublicQueueStatus);
 router.post('/queue/join', bookingLimiter, validate(joinPublicQueueSchema), joinPublicQueue);
@@ -104,5 +122,14 @@ router.post(
 );
 router.post('/payments/verify', validate(verifyPaymentSchema), verifyPayment);
 router.post('/payments/webhook', handlePaymentWebhook);
+
+// Technical SEO, Local Areas & Blog
+router.get('/sitemap.xml', getSitemapXml);
+router.get('/robots.txt', getRobotsTxt);
+router.get('/areas', getPublicAreas);
+router.get('/locations/:areaSlug', getAreaBySlug);
+router.get('/locations/:areaSlug/:serviceSlug', getAreaBySlug);
+router.get('/posts', getPublicPosts);
+router.get('/posts/:slug', getPostBySlug);
 
 export default router;

@@ -15,11 +15,11 @@ const mockFaqsList = [
     _id: 'faq-1',
     question: {
       en: 'Do I need an appointment or can I walk in?',
-      hi: 'क्या मुझे अपॉइंटमेंट की आवश्यकता है?',
+      hi: 'Special Special Special Special Special Special?',
     },
     answer: {
       en: 'Both! You can book in advance for guaranteed zero-wait chair time, or visit us directly.',
-      hi: 'दोनों! आप पहले से बुक कर सकते हैं या सीधे आ सकते हैं।',
+      hi: 'Special! Special Special Special Special Special Special Special Special Special Special Special Special',
     },
     category: 'Booking',
     order: 1,
@@ -30,11 +30,11 @@ const mockFaqsList = [
     _id: 'faq-2',
     question: {
       en: 'What payment methods are accepted?',
-      hi: 'कौन से भुगतान स्वीकार किए जाते हैं?',
+      hi: 'Special Special Special Special Special Special Special?',
     },
     answer: {
       en: 'We accept UPI, cash, credit/debit cards, and mobile wallets.',
-      hi: 'हम UPI, नकद और कार्ड स्वीकार करते हैं।',
+      hi: 'Special UPI, Special Special Special Special Special Special',
     },
     category: 'Pricing',
     order: 2,
@@ -45,11 +45,11 @@ const mockFaqsList = [
     _id: 'faq-3',
     question: {
       en: 'What is your cancellation and reschedule policy?',
-      hi: 'आपकी रद्दीकरण नीति क्या है?',
+      hi: 'Special Special Special Special Special?',
     },
     answer: {
       en: 'You can reschedule or cancel free of charge up to 2 hours before your appointment.',
-      hi: 'आप 2 घंटे पहले तक नि:शुल्क रद्द कर सकते हैं।',
+      hi: 'Special 2 Special Special Special Special:Special Special Special Special Special',
     },
     category: 'Policies',
     order: 3,

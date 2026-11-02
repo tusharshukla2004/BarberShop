@@ -64,7 +64,7 @@ const customerMembershipSchema = new mongoose.Schema(
     },
     planName: {
       en: { type: String, default: 'VIP Membership' },
-      hi: { type: String, default: 'वीआईपी सदस्यता' },
+      hi: { type: String, default: 'VIP Membership' },
     },
     pricePaid: {
       type: Number,

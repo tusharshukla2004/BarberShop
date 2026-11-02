@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
                 No active upcoming appointments.
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[440px] overflow-y-auto overscroll-contain pr-1.5">
                 {upcomingAppointments.map((bk) => (
                   <div
                     key={bk.id}
@@ -225,7 +225,7 @@ export default function AdminDashboardPage() {
               </h2>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-[440px] overflow-y-auto overscroll-contain pr-1.5">
               {barbers.map((barber) => {
                 const bookedCount = bookings.filter(
                   (b) =>

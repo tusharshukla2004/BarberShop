@@ -90,9 +90,6 @@ export default function AdminOffersPage() {
           )}
           <div className="min-w-0">
             <p className="font-semibold text-xs text-ink truncate">{row.title?.en || 'Untitled'}</p>
-            {row.title?.hi && (
-              <p className="text-[11px] text-muted font-hindi truncate">{row.title.hi}</p>
-            )}
             {row.showOnHome && (
               <span className="inline-flex items-center gap-1 text-[10px] text-accent font-semibold mt-0.5">
                 <Sparkles className="w-2.5 h-2.5" /> Home Banner
@@ -272,8 +269,6 @@ function OfferModal({ offer, isSubmitting, onClose, onSave }) {
     usageLimit: offer.usageLimit !== null && offer.usageLimit !== undefined ? offer.usageLimit : '',
   });
 
-  const [activeLangTab, setActiveLangTab] = useState('en'); // 'en' | 'hi'
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.titleEn.trim()) return;
@@ -321,99 +316,36 @@ function OfferModal({ offer, isSubmitting, onClose, onSave }) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Form Fields (Left 7 Cols) */}
             <div className="lg:col-span-7 space-y-4">
-              {/* Language Switcher for Bilingual Fields */}
-              <div className="flex items-center justify-between border-b border-border-light pb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-ink">
-                  Bilingual Content
-                </span>
-                <div className="flex rounded-md bg-neutral-100 p-0.5 border border-border-light text-[11px]">
-                  <button
-                    type="button"
-                    onClick={() => setActiveLangTab('en')}
-                    className={`px-3 py-1 rounded transition-colors ${
-                      activeLangTab === 'en'
-                        ? 'bg-white font-semibold text-ink shadow-sm'
-                        : 'text-muted'
-                    }`}
-                  >
-                    English (Primary)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveLangTab('hi')}
-                    className={`px-3 py-1 rounded font-hindi transition-colors ${
-                      activeLangTab === 'hi'
-                        ? 'bg-white font-semibold text-ink shadow-sm'
-                        : 'text-muted'
-                    }`}
-                  >
-                    हिन्दी (Hindi)
-                  </button>
-                </div>
+              {/* Title Input */}
+              <div>
+                <label htmlFor="offer-title-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
+                  Title <span className="text-accent">*</span>
+                </label>
+                <input
+                  id="offer-title-en"
+                  type="text"
+                  required
+                  value={form.titleEn}
+                  onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
+                  placeholder="e.g. Festival Grooming Special 20% Off"
+                  className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                />
               </div>
 
-              {/* Title Input */}
-              {activeLangTab === 'en' ? (
-                <div>
-                  <label htmlFor="offer-title-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
-                    Title (English) <span className="text-accent">*</span>
-                  </label>
-                  <input
-                    id="offer-title-en"
-                    type="text"
-                    required
-                    value={form.titleEn}
-                    onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
-                    placeholder="e.g. Diwali Grooming Special 20% Off"
-                    className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-              ) : (
-                <div>
-                  <label htmlFor="offer-title-hi" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1 font-hindi">
-                    शीर्षक (Hindi Title)
-                  </label>
-                  <input
-                    id="offer-title-hi"
-                    type="text"
-                    value={form.titleHi}
-                    onChange={(e) => setForm({ ...form, titleHi: e.target.value })}
-                    placeholder="उदा. दिवाली ग्रूमिंग स्पेशल 20% छूट"
-                    className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink font-hindi focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-              )}
-
               {/* Description Input */}
-              {activeLangTab === 'en' ? (
-                <div>
-                  <label htmlFor="offer-desc-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
-                    Description (English)
-                  </label>
-                  <textarea
-                    id="offer-desc-en"
-                    rows={2}
-                    value={form.descriptionEn}
-                    onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })}
-                    placeholder="Details about services included, timing restrictions, or benefits..."
-                    className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-              ) : (
-                <div>
-                  <label htmlFor="offer-desc-hi" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1 font-hindi">
-                    विवरण (Hindi Description)
-                  </label>
-                  <textarea
-                    id="offer-desc-hi"
-                    rows={2}
-                    value={form.descriptionHi}
-                    onChange={(e) => setForm({ ...form, descriptionHi: e.target.value })}
-                    placeholder="शामिल सेवाओं, समय सीमाओं या लाभों के बारे में विवरण..."
-                    className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink font-hindi focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-              )}
+              <div>
+                <label htmlFor="offer-desc-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="offer-desc-en"
+                  rows={2}
+                  value={form.descriptionEn}
+                  onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })}
+                  placeholder="Details about services included, timing restrictions, or benefits..."
+                  className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
 
               {/* Discount Type & Value */}
               <div className="grid grid-cols-2 gap-4">
@@ -572,9 +504,6 @@ function OfferModal({ offer, isSubmitting, onClose, onSave }) {
                   <h4 className="font-display text-base uppercase tracking-wider text-ink">
                     {form.titleEn || 'Offer Title Preview'}
                   </h4>
-                  {form.titleHi && (
-                    <p className="text-[11px] text-muted font-hindi">{form.titleHi}</p>
-                  )}
                   <p className="text-xs text-muted leading-relaxed line-clamp-2">
                     {form.descriptionEn || 'Offer description will appear here as the customer browses packages.'}
                   </p>

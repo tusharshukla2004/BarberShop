@@ -4,7 +4,7 @@ import { validateAndCalculateDiscount } from './offers.js';
 describe('Offers & Discount Math Pure Function Suite', () => {
   const baseOffer = {
     id: 'off-1',
-    title: { en: 'Diwali Special', hi: 'दीवाली ऑफर' },
+    title: { en: 'Diwali Special', hi: 'Special Special' },
     type: 'percent',
     value: 20, // 20%
     appliesToServiceIds: [],

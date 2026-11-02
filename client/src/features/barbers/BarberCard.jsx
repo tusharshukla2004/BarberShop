@@ -44,21 +44,23 @@ export function BarberCard({ barber, className = '' }) {
           </div>
         )}
 
-        {/* Top-Left: Floating White Rounded Tag with Name & Role */}
-        <div className="absolute top-4 left-4 z-10 max-w-[calc(100%-70px)]">
-          <div className="inline-flex flex-col px-4 py-2.5 rounded-2xl bg-white text-ink shadow-sm border border-black/5 text-left">
+        {/* Top-Left: Compact Floating White Badge (Hugs the corner to stay completely clear of the face) */}
+        <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 max-w-[55%]">
+          <div className="inline-flex flex-col px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-white/95 backdrop-blur-xs text-ink shadow-sm border border-black/5 text-left">
             <Link
               to="/barbers"
-              className="font-semibold text-xs sm:text-sm text-ink hover:text-accent transition-colors truncate focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded-sm"
+              className="font-semibold text-[11px] sm:text-xs text-ink hover:text-accent transition-colors truncate focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded-sm leading-tight"
             >
               {name}
             </Link>
-            <span className="text-[11px] text-muted truncate mt-0.5">{role}</span>
+            <span className="text-[9px] sm:text-[10px] text-muted truncate leading-tight mt-0.5">
+              {role}
+            </span>
           </div>
         </div>
 
         {/* Top-Right: Minimalist Social Icons stacked vertically */}
-        <div className="absolute top-4 right-4 z-10 flex flex-col items-center gap-2">
+        <div className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 z-10 flex flex-col items-center gap-1.5">
           {socials.linkedin && (
             <button
               type="button"
@@ -66,7 +68,7 @@ export function BarberCard({ barber, className = '' }) {
               onClick={() => window.open(socials.linkedin, '_blank', 'noopener,noreferrer')}
               className="text-ink/60 hover:text-ink transition-colors p-1"
             >
-              <Linkedin className="h-4 w-4" />
+              <Linkedin className="h-3.5 w-3.5" />
             </button>
           )}
 
@@ -77,7 +79,7 @@ export function BarberCard({ barber, className = '' }) {
               onClick={() => window.open(socials.instagram, '_blank', 'noopener,noreferrer')}
               className="text-ink/60 hover:text-ink transition-colors p-1"
             >
-              <Instagram className="h-4 w-4" />
+              <Instagram className="h-3.5 w-3.5" />
             </button>
           )}
         </div>

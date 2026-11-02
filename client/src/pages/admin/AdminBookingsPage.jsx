@@ -103,7 +103,7 @@ export default function AdminBookingsPage() {
       label: 'Date & Time',
       render: (val, row) => (
         <div>
-          <span className="font-semibold text-ink block">{row.date}</span>
+          <span className="font-medium text-ink/85 block">{row.date}</span>
           <span className="text-muted text-[11px]">{row.startTime}</span>
         </div>
       ),
@@ -113,7 +113,7 @@ export default function AdminBookingsPage() {
       label: 'Client',
       render: (val, row) => (
         <div>
-          <span className="font-semibold text-ink block">{row.customerName}</span>
+          <span className="font-medium text-ink/85 block">{row.customerName}</span>
           <span className="text-muted text-[11px]">{row.phone}</span>
         </div>
       ),
@@ -192,7 +192,7 @@ export default function AdminBookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-wide uppercase">
+        <h1 className="font-display text-2xl sm:text-3xl text-ink/85 font-normal tracking-wide uppercase">
           APPOINTMENT RESERVATIONS
         </h1>
         <p className="text-muted text-xs sm:text-sm mt-0.5">
@@ -298,10 +298,10 @@ export default function AdminBookingsPage() {
             <div>
               <div className="flex items-center justify-between border-b border-border-light pb-4 mb-6">
                 <div>
-                  <span className="text-[10px] text-muted uppercase font-bold tracking-wider">
+                  <span className="text-[10px] text-muted uppercase font-medium tracking-wider">
                     Booking #{detailBooking.id?.slice(-6) || 'Details'}
                   </span>
-                  <h2 id="detail-drawer-title" className="font-display text-2xl text-ink">
+                  <h2 id="detail-drawer-title" className="font-display text-2xl text-ink/85 font-normal">
                     RESERVATION DETAILS
                   </h2>
                 </div>
@@ -309,7 +309,7 @@ export default function AdminBookingsPage() {
                   type="button"
                   onClick={() => setDetailBooking(null)}
                   aria-label="Close detail drawer"
-                  className="p-1.5 rounded-full hover:bg-card text-muted hover:text-ink"
+                  className="p-1.5 rounded-full hover:bg-card text-muted hover:text-ink/80"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -317,7 +317,7 @@ export default function AdminBookingsPage() {
 
               <div className="space-y-4 text-xs sm:text-sm">
                 <div className="flex items-center justify-between p-3 rounded bg-card">
-                  <span className="font-semibold text-muted">Status:</span>
+                  <span className="font-medium text-muted">Status:</span>
                   <StatusBadge status={detailBooking.status} />
                 </div>
 
@@ -330,16 +330,16 @@ export default function AdminBookingsPage() {
                 <div className="flex items-start gap-3 p-3 rounded bg-card">
                   <User className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] uppercase text-muted font-bold block">Client</span>
-                    <span className="font-semibold text-ink">{detailBooking.customerName}</span>
+                    <span className="text-[10px] uppercase text-muted font-medium block">Client</span>
+                    <span className="font-medium text-ink/85">{detailBooking.customerName}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 p-3 rounded bg-card">
                   <Phone className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] uppercase text-muted font-bold block">Phone</span>
-                    <a href={`tel:${detailBooking.phone}`} className="text-ink hover:underline">
+                    <span className="text-[10px] uppercase text-muted font-medium block">Phone</span>
+                    <a href={`tel:${detailBooking.phone}`} className="text-ink/80 hover:underline">
                       {detailBooking.phone}
                     </a>
                   </div>
@@ -349,8 +349,8 @@ export default function AdminBookingsPage() {
                   <div className="flex items-start gap-3 p-3 rounded bg-card">
                     <Mail className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-[10px] uppercase text-muted font-bold block">Email</span>
-                      <span className="text-ink">{detailBooking.email}</span>
+                      <span className="text-[10px] uppercase text-muted font-medium block">Email</span>
+                      <span className="text-ink/80">{detailBooking.email}</span>
                     </div>
                   </div>
                 )}
@@ -358,16 +358,16 @@ export default function AdminBookingsPage() {
                 <div className="flex items-start gap-3 p-3 rounded bg-card">
                   <Calendar className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] uppercase text-muted font-bold block">Appointment</span>
-                    <span className="font-semibold text-ink">{detailBooking.date} at {detailBooking.startTime}</span>
+                    <span className="text-[10px] uppercase text-muted font-medium block">Appointment</span>
+                    <span className="font-medium text-ink/85">{detailBooking.date} at {detailBooking.startTime}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 p-3 rounded bg-card">
                   <Scissors className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] uppercase text-muted font-bold block">Treatment & Master</span>
-                    <span className="text-ink font-semibold">
+                    <span className="text-[10px] uppercase text-muted font-medium block">Treatment & Master</span>
+                    <span className="text-ink/85 font-medium">
                       {serviceMap[detailBooking.serviceId] || 'Haircut'} with {barberMap[detailBooking.barberId] || 'Devraj'}
                     </span>
                   </div>

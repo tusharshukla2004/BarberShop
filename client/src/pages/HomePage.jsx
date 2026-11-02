@@ -1,11 +1,11 @@
 import { Seo } from '@/components/common/Seo';
 import { Hero } from '@/features/home/Hero';
-import { HomeOfferBanner } from '@/features/offers/HomeOfferBanner';
 import { LiveQueueCard } from '@/features/queue/LiveQueueCard';
 import { Container } from '@/components/ui';
 import { ServiceLocationSection } from '@/features/home/ServiceLocationSection';
 import { WorksPricingSection } from '@/features/home/WorksPricingSection';
 import { TeamSection } from '@/features/barbers/TeamSection';
+import { ProductsShowcaseSection } from '@/features/shop/ProductsShowcaseSection';
 import { ClosingCtaSection } from '@/features/home/ClosingCtaSection';
 import { siteConfig } from '@/config/site';
 
@@ -15,7 +15,8 @@ import { siteConfig } from '@/config/site';
  * 2. Service Beyond Expectation + Tinted Map + Contact Info
  * 3. Discover Our Works Slider + Testimonial Card + Our Prices
  * 4. Meet Our Experts (3 Barbers + Join Team Card)
- * 5. Closing CTA Band
+ * 5. Curated Barbershop Apothecary Products
+ * 6. Closing CTA Band
  *
  * @returns {JSX.Element}
  */
@@ -28,9 +29,6 @@ export function HomePage() {
         canonical="/"
         includeSchema={true}
       />
-
-      {/* Dismissible Promotional Offer Banner */}
-      <HomeOfferBanner />
 
       {/* Hero with Appointment Request Card and Fluid Headline */}
       <Hero />
@@ -50,6 +48,9 @@ export function HomePage() {
 
       {/* White Section: Meet Our Experts Team Grid */}
       <TeamSection />
+
+      {/* Cream Section: Curated Apothecary & Grooming Products */}
+      <ProductsShowcaseSection tone="cream" />
 
       {/* Dark Ink Closing Call to Action */}
       <ClosingCtaSection />

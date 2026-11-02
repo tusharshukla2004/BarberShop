@@ -143,7 +143,7 @@ export default function AdminQueuePage() {
 
     const tpl =
       settings?.messageTemplates?.queue_turn_near ||
-      'Namaste {name}! Aapka turn {shopName} me aane wala hai (Token #{tokenNumber}). Kripya reception/waiting area me rahein. Service: {service}. Barber: {barber}.';
+      'Hello {name}! Your turn at {shopName} is approaching (Token #{tokenNumber}). Please wait near the reception area. Service: {service}. Barber: {barber}.';
 
     const srv = services.find((s) => (s.id || s._id) === entry.serviceId);
     const barb = barbers.find((b) => (b.id || b._id) === entry.barberId);
@@ -173,14 +173,14 @@ export default function AdminQueuePage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-card border border-border shadow-sm">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="font-display text-2xl sm:text-3xl tracking-wide uppercase text-ink">
+            <h1 className="font-display text-2xl sm:text-3xl tracking-wide uppercase text-ink/80 font-normal">
               Walk-in Queue Board
             </h1>
             {isFetching && (
               <RefreshCw className="w-4 h-4 text-accent animate-spin" title="Syncing queue..." />
             )}
           </div>
-          <p className="text-muted text-sm mt-0.5">
+          <p className="text-muted text-xs sm:text-sm mt-0.5">
             Real-time walk-in scheduling & wait-time engine
           </p>
         </div>
@@ -220,10 +220,10 @@ export default function AdminQueuePage() {
       {/* KPI Stats Ribbon */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-card border border-border shadow-xs">
-          <div className="text-xs uppercase tracking-wider font-semibold text-muted">
+          <div className="text-xs uppercase tracking-wider font-medium text-muted">
             Waiting in Lounge
           </div>
-          <div className="text-2xl sm:text-3xl font-display text-ink mt-1">
+          <div className="text-2xl sm:text-3xl font-display text-ink/80 font-normal mt-1">
             {waitingEntries.length}
           </div>
           <div className="text-xs text-muted mt-0.5">
@@ -232,7 +232,7 @@ export default function AdminQueuePage() {
         </div>
 
         <div className="bg-white p-4 rounded-card border border-border shadow-xs">
-          <div className="text-xs uppercase tracking-wider font-semibold text-muted">
+          <div className="text-xs uppercase tracking-wider font-medium text-muted">
             In Service Chairs
           </div>
           <div className="text-2xl sm:text-3xl font-display text-accent mt-1">
@@ -244,10 +244,10 @@ export default function AdminQueuePage() {
         </div>
 
         <div className="bg-white p-4 rounded-card border border-border shadow-xs">
-          <div className="text-xs uppercase tracking-wider font-semibold text-muted">
+          <div className="text-xs uppercase tracking-wider font-medium text-muted">
             Working Barbers
           </div>
-          <div className="text-2xl sm:text-3xl font-display text-ink mt-1">
+          <div className="text-2xl sm:text-3xl font-display text-ink/80 font-normal mt-1">
             {queueData?.workingBarbersCount || activeBarbers.length}
           </div>
           <div className="text-xs text-muted mt-0.5">
@@ -270,7 +270,7 @@ export default function AdminQueuePage() {
 
       {/* Barber Chairs Board (1 Column Per Barber) */}
       <div className="space-y-3">
-        <h2 className="text-base font-semibold uppercase tracking-wider text-ink flex items-center gap-2">
+        <h2 className="text-base font-medium uppercase tracking-wider text-ink/80 flex items-center gap-2">
           <Scissors className="w-4 h-4 text-accent" />
           <span>Barber Stations</span>
         </h2>
@@ -302,7 +302,7 @@ export default function AdminQueuePage() {
                 {/* Barber Header */}
                 <div className="p-4 border-b border-border/80 flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-base text-ink">{barber.name}</h3>
+                    <h3 className="font-medium text-base text-ink/85">{barber.name}</h3>
                     <p className="text-xs text-muted">
                       {barber.specialties?.slice(0, 2).join(', ') || 'Master Stylist'}
                     </p>
@@ -323,16 +323,16 @@ export default function AdminQueuePage() {
                 <div className="p-4 space-y-4">
                   {/* Current Active Service */}
                   <div>
-                    <div className="text-xs uppercase tracking-wider font-semibold text-muted mb-1.5">
+                    <div className="text-xs uppercase tracking-wider font-medium text-muted mb-1.5">
                       Current Chair Client
                     </div>
                     {currentServing ? (
                       <div className="bg-sand/30 p-3 rounded-base border border-border/60 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-ink">
+                          <span className="font-medium text-ink/85">
                             #{currentServing.tokenNumber} {currentServing.customerName}
                           </span>
-                          <span className="text-xs bg-ink/10 px-2 py-0.5 rounded text-ink font-mono">
+                          <span className="text-xs bg-ink/5 px-2 py-0.5 rounded text-ink/75 font-mono">
                             {serviceName || 'Grooming'}
                           </span>
                         </div>
@@ -399,7 +399,7 @@ export default function AdminQueuePage() {
                         Next Up In Line
                       </div>
                       <div className="flex items-center justify-between text-xs bg-card/60 p-2 rounded">
-                        <span className="font-medium text-ink truncate">
+                        <span className="font-normal text-ink/80 truncate">
                           #{nextInLine.tokenNumber} {nextInLine.customerName}
                         </span>
                         <span className="text-muted font-mono">
@@ -419,7 +419,7 @@ export default function AdminQueuePage() {
       <div className="bg-white rounded-card border border-border shadow-xs overflow-hidden">
         <div className="p-4 sm:p-5 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold uppercase tracking-wider text-ink flex items-center gap-2">
+            <h2 className="text-base font-medium uppercase tracking-wider text-ink/80 flex items-center gap-2">
               <Clock className="w-4 h-4 text-accent" />
               <span>Waiting Lounge List ({waitingEntries.length})</span>
             </h2>
@@ -435,7 +435,7 @@ export default function AdminQueuePage() {
         {waitingEntries.length === 0 ? (
           <div className="p-10 text-center text-muted space-y-2">
             <CheckCircle className="w-10 h-10 mx-auto text-emerald-500 opacity-80" />
-            <p className="font-medium text-ink">No customers currently waiting</p>
+            <p className="font-medium text-ink/80">No customers currently waiting</p>
             <p className="text-xs">Add a walk-in or customers can join online.</p>
           </div>
         ) : (
@@ -452,16 +452,16 @@ export default function AdminQueuePage() {
                 >
                   {/* Left: Token & Details */}
                   <div className="flex items-start gap-3.5">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-ink text-white font-display text-lg sm:text-xl flex items-center justify-center shrink-0 shadow-xs">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-ink/80 text-white font-display font-normal text-lg sm:text-xl flex items-center justify-center shrink-0 shadow-xs">
                       #{entry.tokenNumber}
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-bold text-base text-ink">
+                        <span className="font-medium text-base text-ink/85">
                           {entry.customerName}
                         </span>
-                        <span className="text-xs font-mono px-2 py-0.5 rounded bg-sand/60 text-ink">
+                        <span className="text-xs font-mono px-2 py-0.5 rounded bg-sand/60 text-ink/75">
                           {srv?.name || 'Standard Cut'} ({srv?.durationMinutes || 30}m)
                         </span>
                         {entry.source === 'public' && (
@@ -479,10 +479,10 @@ export default function AdminQueuePage() {
                           </span>
                         )}
                         <span>
-                          Barber: <strong className="text-ink">{barb?.name || 'Any Barber'}</strong>
+                          Barber: <span className="font-medium text-ink/80">{barb?.name || 'Any Barber'}</span>
                         </span>
                         <span>
-                          Est. Wait: <strong className="text-accent font-mono">~{entry.estimatedWaitMinutes || 0}m</strong> ({entry.estimatedStart || 'Soon'})
+                          Est. Wait: <span className="font-medium text-accent font-mono">~{entry.estimatedWaitMinutes || 0}m</span> ({entry.estimatedStart || 'Soon'})
                         </span>
                       </div>
 
@@ -567,7 +567,7 @@ export default function AdminQueuePage() {
             <div className="p-5 border-b border-border flex items-center justify-between bg-card/40">
               <div className="flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-accent" />
-                <h3 className="font-display text-xl uppercase tracking-wide text-ink">
+                <h3 className="font-display text-xl uppercase tracking-wide text-ink/85 font-normal">
                   Add Walk-in Customer
                 </h3>
               </div>

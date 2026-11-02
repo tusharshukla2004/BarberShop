@@ -9,6 +9,9 @@ import { Review } from '../models/Review.js';
 import { Settings, DEFAULT_MESSAGE_TEMPLATES } from '../models/Settings.js';
 import { Booking } from '../models/Booking.js';
 import { Product } from '../models/Product.js';
+import Area from '../models/Area.js';
+import Post from '../models/Post.js';
+import Redirect from '../models/Redirect.js';
 import { backfillCustomers } from './backfillCustomers.js';
 
 const seedServices = [
@@ -67,7 +70,7 @@ const seedBarbers = [
     name: 'Devraj Saxena',
     role: 'Master Craftsman & Founder',
     photoUrl:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber10/800/800',
     experienceYears: 14,
     specialties: ['Classic Scissor Fades', 'Hot Lather Shaves'],
     socials: {
@@ -90,7 +93,7 @@ const seedBarbers = [
     name: 'Arbaaz Khan',
     role: 'Senior Stylist & Beard Artisan',
     photoUrl:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber11/800/800',
     experienceYears: 9,
     specialties: ['Beard Sculpting', 'Skin Tapers'],
     socials: {
@@ -112,7 +115,7 @@ const seedBarbers = [
     name: 'Neil Fernandes',
     role: 'Traditional Barber',
     photoUrl:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber12/800/800',
     experienceYears: 7,
     specialties: ['Textured Crops', 'Head Shaves'],
     socials: {
@@ -135,56 +138,56 @@ const seedBarbers = [
 const seedGallery = [
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber13/800/800',
     category: 'Haircut',
     caption: 'Low taper fade with textured top silhouette',
     order: 1,
   },
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber14/800/800',
     category: 'Beard',
     caption: 'Handcrafted beard trim and natural balm treatment',
     order: 2,
   },
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1517832606589-715753d4f323?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber15/800/800',
     category: 'Shave',
     caption: 'Hot lather lathering ritual with authentic sandalwood',
     order: 3,
   },
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber16/800/800',
     category: 'Haircut',
     caption: 'Classic gentleman side part with high razor shine',
     order: 4,
   },
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber17/800/800',
     category: 'Shave',
     caption: 'Japanese steel straight razor glide & cool aloe towel',
     order: 5,
   },
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber18/800/800',
     category: 'Treatment',
     caption: 'Deep cleansing clay treatment and scalp revitalization',
     order: 6,
   },
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1512690459411-b9245aed614b?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber19/800/800',
     category: 'Combo',
     caption: 'Full bespoke grooming transformation package',
     order: 7,
   },
   {
     imageUrl:
-      'https://images.unsplash.com/photo-1504703395950-b89145a5425b?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber20/800/800',
     category: 'Haircut',
     caption: 'Slick pompadour with razor neckline perfection',
     order: 8,
@@ -254,7 +257,7 @@ const seedProducts = [
     howToUse:
       'Rub a dime-sized amount between palms and distribute evenly through towel-dried or dry hair. Style with comb or fingers.',
     imageUrl:
-      'https://images.unsplash.com/photo-1597854710119-a5a84396736a?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber21/800/800',
     rating: 4.9,
     reviewCount: 128,
     isBestSeller: true,
@@ -275,7 +278,7 @@ const seedProducts = [
     howToUse:
       'Dispense 3–5 drops into palms and massage upward into beard hair and skin down to roots.',
     imageUrl:
-      'https://images.unsplash.com/photo-1608248597359-548451893c83?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber22/800/800',
     rating: 5.0,
     reviewCount: 214,
     isBestSeller: true,
@@ -296,7 +299,7 @@ const seedProducts = [
     howToUse:
       'Whip hot water and shave soap into a rich lather in the bowl. Apply in circular motions before razor gliding at a 30-degree angle.',
     imageUrl:
-      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber23/800/800',
     rating: 4.9,
     reviewCount: 89,
     isBestSeller: true,
@@ -317,7 +320,7 @@ const seedProducts = [
     howToUse:
       'Spray 4–6 pumps onto damp hair before blow-drying, or onto dry hair for lived-in textured hold.',
     imageUrl:
-      'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber24/800/800',
     rating: 4.8,
     reviewCount: 96,
     isBestSeller: false,
@@ -338,7 +341,7 @@ const seedProducts = [
     howToUse:
       'Scrape a thumbnail amount, warm between palms until melted, and work thoroughly through dry beard.',
     imageUrl:
-      'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber25/800/800',
     rating: 4.9,
     reviewCount: 142,
     isBestSeller: false,
@@ -358,7 +361,7 @@ const seedProducts = [
       'Hamamelis Virginiana (Witch Hazel) Water, Menthol, Aloe Barbadensis Leaf Juice, Eucalyptus Globulus Oil.',
     howToUse: 'Splash onto freshly shaved skin with clean hands and gently pat dry.',
     imageUrl:
-      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber26/800/800',
     rating: 4.8,
     reviewCount: 78,
     isBestSeller: false,
@@ -378,7 +381,7 @@ const seedProducts = [
     howToUse:
       'Unscrew head, drop in double-edge blade, screw tight, and shave using light gliding strokes with zero downward pressure.',
     imageUrl:
-      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber27/800/800',
     rating: 4.9,
     reviewCount: 165,
     isBestSeller: true,
@@ -398,7 +401,7 @@ const seedProducts = [
     howToUse:
       'Brush downward with gentle firm strokes daily, preferably after applying beard oil or balm.',
     imageUrl:
-      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber28/800/800',
     rating: 5.0,
     reviewCount: 154,
     isBestSeller: false,
@@ -418,7 +421,7 @@ const seedProducts = [
       'Full-Grain Buffalo Hide, Water-Resistant Ballistic Nylon, Solid Brass Hardware.',
     howToUse: 'Pack your razor, pomade, beard oils, and personal travel essentials securely.',
     imageUrl:
-      'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/barber29/800/800',
     rating: 5.0,
     reviewCount: 72,
     isBestSeller: true,
@@ -433,17 +436,27 @@ async function seedDatabase() {
     console.log('🌱 Starting database seeding...');
     await connectDB();
 
-    // 1. Seed Admin
-    await Admin.deleteMany({});
-    const passwordHash = await Admin.hashPassword(env.OWNER_PASSWORD);
-    await Admin.create({
-      name: env.OWNER_NAME,
-      email: env.OWNER_EMAIL.toLowerCase(),
-      passwordHash,
-      role: 'owner',
-    });
-    // eslint-disable-next-line no-console
-    console.log(`👤 Owner Admin seeded: ${env.OWNER_EMAIL}`);
+    // 1. Seed Owner Admin only if no staff account exists
+    const existingStaffCount = await Admin.countDocuments();
+    if (existingStaffCount === 0) {
+      const adminEmail = (env.ADMIN_EMAIL || env.OWNER_EMAIL).toLowerCase();
+      const adminPassword = env.ADMIN_PASSWORD || env.OWNER_PASSWORD;
+      const passwordHash = await Admin.hashPassword(adminPassword);
+      await Admin.create({
+        name: env.OWNER_NAME || 'Owner Admin',
+        email: adminEmail,
+        passwordHash,
+        role: 'owner',
+        isActive: true,
+        mustChangePassword: false,
+      });
+      // eslint-disable-next-line no-console
+      console.log(`👤 Initial Owner Admin created: ${adminEmail}`);
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(`👤 Staff accounts already exist (${existingStaffCount} accounts); preserving credentials.`);
+      await Admin.migrateStaffDefaults();
+    }
 
     // 2. Seed Services
     await Service.deleteMany({});
@@ -502,6 +515,199 @@ async function seedDatabase() {
     const insertedProducts = await Product.insertMany(seedProducts);
     // eslint-disable-next-line no-console
     console.log(`🛍️ Seeded ${insertedProducts.length} apothecary products`);
+
+    // 9. Seed Areas (Quality-Checked Local SEO Hubs)
+    await Area.deleteMany({});
+    const seedAreas = [
+      {
+        name: { en: 'Bandra West', hi: 'Bandra West' },
+        slug: 'bandra-west',
+        landmarks: ['Linking Road', 'Hill Road', 'Bandra Railway Station', 'Clock Tower'],
+        description: {
+          en: 'Bandra West is Mumbai’s quintessential neighborhood for contemporary lifestyle, seaside heritage, and discerning fashion. Modern Mane brings timeless Italian barber craft, hot towel razor shaves, and sharp low taper fades directly to gentlemen living and working across Bandra West. Enjoy an unhurried, private grooming session with cold brews and vintage music.',
+          hi: 'Bandra West is Mumbai’s premier lifestyle and heritage destination. Modern Mane delivers bespoke Italian barber craft, hot towel shaves, and precision styling.',
+        },
+        directions: {
+          en: 'Our studio is located 5 minutes walking distance from Bandra Railway Station (West exit). From Linking Road, head west down Turner Road towards the historic Clock Tower landmark. Dedicated valet parking is provided right outside our entrance at 42 Heritage Lane.',
+          hi: 'Located 5 minutes walk from Bandra Railway Station towards Turner Road near the Clock Tower. Complimentary valet parking is available.',
+        },
+        mapEmbedUrl: 'https://maps.google.com/?q=Bandra+West+Mumbai',
+        faqs: [
+          {
+            question: { en: 'Is valet or dedicated parking available in Bandra West?', hi: 'Is parking available?' },
+            answer: {
+              en: 'Yes, complimentary valet parking is available for all confirmed appointments at our studio entrance on Heritage Lane.',
+              hi: 'Yes, complimentary valet parking is available right at our studio entrance.',
+            },
+          },
+          {
+            question: { en: 'Can I walk in or is an advance appointment required?', hi: 'Are walk-ins welcome?' },
+            answer: {
+              en: 'We welcome both walk-in clients and online bookings. To skip wait times on weekends, booking online is strongly recommended.',
+              hi: 'Both walk-ins and online appointments are warmly welcomed. Online booking is recommended on weekends.',
+            },
+          },
+        ],
+        isActive: true,
+        isPublished: true,
+        qualityPassed: true,
+        qualityNotes: [],
+        order: 1,
+        seoTitle: { en: 'Best Men’s Haircut & Barber in Bandra West | Modern Mane', hi: 'Best Men’s Salon in Bandra West' },
+        seoDescription: { en: 'Looking for a premier haircut or hot towel shave in Bandra West? Visit Modern Mane on Turner Road near Clock Tower. Book online today.', hi: 'Top gentleman grooming and styling studio in Bandra West.' },
+      },
+      {
+        name: { en: 'Khar West', hi: 'Khar West' },
+        slug: 'khar-west',
+        landmarks: ['Khar Danda', '14th Road', 'Union Park', 'Khar Station'],
+        description: {
+          en: 'Situated right adjacent to Bandra, Khar West is renowned for its tranquil residential avenues, boutique cafes, and fashion studios. Clients from Khar West regularly visit Modern Mane for executive grooming combos, beard alignment, and precision scissor tapers tailored to executive standards.',
+          hi: 'Renowned for serene residential avenues and upscale cafes. Gentlemen from Khar West visit Modern Mane for unmatched grooming luxury.',
+        },
+        directions: {
+          en: 'From 14th Road or Khar Station, take S.V. Road southward into Turner Road for approximately 800 meters. Turn left into 42 Heritage Lane. Studio is marked by the illuminated gold barber pole.',
+          hi: 'Located 800m from Khar Station via S.V. Road heading into Turner Road. Studio is marked by the illuminated gold barber pole.',
+        },
+        mapEmbedUrl: 'https://maps.google.com/?q=Khar+West+Mumbai',
+        faqs: [
+          {
+            question: { en: 'How far is Modern Mane from Khar Station?', hi: 'How far is Modern Mane from Khar Station?' },
+            answer: {
+              en: 'We are roughly a 6-minute auto-rickshaw ride or a brisk 12-minute walk from Khar Station West.',
+              hi: 'Approximately a 6-minute auto ride or 12-minute walk from Khar Station West.',
+            },
+          },
+        ],
+        isActive: true,
+        isPublished: true,
+        qualityPassed: true,
+        qualityNotes: [],
+        order: 2,
+        seoTitle: { en: 'Luxury Men’s Salon Near Khar West | Modern Mane Studio', hi: 'Luxury Men’s Salon Near Khar West' },
+        seoDescription: { en: 'Top-tier gentleman haircuts, beard styling, and head shaves minutes away from Khar West. Valet parking and master stylists.', hi: 'Top-tier haircuts and beard styling studio near Khar West.' },
+      },
+    ];
+    await Area.insertMany(seedAreas);
+    // eslint-disable-next-line no-console
+    console.log(`📍 Seeded ${seedAreas.length} local area landing pages`);
+
+    // 10. Seed Blog Posts
+    await Post.deleteMany({});
+    const seedPosts = [
+      {
+        title: {
+          en: 'How to Choose the Perfect Fade Haircut for Your Face Shape',
+          hi: 'How to Choose the Perfect Fade Haircut for Your Face Shape',
+        },
+        slug: 'how-to-choose-the-perfect-fade-haircut',
+        excerpt: {
+          en: 'From low skin tapers to high drop fades, discover which fade style accentuates your jawline and personal aesthetic.',
+          hi: 'From low skin tapers to high drop fades, discover which fade style accentuates your jawline.',
+        },
+        content: {
+          en: `## Understanding the Fade Spectrum
+
+The fade has evolved from a vintage military standard into the cornerstone of modern men's hairdressing. But not all fades are created equal. The right variation should enhance your cheekbones, balance your jawline, and fit your lifestyle.
+
+### 1. The Low Taper Fade
+Best for professional workplaces, boardroom meetings, and square or oblong face shapes. The taper begins subtly right above the ears and neckline, preserving natural hair density on the sides while delivering a crisp clean perimeter.
+
+### 2. The Mid Skin Fade
+The most versatile cut in modern barbershop culture. Starting approximately one inch above the ears, it creates a striking gradient between bare skin and scissor-cut top lengths. Ideal for oval and round face shapes seeking vertical balance.
+
+### 3. The High Drop Fade
+A bold, angular cut where the taper curves downward behind the crown of the head. It pairs exceptionally well with textured crops, buzz cuts, and structured pompadours.
+
+## How to Communicate with Your Barber
+
+When you sit in the chair at Modern Mane, bring 1 or 2 reference photographs, but be open to your stylist's consultation regarding your crown growth pattern and hair thickness. Regular maintenance every 14 to 21 days keeps the transition seamlessly sharp.`,
+          hi: 'Complete guide to fade haircut varieties and selecting the ideal cut for your face structure.',
+        },
+        coverImage: 'https://picsum.photos/seed/barber30/800/800',
+        tags: ['haircut', 'fade', 'styling', 'tips'],
+        category: 'haircut',
+        author: {
+          name: 'Master Barber Ravi',
+          role: 'Senior Grooming Expert',
+          avatar: 'https://picsum.photos/seed/barber31/800/800',
+        },
+        status: 'published',
+        publishedAt: new Date(Date.now() - 86400000 * 5),
+        readingTimeMinutes: 3,
+        viewsCount: 142,
+        seoTitle: 'How to Choose the Perfect Fade Haircut | Modern Mane Guide',
+        seoDescription: 'Master guide to low, mid, and high drop fades. Learn how face shape dictates your ideal taper gradient.',
+      },
+      {
+        title: {
+          en: 'The Ultimate Beard Care Routine for Humid Coastal Climates',
+          hi: 'The Ultimate Beard Care Routine for Humid Coastal Climates',
+        },
+        slug: 'the-ultimate-beard-care-routine-for-coastal-climates',
+        excerpt: {
+          en: 'Stop beard itch and humidity frizz with cold-pressed oils, proper hydration, and straight-razor cheek alignment.',
+          hi: 'Simple and effective tips to conquer beard itch and frizz in humid weather.',
+        },
+        content: {
+          en: `## Taming Beard Frizz in Tropical Weather
+
+Living in coastal cities like Mumbai poses unique challenges for facial hair: high humidity swells the hair cuticle, while city soot and sweat clog follicles beneath the beard. Here is the daily three-step regimen prescribed by our master barbers.
+
+### 1. Wash with Sulfate-Free Cleanser
+Avoid regular hair shampoos which strip away natural sebum. Wash your beard 3 times a week with an organic beard wash infused with tea tree or peppermint oil to gently disinfect pores without drying the skin.
+
+### 2. Lock Moisture with Cold-Pressed Oil
+Apply 3 to 4 drops of lightweight jojoba or argan oil onto slightly damp beard hair. Work from the roots outwards using your fingertips, ensuring the skin beneath receives hydration.
+
+### 3. Comb with Wide-Toothed Sandalwood
+Plastic combs generate static electricity which exacerbates beard puffiness. A polished wooden comb evenly distributes natural oils and gently untangles knots without snagging.`,
+          hi: 'Professional and at-home techniques to keep your beard healthy, clean, and lustrous.',
+        },
+        coverImage: 'https://picsum.photos/seed/barber32/800/800',
+        tags: ['beard', 'grooming', 'oil', 'skincare'],
+        category: 'beard',
+        author: {
+          name: 'Vikram Singh',
+          role: 'Master Barber & Stylist',
+          avatar: 'https://picsum.photos/seed/barber33/800/800',
+        },
+        status: 'published',
+        publishedAt: new Date(Date.now() - 86400000 * 2),
+        readingTimeMinutes: 3,
+        viewsCount: 88,
+        seoTitle: 'Beard Care Routine for Coastal Weather | Modern Mane',
+        seoDescription: 'Combat beard itch, frizz, and dandruff in humid weather with master barber tips and organic oils.',
+      },
+    ];
+    await Post.insertMany(seedPosts);
+    // eslint-disable-next-line no-console
+    console.log(`📝 Seeded ${seedPosts.length} editorial blog articles`);
+
+    // 11. Seed Redirects
+    await Redirect.deleteMany({});
+    const seedRedirects = [
+      {
+        fromPath: '/mens-salon-bandra',
+        toPath: '/locations/bandra-west',
+        statusCode: 301,
+        notes: 'Legacy keyword URL redirect to new area landing page',
+      },
+      {
+        fromPath: '/beard-trim-prices',
+        toPath: '/services',
+        statusCode: 301,
+        notes: 'Old service pricing table path',
+      },
+      {
+        fromPath: '/discontinued-hair-color',
+        toPath: '',
+        statusCode: 410,
+        notes: 'Permanently discontinued chemical hair dye service',
+      },
+    ];
+    await Redirect.insertMany(seedRedirects);
+    // eslint-disable-next-line no-console
+    console.log(`🔀 Seeded ${seedRedirects.length} technical 301/410 redirect rules`);
 
     // Backfill customers and visit stats from seeded bookings
     await backfillCustomers();

@@ -14,20 +14,25 @@ export default function ProtectedRoute() {
 
   if (isLoading && status === 'idle') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-card">
+      <div className="min-h-screen flex items-center justify-center bg-ink">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-accent border-t-transparent animate-spin" />
-          <span className="text-xs uppercase tracking-widest text-muted font-semibold">
-            Verifying Session...
+          <span className="text-xs uppercase tracking-widest text-on-dark-muted font-semibold">
+            Verifying Terminal Session...
           </span>
         </div>
       </div>
     );
   }
 
-  if (!canAccess) {
-    const redirectUrl = encodeURIComponent(location.pathname + location.search);
-    return <Navigate to={`/admin/login?redirect=${redirectUrl}`} replace />;
+  if (!canAccess || !currentUser) {
+    const returnTo = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/admin/login?returnTo=${returnTo}`} replace />;
+  }
+
+  // Enforce password change on first login
+  if (currentUser.mustChangePassword && location.pathname !== '/admin/change-password') {
+    return <Navigate to="/admin/change-password" replace />;
   }
 
   return <Outlet />;

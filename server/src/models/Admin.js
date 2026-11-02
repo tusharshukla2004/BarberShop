@@ -24,6 +24,47 @@ const adminSchema = new mongoose.Schema(
       type: String,
       enum: ['owner', 'barber'],
       default: 'owner',
+      index: true,
+    },
+    barberId: {
+      type: String,
+      default: null,
+      validate: {
+        validator: function (val) {
+          if (this.role === 'barber') return Boolean(val);
+          return true;
+        },
+        message: 'barberId is required when role is barber',
+      },
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
+    mustChangePassword: {
+      type: Boolean,
+      default: false,
+    },
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+      default: null,
+    },
+    lastLoginAt: {
+      type: Date,
+      default: null,
+    },
+    passwordChangedAt: {
+      type: Date,
+      default: null,
+    },
+    tokenVersion: {
+      type: Number,
+      default: 0,
     },
   },
   {
@@ -35,6 +76,8 @@ const adminSchema = new mongoose.Schema(
         delete ret._id;
         delete ret.__v;
         delete ret.passwordHash;
+        delete ret.failedLoginAttempts;
+        delete ret.lockUntil;
         return ret;
       },
     },
@@ -45,6 +88,8 @@ const adminSchema = new mongoose.Schema(
         delete ret._id;
         delete ret.__v;
         delete ret.passwordHash;
+        delete ret.failedLoginAttempts;
+        delete ret.lockUntil;
         return ret;
       },
     },
@@ -52,12 +97,55 @@ const adminSchema = new mongoose.Schema(
 );
 
 adminSchema.methods.comparePassword = async function (password) {
+  if (!this.passwordHash) return false;
   return bcrypt.compare(password, this.passwordHash);
 };
 
+adminSchema.methods.isLocked = function () {
+  return Boolean(this.lockUntil && this.lockUntil.getTime() > Date.now());
+};
+
+adminSchema.methods.recordFailedLogin = async function () {
+  this.failedLoginAttempts = (this.failedLoginAttempts || 0) + 1;
+  if (this.failedLoginAttempts >= 5) {
+    // Lock for 15 minutes
+    this.lockUntil = new Date(Date.now() + 15 * 60 * 1000);
+  }
+  return this.save();
+};
+
+adminSchema.methods.recordSuccessfulLogin = async function () {
+  this.failedLoginAttempts = 0;
+  this.lockUntil = null;
+  this.lastLoginAt = new Date();
+  return this.save();
+};
+
 adminSchema.statics.hashPassword = async function (password) {
-  const salt = await bcrypt.genSalt(10);
+  // bcrypt cost 12
+  const salt = await bcrypt.genSalt(12);
   return bcrypt.hash(password, salt);
+};
+
+adminSchema.statics.migrateStaffDefaults = async function () {
+  await this.updateMany(
+    {
+      $or: [
+        { isActive: { $exists: false } },
+        { mustChangePassword: { $exists: false } },
+        { failedLoginAttempts: { $exists: false } },
+        { tokenVersion: { $exists: false } },
+      ],
+    },
+    {
+      $set: {
+        isActive: true,
+        mustChangePassword: false,
+        failedLoginAttempts: 0,
+        tokenVersion: 0,
+      },
+    }
+  );
 };
 
 export const Admin = mongoose.model('Admin', adminSchema);

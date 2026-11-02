@@ -17,6 +17,7 @@ import {
 import { useAppDispatch } from '@/app/hooks';
 import { selectService, setBookingStep } from '@/features/booking/bookingDraftSlice';
 import { formatPrice } from '@/lib/formatters';
+import { ProductsShowcaseSection } from '@/features/shop/ProductsShowcaseSection';
 
 export default function ServicesPage() {
   const navigate = useNavigate();
@@ -203,6 +204,14 @@ export default function ServicesPage() {
           </Container>
         </Section>
       )}
+
+      {/* Artisanal Apothecary Products Section */}
+      <ProductsShowcaseSection
+        tone="white"
+        eyebrow="Studio Formulations"
+        title="THE GROOMING APOTHECARY"
+        subtitle="Take home the master barber clays, oils, and straight razors used across our chair stations."
+      />
     </>
   );
 }

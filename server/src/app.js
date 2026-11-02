@@ -11,6 +11,9 @@ import authRoutes from './routes/authRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { redirectMiddleware } from './middleware/redirectMiddleware.js';
+import { prerenderMiddleware } from './middleware/prerenderMiddleware.js';
+import { getSitemapXml, getRobotsTxt } from './controllers/seoController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +48,13 @@ if (env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 
+// Redirects and 410 Gone middleware (intercepts legacy URLs & changed slugs)
+app.use(redirectMiddleware);
+
+// Root technical SEO assets
+app.get('/sitemap.xml', getSitemapXml);
+app.get('/robots.txt', getRobotsTxt);
+
 // Health check endpoints
 const healthHandler = (req, res) => {
   res.json({
@@ -61,6 +71,9 @@ app.get('/', healthHandler);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', publicRoutes);
+
+// Prerendering middleware for search engine crawlers and social link scrapers
+app.use(prerenderMiddleware);
 
 // Production static assets and SPA fallback for client build
 if (fs.existsSync(clientDistPath)) {

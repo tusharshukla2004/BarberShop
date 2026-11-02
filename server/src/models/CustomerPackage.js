@@ -55,7 +55,7 @@ const customerPackageSchema = new mongoose.Schema(
     },
     packageName: {
       en: { type: String, default: 'Prepaid Package' },
-      hi: { type: String, default: 'प्रीपेड पैकेज' },
+      hi: { type: String, default: 'Prepaid Package' },
     },
     sessionsTotal: {
       type: Number,

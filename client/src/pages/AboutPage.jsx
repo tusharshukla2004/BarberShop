@@ -7,6 +7,7 @@ import Section from '@/components/ui/Section';
 import SectionHeading from '@/components/ui/SectionHeading';
 import Card from '@/components/ui/Card';
 import { assets } from '@/assets';
+import { ProductsShowcaseSection } from '@/features/shop/ProductsShowcaseSection';
 
 const shopStory = {
   headline: 'THE ART OF BESPOKE GROOMING REIMAGINED',
@@ -264,6 +265,14 @@ export default function AboutPage() {
           </div>
         </Container>
       </Section>
+
+      {/* Apothecary Goods Showcase */}
+      <ProductsShowcaseSection
+        tone="sand"
+        eyebrow="Apothecary Goods"
+        title="OUR FORMULATIONS & TONICS"
+        subtitle="Every pomade, beard tonic, and shaving soap available in our shop was developed and vetted in-house."
+      />
     </>
   );
 }

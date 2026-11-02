@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -164,6 +165,27 @@ const bookingSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    bookingRef: {
+      type: String,
+      unique: true,
+      sparse: true,
+      uppercase: true,
+      trim: true,
+      index: true,
+    },
+    manageTokenHash: {
+      type: String,
+      default: null,
+      index: true,
+    },
+    manageTokenExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    rescheduleCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -173,6 +195,7 @@ const bookingSchema = new mongoose.Schema(
         ret.id = ret._id.toString();
         delete ret._id;
         delete ret.__v;
+        delete ret.manageTokenHash;
         return ret;
       },
     },
@@ -182,11 +205,35 @@ const bookingSchema = new mongoose.Schema(
         ret.id = ret._id.toString();
         delete ret._id;
         delete ret.__v;
+        delete ret.manageTokenHash;
         return ret;
       },
     },
   }
 );
+
+bookingSchema.statics.generateBookingRef = function () {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let code = 'MM-';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+};
+
+bookingSchema.statics.hashManageToken = function (token) {
+  return crypto.createHash('sha256').update(String(token)).digest('hex');
+};
+
+bookingSchema.statics.backfillBookingRefs = async function () {
+  const bookingsWithoutRef = await this.find({
+    $or: [{ bookingRef: null }, { bookingRef: { $exists: false } }],
+  });
+  for (const b of bookingsWithoutRef) {
+    b.bookingRef = this.generateBookingRef();
+    await b.save();
+  }
+};
 
 // Prevent double booking at the database level for active appointments
 bookingSchema.index(

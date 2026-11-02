@@ -3,6 +3,7 @@ import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { startSlotHoldCleaner, stopSlotHoldCleaner } from './services/slotHoldService.js';
 import { startWalletExpiryCleaner, stopWalletExpiryCleaner } from './services/walletExpiryService.js';
+import { startBlogScheduler, stopBlogScheduler } from './services/blogScheduler.js';
 
 let server;
 
@@ -11,6 +12,7 @@ async function bootstrap() {
     await connectDB();
     startSlotHoldCleaner();
     startWalletExpiryCleaner();
+    startBlogScheduler();
 
     server = app.listen(env.PORT, () => {
       // eslint-disable-next-line no-console
@@ -28,6 +30,7 @@ async function shutdown(signal) {
   console.log(`\nReceived ${signal}. Gracefully shutting down...`);
   stopSlotHoldCleaner();
   stopWalletExpiryCleaner();
+  stopBlogScheduler();
   if (server) {
     server.close(async () => {
       await disconnectDB();

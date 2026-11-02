@@ -118,11 +118,6 @@ export default function AdminFaqsPage() {
       accessor: (row) => (
         <div className="max-w-md">
           <p className="font-semibold text-xs text-ink truncate">{row.question?.en}</p>
-          {row.question?.hi && (
-            <p className="text-[11px] text-muted font-hindi truncate mt-0.5">
-              {row.question.hi}
-            </p>
-          )}
         </div>
       ),
     },
@@ -251,8 +246,6 @@ function FaqModal({ faq, isSubmitting, onClose, onSave }) {
     isPublished: faq.isPublished !== undefined ? faq.isPublished : true,
   });
 
-  const [activeLangTab, setActiveLangTab] = useState('en'); // 'en' | 'hi'
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.questionEn.trim() || !form.answerEn.trim()) return;
@@ -260,11 +253,11 @@ function FaqModal({ faq, isSubmitting, onClose, onSave }) {
     onSave({
       question: {
         en: form.questionEn.trim(),
-        hi: form.questionHi.trim(),
+        hi: form.questionHi.trim() || form.questionEn.trim(),
       },
       answer: {
         en: form.answerEn.trim(),
-        hi: form.answerHi.trim(),
+        hi: form.answerHi.trim() || form.answerEn.trim(),
       },
       category: form.category,
       isPublished: Boolean(form.isPublished),
@@ -324,100 +317,37 @@ function FaqModal({ faq, isSubmitting, onClose, onSave }) {
               </div>
             </div>
 
-            {/* Bilingual Tab Switcher */}
-            <div className="flex items-center justify-between border-b border-border-light pb-2 pt-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-ink">
-                Bilingual Language Input
-              </span>
-              <div className="flex rounded-md bg-neutral-100 p-0.5 border border-border-light text-[11px]">
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('en')}
-                  className={`px-3 py-1 rounded transition-colors ${
-                    activeLangTab === 'en'
-                      ? 'bg-white font-semibold text-ink shadow-sm'
-                      : 'text-muted'
-                  }`}
-                >
-                  English (Primary)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('hi')}
-                  className={`px-3 py-1 rounded font-hindi transition-colors ${
-                    activeLangTab === 'hi'
-                      ? 'bg-white font-semibold text-ink shadow-sm'
-                      : 'text-muted'
-                  }`}
-                >
-                  हिन्दी (Hindi)
-                </button>
-              </div>
+            {/* Question Field */}
+            <div>
+              <label htmlFor="faq-q-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
+                Question <span className="text-accent">*</span>
+              </label>
+              <input
+                id="faq-q-en"
+                type="text"
+                required
+                value={form.questionEn}
+                onChange={(e) => setForm({ ...form, questionEn: e.target.value })}
+                placeholder="e.g. Do I need an appointment or can I walk in?"
+                className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+              />
             </div>
 
-            {/* Question Field */}
-            {activeLangTab === 'en' ? (
-              <div>
-                <label htmlFor="faq-q-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
-                  Question (English) <span className="text-accent">*</span>
-                </label>
-                <input
-                  id="faq-q-en"
-                  type="text"
-                  required
-                  value={form.questionEn}
-                  onChange={(e) => setForm({ ...form, questionEn: e.target.value })}
-                  placeholder="e.g. Do I need an appointment or can I walk in?"
-                  className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-            ) : (
-              <div>
-                <label htmlFor="faq-q-hi" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1 font-hindi">
-                  प्रश्न (Hindi Question)
-                </label>
-                <input
-                  id="faq-q-hi"
-                  type="text"
-                  value={form.questionHi}
-                  onChange={(e) => setForm({ ...form, questionHi: e.target.value })}
-                  placeholder="उदा. क्या मुझे अपॉइंटमेंट की आवश्यकता है या मैं सीधे आ सकता हूँ?"
-                  className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink font-hindi focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-            )}
-
             {/* Answer Field */}
-            {activeLangTab === 'en' ? (
-              <div>
-                <label htmlFor="faq-ans-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
-                  Answer (English) <span className="text-accent">*</span>
-                </label>
-                <textarea
-                  id="faq-ans-en"
-                  rows={4}
-                  required
-                  value={form.answerEn}
-                  onChange={(e) => setForm({ ...form, answerEn: e.target.value })}
-                  placeholder="Explain your policy or answer clearly for the client..."
-                  className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-            ) : (
-              <div>
-                <label htmlFor="faq-ans-hi" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1 font-hindi">
-                  उत्तर (Hindi Answer)
-                </label>
-                <textarea
-                  id="faq-ans-hi"
-                  rows={4}
-                  value={form.answerHi}
-                  onChange={(e) => setForm({ ...form, answerHi: e.target.value })}
-                  placeholder="ग्राहक के लिए अपनी नीति या उत्तर स्पष्ट रूप से समझाएं..."
-                  className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink font-hindi focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-            )}
+            <div>
+              <label htmlFor="faq-ans-en" className="block text-xs font-semibold uppercase tracking-wider text-ink mb-1">
+                Answer <span className="text-accent">*</span>
+              </label>
+              <textarea
+                id="faq-ans-en"
+                rows={4}
+                required
+                value={form.answerEn}
+                onChange={(e) => setForm({ ...form, answerEn: e.target.value })}
+                placeholder="Explain your policy or answer clearly for the client..."
+                className="w-full px-3.5 py-2 rounded-md bg-card border border-border-light text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            </div>
 
             {/* Accordion Live Preview */}
             <div className="pt-2">
@@ -431,9 +361,6 @@ function FaqModal({ faq, isSubmitting, onClose, onSave }) {
                     <p className="font-semibold text-xs text-ink">
                       {form.questionEn || 'Question preview...'}
                     </p>
-                    {form.questionHi && (
-                      <p className="text-[11px] text-muted font-hindi">{form.questionHi}</p>
-                    )}
                   </div>
                   <span className="text-[10px] uppercase font-bold text-accent px-2 py-0.5 rounded bg-accent/10">
                     {form.category}
@@ -441,9 +368,6 @@ function FaqModal({ faq, isSubmitting, onClose, onSave }) {
                 </div>
                 <div className="pt-2 border-t border-border-light/60 text-xs text-ink/80 leading-relaxed">
                   <p>{form.answerEn || 'Answer preview will appear expanded here.'}</p>
-                  {form.answerHi && (
-                    <p className="text-muted font-hindi text-[11px] mt-1">{form.answerHi}</p>
-                  )}
                 </div>
               </div>
             </div>

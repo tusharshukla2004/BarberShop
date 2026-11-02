@@ -79,7 +79,7 @@ export default function CustomerWalletSection({ customerId, customerPhone, custo
 
   const handleShareWhatsApp = () => {
     if (!publicWalletUrl) return;
-    const msg = `Namaste ${customerName}! Here is your digital wallet pass for Modern Mane: ${publicWalletUrl}\n\nTrack your prepaid haircut sessions and loyalty stamps anytime. See you soon!`;
+    const msg = `Hello ${customerName}! Here is your digital wallet pass for Modern Mane: ${publicWalletUrl}\n\nTrack your prepaid haircut sessions and loyalty stamps anytime. See you soon!`;
     const link = buildWhatsAppLink(customerPhone, msg);
     if (link) {
       window.open(link, '_blank', 'noopener,noreferrer');

@@ -135,6 +135,43 @@ export const bookingApi = baseApi.injectEndpoints({
       invalidatesTags: ['Booking', 'Slots'],
     }),
 
+    // Customer Manage Booking Self-Service
+    getManageBookingDetails: builder.query({
+      query: ({ ref, token }) =>
+        `/bookings/manage?ref=${encodeURIComponent(ref)}&token=${encodeURIComponent(token)}`,
+      transformResponse: (response) => response?.data || response,
+      transformErrorResponse: normalizeError,
+      providesTags: (result, error, { ref }) => [{ type: 'ManagedBooking', id: ref }],
+    }),
+
+    manageCancelBooking: builder.mutation({
+      query: (data) => ({
+        url: '/bookings/manage/cancel',
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (response) => response?.data || response,
+      transformErrorResponse: normalizeError,
+      invalidatesTags: (result, error, { ref }) => [
+        { type: 'ManagedBooking', id: ref },
+        'Slots',
+      ],
+    }),
+
+    manageRescheduleBooking: builder.mutation({
+      query: (data) => ({
+        url: '/bookings/manage/reschedule',
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (response) => response?.data || response,
+      transformErrorResponse: normalizeError,
+      invalidatesTags: (result, error, { ref }) => [
+        { type: 'ManagedBooking', id: ref },
+        'Slots',
+      ],
+    }),
+
     // Admin: Get Reminders
     getReminders: builder.query({
       query: (params = {}) => {
@@ -174,6 +211,9 @@ export const {
   useUpdateBookingMutation,
   useUpdateBookingStatusMutation,
   useCancelBookingMutation,
+  useGetManageBookingDetailsQuery,
+  useManageCancelBookingMutation,
+  useManageRescheduleBookingMutation,
   useGetRemindersQuery,
   useRecordNotificationMutation,
 } = bookingApi;

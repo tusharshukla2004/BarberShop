@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import {
@@ -10,6 +11,10 @@ import {
   User,
   Phone,
   Sparkles,
+  ShieldCheck,
+  ArrowRight,
+  Copy,
+  Check,
 } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -22,13 +27,30 @@ import { useGetSettingsQuery } from '@/features/settings/settingsApi';
 import { buildWhatsAppLink, renderTemplate } from '@/lib/whatsapp';
 
 export default function StepConfirmation({ booking, onReset }) {
+  const [copiedManage, setCopiedManage] = useState(false);
   const { data: services = [] } = useGetServicesQuery();
   const { data: barbers = [] } = useGetBarbersQuery();
   const { data: settings = {} } = useGetSettingsQuery();
 
-  const refCode = booking?.id
-    ? `BK-${booking.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()}`
-    : 'BK-RES892';
+  const refCode =
+    booking?.bookingRef ||
+    (booking?.id
+      ? `BK-${booking.id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()}`
+      : 'BK-RES892');
+
+  const manageUrl =
+    booking?.manageUrl ||
+    (booking?.bookingRef && booking?.manageToken
+      ? `/booking/manage?ref=${encodeURIComponent(booking.bookingRef)}&token=${encodeURIComponent(
+          booking.manageToken
+        )}`
+      : null);
+
+  const manageFullUrl = manageUrl
+    ? manageUrl.startsWith('http')
+      ? manageUrl
+      : `${typeof window !== 'undefined' ? window.location.origin : ''}${manageUrl}`
+    : '';
 
   // Resolve service & barber details ONLY if explicitly chosen by user
   const isSpecificBarber = Boolean(
@@ -88,7 +110,7 @@ export default function StepConfirmation({ booking, onReset }) {
   const shopNumber = settings.whatsappNumber || siteConfig.whatsapp;
   const defaultConfirmationTpl =
     settings.messageTemplates?.confirmation ||
-    'Namaste {name}! Aapka appointment {shopName} me confirm ho gaya hai.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\n📍 Address: {address}\n\nSee you soon!';
+    'Hello {name}! Your appointment at {shopName} is confirmed.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\n📍 Address: {address}\n\nSee you soon!';
 
   const confirmationMessage = renderTemplate(defaultConfirmationTpl, {
     name: booking.customerName,
@@ -100,6 +122,7 @@ export default function StepConfirmation({ booking, onReset }) {
     address: siteConfig.address,
     mapsLink: siteConfig.mapsLink || '',
     bookingRef: refCode,
+    manageLink: manageFullUrl || manageUrl || '',
   });
 
   const shopWhatsAppUrl = shopNumber ? buildWhatsAppLink(shopNumber, confirmationMessage) : null;
@@ -236,6 +259,47 @@ export default function StepConfirmation({ booking, onReset }) {
                 <span className="text-accent">{formatPrice(booking.priceAtBooking)}</span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Self-Service Management Link */}
+        {manageUrl && (
+          <div className="p-4 rounded-xl bg-accent/10 border border-accent/20 text-left space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-accent flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4" />
+                Manage Your Appointment
+              </span>
+              <span className="text-[10px] text-muted font-medium">No account required</span>
+            </div>
+            <p className="text-xs text-ink/80">
+              Need to reschedule or cancel your visit? Use your private management link anytime:
+            </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <Link
+                to={manageUrl}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-accent text-white hover:bg-accent-hover text-xs font-semibold uppercase tracking-wider transition-colors"
+              >
+                <span>Manage Appointment</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(manageFullUrl || window.location.origin + manageUrl);
+                  setCopiedManage(true);
+                  setTimeout(() => setCopiedManage(false), 2000);
+                }}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-border bg-white hover:bg-neutral-50 text-xs font-medium text-ink transition-colors"
+              >
+                {copiedManage ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+                <span>{copiedManage ? 'Link Copied' : 'Copy Link'}</span>
+              </button>
+            </div>
           </div>
         )}
 

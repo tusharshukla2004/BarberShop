@@ -11,6 +11,13 @@ export default {
     extend: {
       colors: {
         ink: 'rgb(var(--color-ink-rgb, 20 16 14) / <alpha-value>)',
+        primary: {
+          DEFAULT: 'rgb(var(--color-ink-rgb, 20 16 14) / <alpha-value>)',
+          hover: 'rgb(var(--color-brown-rgb, 74 63 58) / <alpha-value>)',
+        },
+        secondary: {
+          DEFAULT: 'rgb(var(--color-cream-rgb, 235 224 200) / <alpha-value>)',
+        },
         brown: 'rgb(var(--color-brown-rgb, 74 63 58) / <alpha-value>)',
         cream: 'rgb(var(--color-cream-rgb, 235 224 200) / <alpha-value>)',
         accent: {
@@ -21,6 +28,10 @@ export default {
         card: {
           DEFAULT: 'rgb(var(--color-card-rgb, 240 236 230) / <alpha-value>)',
           border: 'var(--color-card-border)',
+        },
+        surface: {
+          DEFAULT: 'rgb(var(--color-card-rgb, 240 236 230) / <alpha-value>)',
+          elevated: 'rgb(var(--color-cream-rgb, 235 224 200) / <alpha-value>)',
         },
         muted: 'rgb(var(--color-muted-rgb, 122 122 122) / <alpha-value>)',
         'on-dark-muted': 'var(--color-on-dark-muted)',

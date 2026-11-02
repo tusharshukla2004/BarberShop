@@ -6,3 +6,5 @@ export { Input } from './Input';
 export { IconButton } from './IconButton';
 export { Card } from './Card';
 export { DateTimeField } from './DateTimeField';
+export { default as Modal } from './Modal';
+export { default as Badge } from './Badge';

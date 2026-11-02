@@ -68,13 +68,13 @@ export function CompactCustomerCard({ phone, customerId }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <User className="w-4 h-4 text-accent" />
-          <span className="font-bold text-ink uppercase tracking-wider text-[11px]">
+          <span className="font-medium text-ink/80 uppercase tracking-wider text-[11px]">
             Customer Profile
           </span>
         </div>
         <Link
           to={`/admin/customers/${customer.id || customer._id}`}
-          className="text-[11px] font-semibold text-accent hover:underline inline-flex items-center"
+          className="text-[11px] font-medium text-accent hover:underline inline-flex items-center"
         >
           View Profile <ChevronRight className="w-3 h-3 ml-0.5" />
         </Link>
@@ -82,7 +82,7 @@ export function CompactCustomerCard({ phone, customerId }) {
 
       {/* Flag / Repeat No-Show Alert Badge */}
       {(isFlagged || isHighNoShow) && (
-        <div className="p-2 rounded bg-red-500/10 border border-red-500/20 text-red-600 font-semibold text-[11px] flex items-center gap-1.5">
+        <div className="p-2 rounded bg-red-500/10 border border-red-500/20 text-red-600 font-medium text-[11px] flex items-center gap-1.5">
           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
           <span>
             {customer.flagReason || `Alert: ${noShowCount} recorded no-shows`}
@@ -93,14 +93,14 @@ export function CompactCustomerCard({ phone, customerId }) {
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
         <div>
-          <span className="text-ink/50 block">Completed Visits:</span>
-          <span className="font-bold font-mono text-ink">
+          <span className="text-muted block">Completed Visits:</span>
+          <span className="font-medium font-mono text-ink/80">
             {stats.completedVisits || 0} / {stats.totalVisits || 0}
           </span>
         </div>
         <div>
-          <span className="text-ink/50 block">Last Visit:</span>
-          <span className="font-medium text-ink truncate block">
+          <span className="text-muted block">Last Visit:</span>
+          <span className="font-normal text-ink/80 truncate block">
             {formatDate(stats.lastVisitAt)}
           </span>
         </div>

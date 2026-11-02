@@ -14,6 +14,12 @@ import {
   mockPackages,
   mockMembershipPlans,
   mockCustomerWallet,
+  mockAreas,
+  mockPosts,
+  mockRedirects,
+  mockSeoHealthReport,
+  mockGbpHelpers,
+  mockProducts,
 } from './data';
 
 // In-memory reactive collections for the MSW dev/test session
@@ -31,6 +37,10 @@ const dynamicPayments = [...mockPayments];
 const dynamicPackages = [...mockPackages];
 const dynamicMembershipPlans = [...mockMembershipPlans];
 const dynamicCustomerWallets = { '60d5ec49f1b2c8b1f8e4e1a1': { ...mockCustomerWallet } };
+const dynamicAreas = [...mockAreas];
+const dynamicPosts = [...mockPosts];
+const dynamicRedirects = [...mockRedirects];
+const dynamicProducts = [...mockProducts];
 
 let currentUser = {
   id: 'admin-1',
@@ -38,6 +48,43 @@ let currentUser = {
   email: 'owner@barbershop.com',
   role: 'owner',
 };
+
+let dynamicStaffUsers = [
+  {
+    id: 'admin-1',
+    _id: 'admin-1',
+    name: 'Devraj Saxena',
+    email: 'owner@barbershop.com',
+    role: 'owner',
+    isActive: true,
+    mustChangePassword: false,
+    lastLoginAt: new Date().toISOString(),
+  },
+  {
+    id: 'barb-2',
+    _id: 'barb-2',
+    name: 'Arbaaz Khan',
+    email: 'barber@barbershop.com',
+    role: 'barber',
+    barberId: 'barb-2',
+    isActive: true,
+    mustChangePassword: false,
+    lastLoginAt: new Date().toISOString(),
+  },
+];
+
+let dynamicAuditLogs = [
+  {
+    _id: 'audit-1',
+    action: 'LOGIN_SUCCESS',
+    actorEmail: 'owner@barbershop.com',
+    actorRole: 'owner',
+    ip: '127.0.0.1',
+    status: 'SUCCESS',
+    details: { message: 'Owner session started' },
+    createdAt: new Date().toISOString(),
+  },
+];
 
 /**
  * Standard operating schedule slots generation helper
@@ -74,28 +121,58 @@ function generateDeterministicSlots(date, barberId) {
 }
 
 export const handlers = [
-  // --- AUTH ENDPOINTS ---
+  // --- AUTH ENDPOINTS (Staff Only: owner & barber) ---
   http.post('*/api/auth/login', async ({ request }) => {
     const body = await request.json();
     await delay(50);
 
-    const email = body.email?.toLowerCase();
-    const isBarber = email?.includes('barber');
+    const email = body.email?.toLowerCase().trim();
+    const user = dynamicStaffUsers.find((u) => u.email.toLowerCase() === email);
+
+    if (!user || !user.isActive) {
+      return HttpResponse.json(
+        { success: false, message: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
 
     currentUser = {
-      id: isBarber ? 'barb-2' : 'admin-1',
-      name: isBarber ? 'Arbaaz Khan' : 'Devraj Saxena',
-      email: body.email,
-      role: isBarber ? 'barber' : 'owner',
+      id: user.id || user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      barberId: user.barberId,
+      mustChangePassword: user.mustChangePassword,
     };
 
     return HttpResponse.json({
       success: true,
       data: {
         user: currentUser,
-        token: 'mock-jwt-token-xyz',
       },
       message: 'Signed in successfully',
+    });
+  }),
+
+  // Removed public registration returns 404
+  http.post('*/api/auth/register', async () => {
+    return HttpResponse.json(
+      { success: false, message: 'Not found' },
+      { status: 404 }
+    );
+  }),
+
+  http.post('*/api/auth/refresh', async () => {
+    await delay(30);
+    if (!currentUser) {
+      return HttpResponse.json(
+        { success: false, message: 'Invalid refresh session' },
+        { status: 401 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: { user: currentUser },
     });
   }),
 
@@ -109,10 +186,10 @@ export const handlers = [
   }),
 
   http.get('*/api/auth/me', async () => {
-    await delay(50);
+    await delay(30);
     if (!currentUser) {
       return HttpResponse.json(
-        { success: false, error: 'Unauthorized' },
+        { success: false, message: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -120,6 +197,202 @@ export const handlers = [
       success: true,
       data: { user: currentUser },
     });
+  }),
+
+  http.post('*/api/auth/change-password', async ({ request }) => {
+    await delay(50);
+    if (!currentUser) {
+      return HttpResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+    const body = await request.json();
+    if (!body.newPassword || body.newPassword.length < 10) {
+      return HttpResponse.json(
+        { success: false, message: 'New password must be at least 10 characters' },
+        { status: 400 }
+      );
+    }
+
+    const user = dynamicStaffUsers.find((u) => (u.id || u._id) === currentUser.id);
+    if (user) {
+      user.mustChangePassword = false;
+    }
+    currentUser.mustChangePassword = false;
+
+    return HttpResponse.json({
+      success: true,
+      data: { user: currentUser },
+      message: 'Password changed successfully',
+    });
+  }),
+
+  // Staff Management (Owner only)
+  http.get('*/api/admin/users', async () => {
+    await delay(50);
+    return HttpResponse.json({
+      success: true,
+      data: dynamicStaffUsers,
+    });
+  }),
+
+  http.post('*/api/admin/users', async ({ request }) => {
+    const body = await request.json();
+    await delay(50);
+
+    const newUser = {
+      id: 'staff-' + Date.now(),
+      _id: 'staff-' + Date.now(),
+      name: body.name,
+      email: body.email,
+      role: body.role,
+      barberId: body.barberId,
+      isActive: true,
+      mustChangePassword: true,
+      lastLoginAt: null,
+    };
+    dynamicStaffUsers.push(newUser);
+
+    return HttpResponse.json({
+      success: true,
+      data: newUser,
+      message: 'Staff member created successfully',
+    });
+  }),
+
+  http.patch('*/api/admin/users/:id', async ({ params, request }) => {
+    const { id } = params;
+    const patch = await request.json();
+    await delay(50);
+
+    const target = dynamicStaffUsers.find((u) => (u.id || u._id) === id);
+    if (!target) {
+      return HttpResponse.json({ success: false, message: 'Staff member not found' }, { status: 404 });
+    }
+
+    Object.assign(target, patch);
+    return HttpResponse.json({
+      success: true,
+      data: target,
+      message: 'Staff member updated',
+    });
+  }),
+
+  http.post('*/api/admin/users/:id/reset-password', async ({ params }) => {
+    const { id } = params;
+    await delay(50);
+
+    const target = dynamicStaffUsers.find((u) => (u.id || u._id) === id);
+    if (!target) {
+      return HttpResponse.json({ success: false, message: 'Staff member not found' }, { status: 404 });
+    }
+    target.mustChangePassword = true;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Password reset successfully',
+    });
+  }),
+
+  // Audit Logs (Owner only)
+  http.get('*/api/admin/audit-logs', async () => {
+    await delay(50);
+    return HttpResponse.json({
+      success: true,
+      data: {
+        logs: dynamicAuditLogs,
+        pagination: { page: 1, limit: 25, total: dynamicAuditLogs.length, pages: 1 },
+      },
+    });
+  }),
+
+  // --- CUSTOMER MANAGE BOOKING SELF-SERVICE ---
+  http.get('*/api/bookings/manage', async ({ request }) => {
+    await delay(50);
+    const url = new URL(request.url);
+    const ref = url.searchParams.get('ref');
+    const token = url.searchParams.get('token');
+
+    if (!ref || !token) {
+      return HttpResponse.json({ success: false, message: 'Booking not found or link has expired.' }, { status: 404 });
+    }
+
+    const booking = dynamicBookings.find(
+      (b) => b.bookingRef?.toUpperCase() === ref.toUpperCase() || b.id === ref
+    ) || dynamicBookings[0];
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        bookingRef: booking.bookingRef || 'MM-AB12CD',
+        customerName: booking.customerName || 'Test Customer',
+        phone: '91******3210',
+        serviceName: booking.serviceName || 'Executive Haircut',
+        serviceId: booking.serviceId || 'srv-1',
+        barberName: booking.barberName || 'Devraj Saxena',
+        barberId: booking.barberId || 'barb-1',
+        date: booking.date || '2026-11-05',
+        startTime: booking.startTime || '10:00 AM',
+        endTime: booking.endTime || '10:45 AM',
+        status: booking.status || 'confirmed',
+        price: booking.priceAtBooking || 650,
+        rescheduleCount: booking.rescheduleCount || 0,
+        maxReschedules: 2,
+        cancellationPolicyHours: 2,
+        shopInfo: {
+          name: 'Modern Mane Barbershop',
+          phone: '+91 98765 43210',
+          address: '123 Luxury Lane, Indiranagar, Bangalore',
+        },
+      },
+    });
+  }),
+
+  http.post('*/api/bookings/manage/cancel', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    if (!body.ref || !body.token) {
+      return HttpResponse.json({ success: false, message: 'Booking not found' }, { status: 404 });
+    }
+    const booking = dynamicBookings.find(
+      (b) => b.bookingRef?.toUpperCase() === body.ref.toUpperCase() || b.id === body.ref
+    );
+    if (booking) {
+      booking.status = 'cancelled';
+    }
+    return HttpResponse.json({
+      success: true,
+      data: { status: 'cancelled' },
+      message: 'Appointment cancelled successfully',
+    });
+  }),
+
+  http.post('*/api/bookings/manage/reschedule', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    if (!body.ref || !body.token || !body.newDate || !body.newStartTime) {
+      return HttpResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
+    }
+    const booking = dynamicBookings.find(
+      (b) => b.bookingRef?.toUpperCase() === body.ref.toUpperCase() || b.id === body.ref
+    );
+    if (booking) {
+      booking.date = body.newDate;
+      booking.startTime = body.newStartTime;
+      if (body.newEndTime) booking.endTime = body.newEndTime;
+      booking.rescheduleCount = (booking.rescheduleCount || 0) + 1;
+    }
+    return HttpResponse.json({
+      success: true,
+      data: { status: 'rescheduled' },
+      message: 'Appointment rescheduled successfully',
+    });
+  }),
+
+  // Removed legacy customer routes return 404
+  http.all('*/api/customer/*', async () => {
+    return HttpResponse.json(
+      { success: false, message: 'Customer endpoints have been deprecated.' },
+      { status: 404 }
+    );
   }),
 
   // --- PUBLIC ENDPOINTS ---
@@ -161,6 +434,87 @@ export const handlers = [
       success: true,
       data: dynamicSettings,
     });
+  }),
+
+  // Products
+  http.get('*/api/products', async ({ request }) => {
+    await delay(50);
+    const url = new URL(request.url);
+    const category = url.searchParams.get('category');
+    const search = url.searchParams.get('search');
+    const sort = url.searchParams.get('sort');
+
+    let result = [...dynamicProducts];
+    if (category && category !== 'All') {
+      result = result.filter((p) => p.category?.toLowerCase() === category.toLowerCase());
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name?.toLowerCase().includes(q) ||
+          p.tagline?.toLowerCase().includes(q) ||
+          p.description?.toLowerCase().includes(q)
+      );
+    }
+    if (sort === 'price-asc') {
+      result.sort((a, b) => a.price - b.price);
+    } else if (sort === 'price-desc') {
+      result.sort((a, b) => b.price - a.price);
+    } else if (sort === 'rating') {
+      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    }
+    return HttpResponse.json({
+      success: true,
+      data: result,
+    });
+  }),
+
+  http.get('*/api/products/:id', async ({ params }) => {
+    await delay(50);
+    const product = dynamicProducts.find((p) => p.id === params.id || p._id === params.id);
+    if (!product) {
+      return HttpResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    }
+    return HttpResponse.json({
+      success: true,
+      data: product,
+    });
+  }),
+
+  http.post('*/api/admin/products', async ({ request }) => {
+    await delay(50);
+    const body = await request.json();
+    const newProd = {
+      ...body,
+      id: `prod-${Date.now()}`,
+      _id: `prod-${Date.now()}`,
+      rating: body.rating || 5.0,
+      reviewCount: body.reviewCount || 0,
+    };
+    dynamicProducts.unshift(newProd);
+    return HttpResponse.json({ success: true, data: newProd }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/products/:id', async ({ params, request }) => {
+    await delay(50);
+    const body = await request.json();
+    const idx = dynamicProducts.findIndex((p) => p.id === params.id || p._id === params.id);
+    if (idx === -1) {
+      return HttpResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    }
+    dynamicProducts[idx] = { ...dynamicProducts[idx], ...body };
+    return HttpResponse.json({ success: true, data: dynamicProducts[idx] });
+  }),
+
+  http.delete('*/api/admin/products/:id', async ({ params }) => {
+    await delay(50);
+    const idx = dynamicProducts.findIndex((p) => p.id === params.id || p._id === params.id);
+    if (idx === -1) {
+      return HttpResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    }
+    dynamicProducts.splice(idx, 1);
+    return HttpResponse.json({ success: true, message: 'Product deleted' });
   }),
 
   // Slots
@@ -1090,7 +1444,7 @@ export const handlers = [
       _id: `off-${Date.now()}`,
       title: {
         en: `Copy of ${original.title.en}`,
-        hi: original.title.hi ? `प्रतिलिपि: ${original.title.hi}` : '',
+        hi: original.title.hi ? `Copy of ${original.title.hi}` : `Copy of ${original.title.en}`,
       },
       promoCode: original.promoCode ? `${original.promoCode}_COPY` : '',
       isActive: false,
@@ -1652,6 +2006,213 @@ export const handlers = [
         loyaltyRewardsGiven: 6,
       },
     });
+  }),
+
+  // Prompt 20: SEO, Local Landing Pages, Blog & Technical Redirects
+  http.get('*/api/areas', async () => {
+    await delay(30);
+    return HttpResponse.json({
+      success: true,
+      data: dynamicAreas.filter((a) => a.isActive && a.isPublished),
+    });
+  }),
+
+  http.get('*/api/locations/:areaSlug/:serviceSlug?', async ({ params }) => {
+    await delay(30);
+    const { areaSlug, serviceSlug } = params;
+    const area = dynamicAreas.find((a) => a.slug === areaSlug);
+    if (!area) {
+      return HttpResponse.json({ success: false, error: 'Area not found' }, { status: 404 });
+    }
+    const service = serviceSlug
+      ? dynamicServices.find((s) => s.slug === serviceSlug || s.id === serviceSlug)
+      : null;
+    return HttpResponse.json({
+      success: true,
+      data: {
+        area,
+        selectedService: service,
+        allServices: dynamicServices,
+        nearbyAreas: dynamicAreas.filter((a) => a.slug !== areaSlug),
+      },
+    });
+  }),
+
+  http.get('*/api/posts', async ({ request }) => {
+    await delay(30);
+    const url = new URL(request.url);
+    const category = url.searchParams.get('category');
+    const tag = url.searchParams.get('tag');
+
+    let posts = dynamicPosts.filter((p) => p.status === 'published');
+    if (category) {
+      posts = posts.filter((p) => p.category === category);
+    }
+    if (tag) {
+      posts = posts.filter((p) => p.tags?.includes(tag));
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        posts,
+        pagination: { page: 1, limit: 10, total: posts.length, pages: 1 },
+        categories: ['haircut', 'beard', 'styling', 'grooming', 'trends', 'news'],
+        tags: ['haircut', 'fade', 'styling', 'beard', 'grooming', 'oil'],
+      },
+    });
+  }),
+
+  http.get('*/api/posts/:slug', async ({ params }) => {
+    await delay(30);
+    const { slug } = params;
+    const post = dynamicPosts.find((p) => p.slug === slug);
+    if (!post) {
+      return HttpResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
+    }
+    const relatedPosts = dynamicPosts.filter((p) => p.id !== post.id && p.category === post.category);
+    return HttpResponse.json({
+      success: true,
+      data: { post, relatedPosts },
+    });
+  }),
+
+  // Admin Areas
+  http.get('*/api/admin/areas', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: dynamicAreas });
+  }),
+
+  http.post('*/api/admin/areas', async ({ request }) => {
+    const body = await request.json();
+    await delay(30);
+    const newArea = {
+      ...body,
+      id: `area-${Date.now()}`,
+      _id: `area-${Date.now()}`,
+      qualityPassed: true,
+      qualityNotes: [],
+    };
+    dynamicAreas.unshift(newArea);
+    return HttpResponse.json({ success: true, data: newArea }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/areas/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(30);
+    const idx = dynamicAreas.findIndex((a) => a.id === id || a._id === id);
+    if (idx !== -1) {
+      dynamicAreas[idx] = { ...dynamicAreas[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicAreas[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Area not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/areas/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(30);
+    const idx = dynamicAreas.findIndex((a) => a.id === id || a._id === id);
+    if (idx !== -1) {
+      dynamicAreas.splice(idx, 1);
+    }
+    return HttpResponse.json({ success: true, message: 'Deleted' });
+  }),
+
+  // Admin Posts
+  http.get('*/api/admin/posts', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: dynamicPosts });
+  }),
+
+  http.post('*/api/admin/posts', async ({ request }) => {
+    const body = await request.json();
+    await delay(30);
+    const newPost = {
+      ...body,
+      id: `post-${Date.now()}`,
+      _id: `post-${Date.now()}`,
+      readingTimeMinutes: 3,
+      viewsCount: 0,
+      status: body.status || 'draft',
+      publishedAt: body.publishedAt || new Date().toISOString(),
+    };
+    dynamicPosts.unshift(newPost);
+    return HttpResponse.json({ success: true, data: newPost }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/posts/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(30);
+    const idx = dynamicPosts.findIndex((p) => p.id === id || p._id === id);
+    if (idx !== -1) {
+      dynamicPosts[idx] = { ...dynamicPosts[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicPosts[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/posts/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(30);
+    const idx = dynamicPosts.findIndex((p) => p.id === id || p._id === id);
+    if (idx !== -1) {
+      dynamicPosts.splice(idx, 1);
+    }
+    return HttpResponse.json({ success: true, message: 'Deleted' });
+  }),
+
+  // Admin Redirects
+  http.get('*/api/admin/redirects', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: dynamicRedirects });
+  }),
+
+  http.post('*/api/admin/redirects', async ({ request }) => {
+    const body = await request.json();
+    await delay(30);
+    const newRedir = {
+      ...body,
+      id: `redir-${Date.now()}`,
+      _id: `redir-${Date.now()}`,
+      hitCount: 0,
+    };
+    dynamicRedirects.unshift(newRedir);
+    return HttpResponse.json({ success: true, data: newRedir }, { status: 201 });
+  }),
+
+  http.put('*/api/admin/redirects/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    await delay(30);
+    const idx = dynamicRedirects.findIndex((r) => r.id === id || r._id === id);
+    if (idx !== -1) {
+      dynamicRedirects[idx] = { ...dynamicRedirects[idx], ...body };
+      return HttpResponse.json({ success: true, data: dynamicRedirects[idx] });
+    }
+    return HttpResponse.json({ success: false, error: 'Redirect not found' }, { status: 404 });
+  }),
+
+  http.delete('*/api/admin/redirects/:id', async ({ params }) => {
+    const { id } = params;
+    await delay(30);
+    const idx = dynamicRedirects.findIndex((r) => r.id === id || r._id === id);
+    if (idx !== -1) {
+      dynamicRedirects.splice(idx, 1);
+    }
+    return HttpResponse.json({ success: true, message: 'Deleted' });
+  }),
+
+  // Admin SEO Health & GBP
+  http.get('*/api/admin/seo/health', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: mockSeoHealthReport });
+  }),
+
+  http.get('*/api/admin/seo/gbp', async () => {
+    await delay(30);
+    return HttpResponse.json({ success: true, data: mockGbpHelpers });
   }),
 ];
 

@@ -19,6 +19,11 @@ import {
   HelpCircle,
   CreditCard,
   Package as PackageIcon,
+  Globe,
+  BookOpen,
+  UserCheck,
+  ShieldCheck,
+  KeyRound,
 } from 'lucide-react';
 import { useAppSelector } from '@/app/hooks';
 import { selectCurrentUser, selectIsOwner } from '@/features/auth/authSlice';
@@ -43,15 +48,19 @@ export default function AdminLayout() {
     { to: '/admin/bookings', label: 'Bookings', icon: Calendar },
     { to: '/admin/reminders', label: 'Reminders', icon: Bell },
     { to: '/admin/customers', label: 'Customers', icon: Users },
-    { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
-    { to: '/admin/payments', label: 'Payments', icon: CreditCard },
-    { to: '/admin/packages-plans', label: 'Packages & Plans', icon: PackageIcon },
     ...(isOwner
       ? [
+          { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
+          { to: '/admin/staff', label: 'Staff Accounts', icon: UserCheck },
+          { to: '/admin/audit-logs', label: 'Audit Logs', icon: ShieldCheck },
+          { to: '/admin/payments', label: 'Payments', icon: CreditCard },
+          { to: '/admin/packages-plans', label: 'Packages & Plans', icon: PackageIcon },
           { to: '/admin/services', label: 'Services', icon: Scissors },
           { to: '/admin/barbers', label: 'Barbers', icon: Users },
           { to: '/admin/offers', label: 'Offers', icon: Tag },
           { to: '/admin/faqs', label: 'FAQs', icon: HelpCircle },
+          { to: '/admin/blog', label: 'Blog Journal', icon: BookOpen },
+          { to: '/admin/seo', label: 'SEO & Local', icon: Globe },
           { to: '/admin/gallery', label: 'Gallery', icon: Image },
           { to: '/admin/reviews', label: 'Reviews', icon: Star },
           { to: '/admin/settings', label: 'Settings', icon: Settings },
@@ -60,7 +69,7 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-card/40 flex flex-col md:flex-row text-ink">
+    <div className="min-h-screen md:h-screen md:overflow-hidden bg-card/40 flex flex-col md:flex-row text-ink">
       <Seo title="Admin Console | Sovereign Barbershop" noindex={true} />
       {/* Mobile Top Bar */}
       <div className="md:hidden bg-ink text-white px-4 py-3 flex items-center justify-between border-b border-border-dark sticky top-0 z-40">
@@ -81,11 +90,11 @@ export default function AdminLayout() {
 
       {/* Sidebar (Desktop + Mobile Drawer) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-ink text-white flex flex-col justify-between transition-transform duration-300 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-ink text-white flex flex-col justify-between transition-transform duration-300 md:static md:translate-x-0 md:h-screen md:overflow-y-auto overscroll-contain shrink-0 ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div>
+        <div className="flex-1">
           {/* Brand header */}
           <div className="p-6 border-b border-border-dark flex items-center justify-between">
             <Link to="/admin" className="flex items-center gap-2.5">
@@ -138,7 +147,7 @@ export default function AdminLayout() {
         </div>
 
         {/* User profile & footer */}
-        <div className="p-4 border-t border-border-dark space-y-3">
+        <div className="p-4 border-t border-border-dark space-y-3 shrink-0">
           <div className="flex items-center justify-between text-xs px-2">
             <div>
               <p className="font-semibold text-white truncate max-w-[140px]">
@@ -149,15 +158,25 @@ export default function AdminLayout() {
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              title="Sign Out"
-              className="p-1.5 rounded text-on-dark-muted hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <Link
+                to="/admin/change-password"
+                title="Change Staff Password"
+                className="p-1.5 rounded text-on-dark-muted hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <KeyRound className="w-4 h-4" />
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                title="Sign Out"
+                className="p-1.5 rounded text-on-dark-muted hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           <Link
@@ -172,7 +191,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Panel Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-y-auto overscroll-contain">
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>

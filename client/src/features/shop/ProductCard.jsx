@@ -27,6 +27,10 @@ export function ProductCard({ product, onQuickView, onAddToCart }) {
           src={imageUrl}
           alt={name}
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = 'https://placehold.co/800x800/1a1a1a/d4a843?text=Product';
+          }}
           className="h-full w-full object-cover object-center transition-transform duration-slow group-hover:scale-105"
         />
 

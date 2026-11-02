@@ -83,7 +83,7 @@ export default function AdminCustomersPage() {
   const handleSendRebookingNudge = (cust) => {
     const template =
       settings?.messageTemplates?.rebooking_nudge ||
-      'Namaste {name}! {shopName} se yaad dila rahe hain ki aapka last haircut lagbhag {lastVisitAgo} hua tha. Fresh haircut aur styling ke liye aaj hi slot book karein: {bookingLink}';
+      'Hello {name}! Gentle reminder from {shopName} that your last haircut was about {lastVisitAgo}. Ready for a fresh haircut and styling? Book your slot today: {bookingLink}';
     const message = renderTemplate(template, {
       name: cust.name,
       shopName: 'Modern Mane Luxury Barber Studio',
@@ -199,11 +199,11 @@ export default function AdminCustomersPage() {
             <div className="p-2 rounded-lg bg-accent/15 text-accent border border-accent/30">
               <Users className="w-5 h-5" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold font-heading text-ink tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-medium font-heading text-ink/85 tracking-tight">
               Customer Directory
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-ink/70 mt-1">
+          <p className="text-xs sm:text-sm text-muted mt-1">
             Client profiles, visit frequency, barbershop notes, and repeat history.
           </p>
         </div>
@@ -259,7 +259,7 @@ export default function AdminCustomersPage() {
         <div className="space-y-4">
           <Card className="p-5">
             <div className="mb-4">
-              <h2 className="text-base font-bold text-ink">Due for Visit (Over 4 Weeks Since Last Appointment)</h2>
+              <h2 className="text-base font-medium text-ink/85">Due for Visit (Over 4 Weeks Since Last Appointment)</h2>
               <p className="text-xs text-muted">
                 One-tap WhatsApp button pre-fills a friendly Hinglish rebooking reminder with customer name and booking link.
               </p>
@@ -275,11 +275,11 @@ export default function AdminCustomersPage() {
                   <div key={cust.id} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-ink text-sm">{cust.name}</span>
+                        <span className="font-medium text-ink/85 text-sm">{cust.name}</span>
                         <span className="text-xs text-muted font-mono">{cust.phone}</span>
                       </div>
                       <div className="text-xs text-muted mt-0.5">
-                        Last visit: <strong className="text-amber-700">{cust.lastVisitAgo}</strong> ({cust.daysSinceVisit} days ago) · {cust.stats?.completedVisits || 0} lifetime visits
+                        Last visit: <strong className="text-amber-700 font-medium">{cust.lastVisitAgo}</strong> ({cust.daysSinceVisit} days ago) · {cust.stats?.completedVisits || 0} lifetime visits
                       </div>
                     </div>
 
@@ -303,7 +303,7 @@ export default function AdminCustomersPage() {
         <div className="space-y-4">
           <Card className="p-5">
             <div className="mb-4">
-              <h2 className="text-base font-bold text-ink">Upcoming Birthdays (Next 7 Days)</h2>
+              <h2 className="text-base font-medium text-ink/85">Upcoming Birthdays (Next 7 Days)</h2>
               <p className="text-xs text-muted">
                 Congratulate your clients on their birthday with a one-tap WhatsApp greeting (consent verified).
               </p>
@@ -319,14 +319,14 @@ export default function AdminCustomersPage() {
                   <div key={cust.id} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-ink text-sm flex items-center gap-1.5">
+                        <span className="font-medium text-ink/85 text-sm flex items-center gap-1.5">
                           <Cake className="w-4 h-4 text-pink-500" />
                           {cust.name}
                         </span>
                         <span className="text-xs text-muted font-mono">{cust.phone}</span>
                       </div>
                       <div className="text-xs text-muted mt-0.5">
-                        Birthday: <strong className="text-pink-600">{cust.birthdayFormatted}</strong> ({cust.daysUntilBirthday === 0 ? 'Today! 🎉' : `in ${cust.daysUntilBirthday} days`})
+                        Birthday: <strong className="text-pink-600 font-medium">{cust.birthdayFormatted}</strong> ({cust.daysUntilBirthday === 0 ? 'Today! 🎉' : `in ${cust.daysUntilBirthday} days`})
                       </div>
                     </div>
 
@@ -402,8 +402,8 @@ export default function AdminCustomersPage() {
             <div className="w-12 h-12 rounded-full bg-accent/10 text-accent mx-auto flex items-center justify-center mb-3">
               <Users className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-semibold text-ink">No customers found</h3>
-            <p className="text-xs text-ink/70 mt-1 max-w-sm mx-auto">
+            <h3 className="text-base font-medium text-ink/80">No customers found</h3>
+            <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
               {searchTerm || selectedFlagFilter !== 'all' || selectedTag
                 ? 'Try adjusting your filters or search terms.'
                 : 'Customer profiles will automatically be generated here as appointments are booked.'}
@@ -412,7 +412,7 @@ export default function AdminCustomersPage() {
         ) : (
           <div className="space-y-3">
             {/* Desktop Table Header */}
-            <div className="hidden lg:grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-bold text-ink/50 uppercase tracking-wider">
+            <div className="hidden lg:grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-medium text-muted uppercase tracking-wider">
               <div className="col-span-4">Client & Contact</div>
               <div className="col-span-2 text-center">Visits (Done/Total)</div>
               <div className="col-span-2">Last Visit</div>
@@ -441,7 +441,7 @@ export default function AdminCustomersPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <Link
                           to={`/admin/customers/${custId}`}
-                          className="font-semibold text-sm text-ink hover:text-accent transition-colors"
+                          className="font-medium text-sm text-ink/85 hover:text-accent transition-colors"
                         >
                           {c.name}
                         </Link>
@@ -455,14 +455,14 @@ export default function AdminCustomersPage() {
                         ) : null}
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-ink/60 mt-1">
+                      <div className="flex items-center gap-3 text-xs text-muted mt-1">
                         <span className="flex items-center gap-1 font-mono">
-                          <Phone className="w-3 h-3 text-ink/40" />
+                          <Phone className="w-3 h-3 text-muted/60" />
                           {c.phone}
                         </span>
                         {c.email ? (
                           <span className="flex items-center gap-1 truncate max-w-[150px]">
-                            <Mail className="w-3 h-3 text-ink/40" />
+                            <Mail className="w-3 h-3 text-muted/60" />
                             {c.email}
                           </span>
                         ) : null}
@@ -474,7 +474,7 @@ export default function AdminCustomersPage() {
                           {c.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="text-[10px] px-1.5 py-0.2 rounded bg-surface border border-border-light text-ink/70"
+                              className="text-[10px] px-1.5 py-0.2 rounded bg-surface border border-border-light text-muted"
                             >
                               #{tag}
                             </span>
@@ -485,18 +485,18 @@ export default function AdminCustomersPage() {
 
                     {/* Visits */}
                     <div className="lg:col-span-2 text-left lg:text-center">
-                      <span className="inline-block px-2.5 py-1 rounded bg-surface border border-border-light text-xs font-mono font-semibold text-ink">
+                      <span className="inline-block px-2.5 py-1 rounded bg-surface border border-border-light text-xs font-mono font-medium text-ink/80">
                         {stats.completedVisits || 0} / {stats.totalVisits || 0}
                       </span>
-                      <div className="text-[10px] text-ink/50 mt-0.5">
+                      <div className="text-[10px] text-muted mt-0.5">
                         Spent: ₹{stats.totalSpent || 0}
                       </div>
                     </div>
 
                     {/* Last Visit */}
-                    <div className="lg:col-span-2 text-xs text-ink/80">
+                    <div className="lg:col-span-2 text-xs text-muted">
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-ink/40" />
+                        <Calendar className="w-3.5 h-3.5 text-muted/60" />
                         <span>{formatDate(stats.lastVisitAt)}</span>
                       </div>
                     </div>

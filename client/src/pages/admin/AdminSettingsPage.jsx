@@ -15,21 +15,21 @@ import {
 
 const DEFAULT_TEMPLATES = {
   confirmation:
-    'Namaste {name}! Aapka appointment {shopName} me confirm ho gaya hai.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\n📍 Address: {address}\n🗺️ Maps: {mapsLink}\n\nKisi bhi change ke liye hume yahan WhatsApp par reply karein. See you soon!',
+    'Hello {name}! Your appointment at {shopName} is confirmed.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\n📍 Address: {address}\n🗺️ Maps: {mapsLink}\n\nFor any changes, reply to this WhatsApp message. See you soon!',
   reminder:
-    'Namaste {name}! Yeh ek friendly reminder hai ki aapka grooming session {shopName} par scheduled hai.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n\nKripya 5 minute pehle pahuchein. Agar koi change chahiye toh please bataiye!',
+    'Hello {name}! Friendly reminder that your grooming session at {shopName} is coming up.\n\n📅 Date: {date}\n⏰ Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n\nPlease arrive 5 minutes early. Let us know if you need any adjustments!',
   reschedule:
-    'Namaste {name}! Aapka {shopName} ka appointment naye samay par reschedule kar diya gaya hai.\n\n📅 Nayi Date: {date}\n⏰ Naya Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\nShukriya! Hum aapka intezar karenge.',
+    'Hello {name}! Your appointment at {shopName} has been rescheduled.\n\n📅 New Date: {date}\n⏰ New Time: {time}\n💈 Service: {service}\n✂️ Barber: {barber}\n🔖 Ref: {bookingRef}\n\nThank you! We look forward to seeing you.',
   cancellation:
-    'Namaste {name}! Aapka booking (Ref: {bookingRef}) {shopName} par cancel kar diya gaya hai.\n\nNaye appointment ke liye aap kabhi bhi humari website par visit kar sakte hain ya hume yahan message karein. Shukriya!',
+    'Hello {name}! Your booking (Ref: {bookingRef}) at {shopName} has been cancelled.\n\nTo schedule a new appointment, visit our website or message us here. Thank you!',
   review_request:
-    'Namaste {name}! {shopName} visit karne ke liye bohot shukriya! Ummeed hai aapko hamara service aur cut pasand aaya.\n\nAapka feedback hamare liye bohot keemti hai. Kripya 1 minute nikaal kar apna review zaroor dein:\n⭐ {reviewLink}\n\nHave a great day ahead!',
+    'Hello {name}! Thank you for visiting {shopName}! We hope you enjoyed your service.\n\nYour feedback means a lot to us. Please take a minute to leave a review:\n⭐ {reviewLink}\n\nHave a great day ahead!',
   rebooking_nudge:
-    'Namaste {name}! {shopName} se yaad dila rahe hain ki aapka aakhri visit lagbhag {lastVisitAgo} hua tha. Fresh haircut aur styling ke liye aaj hi slot book karein: {bookingLink}',
+    'Hello {name}! Checking in from {shopName}—your last visit was about {lastVisitAgo}. Keep your look sharp and book your next appointment today: {bookingLink}',
   birthday_greeting:
-    'Janamdin Mubarak {name}! 🎂 {shopName} ki taraf se aapko hardik shubhkaamnayein. Apne birthday par aaiye aur ek premium grooming session enjoy karein: {bookingLink}',
+    'Happy Birthday {name}! 🎂 Warm wishes from the team at {shopName}. Treat yourself to a premium grooming session today: {bookingLink}',
   running_late:
-    'Namaste {name}! {shopName} se update: aaj chair thodi busy hone ke karan aapka slot lagbhag 10-15 minute late ho sakta hai. Asuvidha ke liye khed hai. Hum jaldi hi aapko attend karenge!',
+    'Hello {name}! Update from {shopName}: our chairs are running slightly behind and your appointment may start 10-15 minutes late. We apologize for the wait and will attend to you shortly!',
 };
 
 const TEMPLATE_TABS = [
@@ -76,7 +76,7 @@ export default function AdminSettingsPage() {
     'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.'
   );
   const [refundPolicyTextHi, setRefundPolicyTextHi] = useState(
-    'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।'
+    'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.'
   );
   const [holdTimeoutMinutes, setHoldTimeoutMinutes] = useState(10);
 
@@ -123,7 +123,7 @@ export default function AdminSettingsPage() {
       );
       setRefundPolicyTextHi(
         pSet.refundPolicyText?.hi ||
-          'पूरे डिपॉजिट रिफंड के लिए अपॉइंटमेंट से 2 घंटे पहले तक मुफ्त रद्दीकरण।'
+          'Free cancellation up to 2 hours prior to scheduled appointment for full deposit refund.'
       );
       setHoldTimeoutMinutes(pSet.holdTimeoutMinutes ?? 10);
 
@@ -843,7 +843,7 @@ export default function AdminSettingsPage() {
                       htmlFor="refund-policy-hi-input"
                       className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1"
                     >
-                      Refund Policy Notice (Hindi)
+                      Refund Policy Notice (Local)
                     </label>
                     <input
                       id="refund-policy-hi-input"

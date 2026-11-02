@@ -47,15 +47,11 @@ export default function FaqPage() {
 
       const q = searchQuery.toLowerCase();
       const questionEn = (faq.question?.en || '').toLowerCase();
-      const questionHi = (faq.question?.hi || '').toLowerCase();
       const answerEn = (faq.answer?.en || '').toLowerCase();
-      const answerHi = (faq.answer?.hi || '').toLowerCase();
 
       return (
         questionEn.includes(q) ||
-        questionHi.includes(q) ||
-        answerEn.includes(q) ||
-        answerHi.includes(q)
+        answerEn.includes(q)
       );
     });
   }, [faqs, activeCategory, searchQuery]);
@@ -226,11 +222,6 @@ export default function FaqPage() {
                               <span className="font-semibold text-sm sm:text-base text-ink block">
                                 {faq.question?.en}
                               </span>
-                              {faq.question?.hi && (
-                                <span className="text-xs text-muted font-hindi block mt-0.5">
-                                  {faq.question.hi}
-                                </span>
-                              )}
                             </div>
                             <ChevronDown
                               className={`w-5 h-5 text-accent shrink-0 mt-0.5 transition-transform duration-200 ${
@@ -249,11 +240,6 @@ export default function FaqPage() {
                               <p className="text-xs sm:text-sm text-ink/80 leading-relaxed">
                                 {faq.answer?.en}
                               </p>
-                              {faq.answer?.hi && (
-                                <p className="text-xs text-muted font-hindi mt-2 leading-relaxed">
-                                  {faq.answer.hi}
-                                </p>
-                              )}
                             </div>
                           )}
                         </Card>

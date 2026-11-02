@@ -96,7 +96,9 @@
  * @property {string} id - User ID
  * @property {string} name - Display name
  * @property {string} email - Email address
- * @property {'admin' | 'staff' | 'client'} role - Permission level
+ * @property {'owner' | 'barber'} role - Staff role
+ * @property {string|null} [barberId] - Associated barber document ID
+ * @property {boolean} [mustChangePassword] - Password reset flag
  *
  * @typedef {Object} BilingualString
  * @property {string} en - English text
@@ -215,6 +217,54 @@
  * @property {number} stampsForReward - Threshold required for reward
  * @property {boolean} isRewardReady - Whether reward can be redeemed
  * @property {Array<Object>} history - Transaction and audit log
+ *
+ * @typedef {Object} AreaFaq
+ * @property {BilingualString} question - FAQ question
+ * @property {BilingualString} answer - FAQ answer
+ *
+ * @typedef {Object} Area
+ * @property {string} id - Area unique identifier
+ * @property {BilingualString} name - Area name in English and Hindi
+ * @property {string} slug - Unique lowercase URL slug
+ * @property {string[]} landmarks - Nearby landmarks
+ * @property {BilingualString} description - Detailed local intro
+ * @property {BilingualString} directions - Transit and driving directions
+ * @property {string} [mapEmbedUrl] - Google Maps embed URL
+ * @property {AreaFaq[]} faqs - Area-specific FAQs
+ * @property {boolean} isActive - Active toggle
+ * @property {boolean} isPublished - Published toggle
+ * @property {boolean} qualityPassed - Whether content passes minimum quality check
+ * @property {string[]} qualityNotes - Quality audit reasons if failed
+ * @property {number} order - Display order
+ * @property {BilingualString} [seoTitle] - Custom SEO title
+ * @property {BilingualString} [seoDescription] - Custom SEO meta description
+ *
+ * @typedef {Object} BlogPost
+ * @property {string} id - Post identifier
+ * @property {BilingualString} title - Article title
+ * @property {string} slug - Unique URL slug
+ * @property {BilingualString} excerpt - Summary excerpt
+ * @property {BilingualString} content - Markdown content
+ * @property {string} coverImage - Featured image URL
+ * @property {string[]} tags - Article topic tags
+ * @property {'haircut' | 'beard' | 'styling' | 'grooming' | 'trends' | 'news'} category - Category
+ * @property {{ name: string, role: string, avatar: string }} author - Author bio
+ * @property {'draft' | 'scheduled' | 'published'} status - Publishing state
+ * @property {string} publishedAt - Publication date ISO
+ * @property {number} readingTimeMinutes - Estimated reading time
+ * @property {number} viewsCount - View counter
+ * @property {string} [seoTitle] - Custom meta title
+ * @property {string} [seoDescription] - Custom meta description
+ *
+ * @typedef {Object} RedirectRule
+ * @property {string} id - Redirect ID
+ * @property {string} fromPath - Source URL path
+ * @property {string} toPath - Destination path
+ * @property {301 | 302 | 410} statusCode - HTTP status code
+ * @property {boolean} isActive - Active toggle
+ * @property {number} hitCount - Usage count
+ * @property {string} [lastHitAt] - Last access timestamp
+ * @property {string} [notes] - Admin notes
  */
 
 export {};

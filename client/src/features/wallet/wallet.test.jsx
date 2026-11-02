@@ -101,7 +101,7 @@ describe('Prompt 19: Wallet, Packages & Memberships Client Suite', () => {
         data: [
           {
             id: 'pkg-1',
-            name: { en: '5x Grooming Pack', hi: '5x ग्रूमिंग पैक' },
+            name: { en: '5x Grooming Pack', hi: '5x Special Special' },
             price: 2500,
             sessions: 5,
             validityDays: 90,
@@ -115,7 +115,7 @@ describe('Prompt 19: Wallet, Packages & Memberships Client Suite', () => {
         data: [
           {
             id: 'plan-1',
-            name: { en: 'VIP Club Monthly', hi: 'वीआईपी क्लब' },
+            name: { en: 'VIP Club Monthly', hi: 'Special Special' },
             price: 999,
             durationDays: 30,
             benefits: [{ type: 'discount_percent', value: 20 }],
@@ -243,7 +243,7 @@ describe('Prompt 19: Wallet, Packages & Memberships Client Suite', () => {
         </Provider>
       );
 
-      expect(screen.getByText(/Namaste, Aakash Verma!/i)).toBeInTheDocument();
+      expect(screen.getByText(/Welcome, Aakash Verma!/i)).toBeInTheDocument();
       expect(screen.getByText(/VIP Member/i)).toBeInTheDocument();
       expect(screen.getByText(/★ Free Haircut Ready!/i)).toBeInTheDocument();
       expect(screen.getByText(/4 sessions left/i)).toBeInTheDocument();

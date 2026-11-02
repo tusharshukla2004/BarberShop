@@ -51,6 +51,22 @@
     -webkit-box-shadow: 0 0 0 1000px #1e1815 inset !important;
     transition: background-color 5000s ease-in-out 0s;
   }
+
+  /* Sleek modern scrollbars for isolated scrollable dashboard sections */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(120, 113, 108, 0.25);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(120, 113, 108, 0.45);
+  }
 }
 
 /* Accessibility: Respect user motion preferences */

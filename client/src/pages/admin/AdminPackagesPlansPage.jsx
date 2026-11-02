@@ -242,7 +242,7 @@ export default function AdminPackagesPlansPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border-light pb-5">
         <div>
-          <h1 className="text-2xl font-bold font-serif text-ink tracking-tight flex items-center gap-2">
+          <h1 className="font-display text-2xl sm:text-3xl tracking-wide uppercase text-ink flex items-center gap-2">
             <PackageIcon className="w-6 h-6 text-primary" />
             Packages & Memberships
           </h1>
@@ -312,38 +312,37 @@ export default function AdminPackagesPlansPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {packages.map((pkg) => (
-              <Card key={pkg.id || pkg._id} className="relative p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <Card key={pkg.id || pkg._id} tone="white" className="relative p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
                 <div>
                   <div className="flex justify-between items-start mb-2">
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded tracking-wider ${
                         pkg.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-500'
                       }`}
                     >
                       {pkg.isActive ? 'Active' : 'Inactive'}
                     </span>
-                    <span className="text-xl font-bold font-serif text-ink">₹{pkg.price}</span>
+                    <span className="text-xl font-bold font-sans text-ink">₹{pkg.price}</span>
                   </div>
 
-                  <h3 className="text-base font-bold text-ink leading-snug">{pkg.name?.en}</h3>
-                  <p className="text-xs text-muted font-sans mt-0.5">{pkg.name?.hi}</p>
+                  <h3 className="text-base font-semibold text-ink leading-snug">{pkg.name?.en}</h3>
 
-                  <p className="text-xs text-muted mt-3 line-clamp-2">
+                  <p className="text-xs text-muted mt-2 line-clamp-2">
                     {pkg.description?.en || 'Standard bundled package.'}
                   </p>
 
-                  <div className="mt-4 pt-4 border-t border-border-light space-y-1.5 text-xs text-ink">
+                  <div className="mt-4 pt-4 border-t border-border-light space-y-1.5 text-xs text-ink/85">
                     <div className="flex justify-between">
                       <span className="text-muted">Total Sessions:</span>
-                      <span className="font-semibold">{pkg.sessions} sessions</span>
+                      <span className="font-medium text-ink">{pkg.sessions} sessions</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted">Validity:</span>
-                      <span className="font-semibold">{pkg.validityDays} days</span>
+                      <span className="font-medium text-ink">{pkg.validityDays} days</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted">Unit Value:</span>
-                      <span className="font-semibold">₹{Math.round(pkg.price / (pkg.sessions || 1))} / cut</span>
+                      <span className="font-medium text-ink">₹{Math.round(pkg.price / (pkg.sessions || 1))} / cut</span>
                     </div>
                   </div>
                 </div>
@@ -387,37 +386,36 @@ export default function AdminPackagesPlansPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {plans.map((plan) => (
-              <Card key={plan.id || plan._id} className="relative p-6 flex flex-col justify-between hover:shadow-md transition-shadow border-amber-200">
+              <Card key={plan.id || plan._id} tone="white" className="relative p-6 flex flex-col justify-between hover:shadow-md transition-shadow border-amber-200/80">
                 <div>
                   <div className="flex justify-between items-start mb-2">
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded tracking-wider ${
                         plan.isActive ? 'bg-amber-50 text-amber-800 border border-amber-300' : 'bg-gray-100 text-gray-500'
                       }`}
                     >
                       {plan.isActive ? 'VIP Plan' : 'Inactive'}
                     </span>
-                    <span className="text-xl font-bold font-serif text-ink">₹{plan.price}</span>
+                    <span className="text-xl font-bold font-sans text-ink">₹{plan.price}</span>
                   </div>
 
-                  <h3 className="text-base font-bold text-ink leading-snug flex items-center gap-1.5">
+                  <h3 className="text-base font-semibold text-ink leading-snug flex items-center gap-1.5">
                     <Crown className="w-4 h-4 text-amber-500" />
                     {plan.name?.en}
                   </h3>
-                  <p className="text-xs text-muted font-sans mt-0.5">{plan.name?.hi}</p>
 
-                  <p className="text-xs text-muted mt-3 line-clamp-2">
+                  <p className="text-xs text-muted mt-2 line-clamp-2">
                     {plan.description?.en || 'VIP privileges & grooming perks.'}
                   </p>
 
-                  <div className="mt-4 pt-4 border-t border-border-light space-y-1.5 text-xs text-ink">
+                  <div className="mt-4 pt-4 border-t border-border-light space-y-1.5 text-xs text-ink/85">
                     <div className="flex justify-between">
                       <span className="text-muted">Duration:</span>
-                      <span className="font-semibold">{plan.durationDays} days</span>
+                      <span className="font-medium text-ink">{plan.durationDays} days</span>
                     </div>
 
                     <div className="pt-2">
-                      <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">
+                      <span className="text-[10px] font-semibold text-muted tracking-wider block mb-1">
                         Benefits Included
                       </span>
                       <div className="space-y-1">
@@ -466,10 +464,10 @@ export default function AdminPackagesPlansPage() {
 
       {/* Tab 3: Expiring Soon */}
       {activeTab === 'expiring' && (
-        <Card className="p-6">
+        <Card tone="white" className="p-6">
           <div className="mb-4">
-            <h3 className="text-base font-bold text-ink">Items Expiring Within 7 Days</h3>
-            <p className="text-xs text-muted">
+            <h3 className="text-base font-semibold text-ink">Items Expiring Within 7 Days</h3>
+            <p className="text-xs text-muted mt-1">
               Packages and memberships ending soon. Staff can reach out on WhatsApp for renewal.
             </p>
           </div>
@@ -522,8 +520,8 @@ export default function AdminPackagesPlansPage() {
       {/* Package Form Modal */}
       {packageModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <Card className="w-full max-w-lg p-6 bg-white max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold font-serif text-ink mb-4">
+          <Card tone="white" className="w-full max-w-lg p-6 bg-white max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-semibold text-ink mb-4">
               {editingPackage ? 'Edit Prepaid Package' : 'Create New Prepaid Package'}
             </h2>
 
@@ -531,57 +529,36 @@ export default function AdminPackagesPlansPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="pkgNameEn" className="block text-xs font-semibold text-ink mb-1">
-                    English Name *
+                    Package Name *
                   </label>
                   <input
                     id="pkgNameEn"
                     type="text"
                     required
                     value={pkgNameEn}
-                    onChange={(e) => setPkgNameEn(e.target.value)}
+                    onChange={(e) => {
+                      setPkgNameEn(e.target.value);
+                      setPkgNameHi(e.target.value);
+                    }}
                     className="w-full text-sm px-3 py-2 border border-border-light rounded focus:ring-1 focus:ring-primary"
                     placeholder="e.g. 5x Haircut Pack"
                   />
                 </div>
-                <div>
-                  <label htmlFor="pkgNameHi" className="block text-xs font-semibold text-ink mb-1">
-                    Hindi Name *
-                  </label>
-                  <input
-                    id="pkgNameHi"
-                    type="text"
-                    required
-                    value={pkgNameHi}
-                    onChange={(e) => setPkgNameHi(e.target.value)}
-                    className="w-full text-sm px-3 py-2 border border-border-light rounded focus:ring-1 focus:ring-primary"
-                    placeholder="e.g. 5x हेयरकट पैक"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="pkgDescEn" className="block text-xs font-semibold text-ink mb-1">
-                    English Description
+                    Description
                   </label>
                   <textarea
                     id="pkgDescEn"
                     rows={2}
                     value={pkgDescEn}
-                    onChange={(e) => setPkgDescEn(e.target.value)}
+                    onChange={(e) => {
+                      setPkgDescEn(e.target.value);
+                      setPkgDescHi(e.target.value);
+                    }}
                     className="w-full text-sm px-3 py-2 border border-border-light rounded focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="pkgDescHi" className="block text-xs font-semibold text-ink mb-1">
-                    Hindi Description
-                  </label>
-                  <textarea
-                    id="pkgDescHi"
-                    rows={2}
-                    value={pkgDescHi}
-                    onChange={(e) => setPkgDescHi(e.target.value)}
-                    className="w-full text-sm px-3 py-2 border border-border-light rounded focus:ring-1 focus:ring-primary"
+                    placeholder="Details about sessions included, benefits, or conditions..."
                   />
                 </div>
               </div>
@@ -687,41 +664,28 @@ export default function AdminPackagesPlansPage() {
       {/* Membership Plan Form Modal */}
       {membershipModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <Card className="w-full max-w-lg p-6 bg-white max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold font-serif text-ink mb-4">
+          <Card tone="white" className="w-full max-w-lg p-6 bg-white max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-semibold text-ink mb-4">
               {editingPlan ? 'Edit Membership Plan' : 'Create New Membership Plan'}
             </h2>
 
             <form onSubmit={handleSaveMembership} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="planNameEn" className="block text-xs font-semibold text-ink mb-1">
-                    English Name *
-                  </label>
-                  <input
-                    id="planNameEn"
-                    type="text"
-                    required
-                    value={planNameEn}
-                    onChange={(e) => setPlanNameEn(e.target.value)}
-                    className="w-full text-sm px-3 py-2 border border-border-light rounded focus:ring-1 focus:ring-primary"
-                    placeholder="e.g. Black Card VIP Club"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="planNameHi" className="block text-xs font-semibold text-ink mb-1">
-                    Hindi Name *
-                  </label>
-                  <input
-                    id="planNameHi"
-                    type="text"
-                    required
-                    value={planNameHi}
-                    onChange={(e) => setPlanNameHi(e.target.value)}
-                    className="w-full text-sm px-3 py-2 border border-border-light rounded focus:ring-1 focus:ring-primary"
-                    placeholder="e.g. ब्लैक कार्ड वीआईपी क्लब"
-                  />
-                </div>
+              <div>
+                <label htmlFor="planNameEn" className="block text-xs font-semibold text-ink mb-1">
+                  Plan Name *
+                </label>
+                <input
+                  id="planNameEn"
+                  type="text"
+                  required
+                  value={planNameEn}
+                  onChange={(e) => {
+                    setPlanNameEn(e.target.value);
+                    setPlanNameHi(e.target.value);
+                  }}
+                  className="w-full text-sm px-3 py-2 border border-border-light rounded focus:ring-1 focus:ring-primary"
+                  placeholder="e.g. Black Card VIP Club"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

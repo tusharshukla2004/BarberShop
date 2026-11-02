@@ -149,6 +149,7 @@ export const KNOWN_PLACEHOLDERS = [
   'lastVisitAgo',
   'bookingLink',
   'walletLink',
+  'manageLink',
 ];
 
 /**
@@ -173,6 +174,7 @@ export function renderTemplate(template, data = {}) {
     address: data.address || '',
     mapsLink: data.mapsLink || '',
     bookingRef: data.bookingRef || (data.id ? `BK-${data.id.slice(-6).toUpperCase()}` : ''),
+    manageLink: data.manageLink || '',
     reviewLink: data.reviewLink || '',
     cancelPolicy: data.cancelPolicy || 'Free cancellation up to 2 hours before your appointment.',
   };

@@ -42,7 +42,7 @@ describe('Prompt 19: Packages, Memberships & Loyalty Test Suite', () => {
   const mockPackage = {
     _id: '60d5ec49f1b2c8b1f8e4e1b1',
     id: '60d5ec49f1b2c8b1f8e4e1b1',
-    name: { en: '5x Grooming Pack', hi: '5x ग्रूमिंग पैक' },
+    name: { en: '5x Grooming Pack', hi: '5x Special Special' },
     sessions: 5,
     price: 3500,
     validityDays: 90,
@@ -53,7 +53,7 @@ describe('Prompt 19: Packages, Memberships & Loyalty Test Suite', () => {
   const mockPlan = {
     _id: '60d5ec49f1b2c8b1f8e4e1c1',
     id: '60d5ec49f1b2c8b1f8e4e1c1',
-    name: { en: 'VIP Monthly', hi: 'वीआईपी मंथली' },
+    name: { en: 'VIP Monthly', hi: 'Special Special' },
     price: 999,
     durationDays: 30,
     benefits: [{ type: 'discount_percent', value: 20, serviceIds: [] }],
@@ -71,7 +71,7 @@ describe('Prompt 19: Packages, Memberships & Loyalty Test Suite', () => {
     it('allows owner to create a package', async () => {
       vi.spyOn(Package, 'create').mockResolvedValue({
         id: 'pkg-new',
-        name: { en: 'Haircut Bundle', hi: 'हेयरकट बंडल' },
+        name: { en: 'Haircut Bundle', hi: 'Special Special' },
         price: 2000,
         sessions: 5,
         validityDays: 60,
@@ -81,7 +81,7 @@ describe('Prompt 19: Packages, Memberships & Loyalty Test Suite', () => {
         .post('/api/admin/packages')
         .set('Cookie', [ownerCookie])
         .send({
-          name: { en: 'Haircut Bundle', hi: 'हेयरकट बंडल' },
+          name: { en: 'Haircut Bundle', hi: 'Special Special' },
           price: 2000,
           sessions: 5,
           validityDays: 60,
@@ -97,7 +97,7 @@ describe('Prompt 19: Packages, Memberships & Loyalty Test Suite', () => {
         .post('/api/admin/packages')
         .set('Cookie', [barberCookie])
         .send({
-          name: { en: 'Barber Pack', hi: 'पैक' },
+          name: { en: 'Barber Pack', hi: 'Special' },
           price: 1500,
           sessions: 3,
         });

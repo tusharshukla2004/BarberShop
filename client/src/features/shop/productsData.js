@@ -18,7 +18,7 @@ export const products = [
     howToUse:
       'Rub a dime-sized amount between palms and distribute evenly through towel-dried or dry hair. Style with comb or fingers.',
     imageUrl:
-      'https://images.unsplash.com/photo-1597854710119-a5a84396736a?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/claypomade/800/800',
     rating: 4.9,
     reviewCount: 128,
     isBestSeller: true,
@@ -39,7 +39,7 @@ export const products = [
     howToUse:
       'Dispense 3–5 drops into palms and massage upward into beard hair and skin down to roots.',
     imageUrl:
-      'https://images.unsplash.com/photo-1608248597359-548451893c83?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/beardoil/800/800',
     rating: 5.0,
     reviewCount: 214,
     isBestSeller: true,
@@ -60,7 +60,7 @@ export const products = [
     howToUse:
       'Whip hot water and shave soap into a rich lather in the bowl. Apply in circular motions before razor gliding at a 30-degree angle.',
     imageUrl:
-      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/straightrazor/800/800',
     rating: 4.9,
     reviewCount: 89,
     isBestSeller: true,
@@ -81,7 +81,7 @@ export const products = [
     howToUse:
       'Spray 4–6 pumps onto damp hair before blow-drying, or onto dry hair for lived-in textured hold.',
     imageUrl:
-      'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/saltspray/800/800',
     rating: 4.8,
     reviewCount: 96,
     isBestSeller: false,
@@ -102,7 +102,7 @@ export const products = [
     howToUse:
       'Scrape a thumbnail amount, warm between palms until melted, and work thoroughly through dry beard.',
     imageUrl:
-      'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/beardbalm/800/800',
     rating: 4.9,
     reviewCount: 142,
     isBestSeller: false,
@@ -122,7 +122,7 @@ export const products = [
       'Hamamelis Virginiana (Witch Hazel) Water, Menthol, Aloe Barbadensis Leaf Juice, Eucalyptus Globulus Oil.',
     howToUse: 'Splash onto freshly shaved skin with clean hands and gently pat dry.',
     imageUrl:
-      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/shavetonic/800/800',
     rating: 4.8,
     reviewCount: 78,
     isBestSeller: false,
@@ -142,7 +142,7 @@ export const products = [
     howToUse:
       'Unscrew head, drop in double-edge blade, screw tight, and shave using light gliding strokes with zero downward pressure.',
     imageUrl:
-      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/safetyrazor/800/800',
     rating: 4.9,
     reviewCount: 165,
     isBestSeller: true,
@@ -162,7 +162,7 @@ export const products = [
     howToUse:
       'Brush downward with gentle firm strokes daily, preferably after applying beard oil or balm.',
     imageUrl:
-      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/beardbrush/800/800',
     rating: 5.0,
     reviewCount: 154,
     isBestSeller: false,
@@ -182,7 +182,7 @@ export const products = [
       'Full-Grain Buffalo Hide, Water-Resistant Ballistic Nylon, Solid Brass Hardware.',
     howToUse: 'Pack your razor, pomade, beard oils, and personal travel essentials securely.',
     imageUrl:
-      'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+      'https://picsum.photos/seed/doppkit/800/800',
     rating: 5.0,
     reviewCount: 72,
     isBestSeller: true,

@@ -176,18 +176,10 @@ export default function OffersPage() {
                         <h2 className="font-display text-xl uppercase tracking-wider text-ink mb-1">
                           {offer.title?.en || 'Special Offer'}
                         </h2>
-                        {offer.title?.hi && (
-                          <p className="text-xs text-muted font-hindi mb-2">{offer.title.hi}</p>
-                        )}
 
                         <p className="text-xs text-muted leading-relaxed line-clamp-3">
                           {offer.description?.en || ''}
                         </p>
-                        {offer.description?.hi && (
-                          <p className="text-[11px] text-muted/80 font-hindi mt-1 line-clamp-2">
-                            {offer.description.hi}
-                          </p>
-                        )}
                       </div>
 
                       <div className="space-y-3 pt-3 border-t border-border-light/60">

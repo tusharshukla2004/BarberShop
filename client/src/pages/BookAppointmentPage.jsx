@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Seo from '@/components/common/Seo';
 import PageBanner from '@/components/common/PageBanner';
 import Container from '@/components/ui/Container';
@@ -20,12 +21,17 @@ import {
   clearBookingDraft,
 } from '@/features/booking/bookingDraftSlice';
 import { addToast } from '@/features/ui/uiSlice';
+import { trackEvent } from '@/lib/analytics';
 
 export default function BookAppointmentPage() {
   const dispatch = useAppDispatch();
   const draft = useAppSelector(selectBookingDraft);
 
   const currentStep = draft.currentStep || 1;
+
+  useEffect(() => {
+    trackEvent('booking_started');
+  }, []);
 
   const handleStepSelect = (step) => {
     dispatch(setBookingStep(step));
@@ -58,6 +64,12 @@ export default function BookAppointmentPage() {
       barberId: isSpecificBarber ? booking.barberId || draft.barberId : '',
     };
     dispatch(setConfirmedBooking(completeBooking));
+    trackEvent('booking_completed', {
+      bookingId: completeBooking.id || completeBooking._id,
+      serviceId: completeBooking.serviceId,
+      barberId: completeBooking.barberId,
+      price: completeBooking.priceAtBooking || completeBooking.price,
+    });
     dispatch(
       addToast({
         type: 'success',

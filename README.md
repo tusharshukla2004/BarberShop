@@ -12,6 +12,7 @@ Sovereign Barbershop is built as a production-grade monorepo containing:
 
 ```
 BarberShop/
+
 ├── client/                     # React 18 Frontend
 │   ├── public/                 # Static assets, robots.txt, sitemap.xml, favicon
 │   ├── src/
@@ -180,12 +181,64 @@ Access the application at **[http://localhost:5000](http://localhost:5000)**.
 
 ---
 
-## 8. Design System & Accessibility
+## 9. Authentication Model & Security
 
-- **Design Tokens**: All typography, colors (`ink`, `brown`, `cream`, `white`, `accent`), and border radiuses are centralized in [`client/src/styles/tokens.css`](file:///c:/Users/Veerendra/OneDrive/Desktop/BarberShop/client/src/styles/tokens.css).
-- **Accessibility**:
-  - Full keyboard navigation and visible focus rings (`:focus-visible`).
-  - Active focus trapping in mobile menu, lightbox, and modal dialogs.
-  - Exactly one `<h1>` landmark per page.
-  - Automatic `prefers-reduced-motion` compliance.
-  - WCAG AA compliant color contrast ratios.
+### Overview: Staff-Only Authentication & Frictionless Guest Booking
+1. **Staff-Only Login (`/admin/login`)**:
+   - Authentication exists **strictly** for shop staff: `owner` (full business control) and `barber` (scoped to their own chair and appointments).
+   - **Zero customer accounts or customer passwords**: Public customers never register, never log in, and never store passwords.
+   - Any legacy customer registration or login routes return `404 Not Found`.
+
+2. **Customer Self-Service via Secret Tokenized Manage Link**:
+   - Every appointment is assigned a human-friendly unique booking reference (e.g., `#MM-A3B9C2`).
+   - On booking confirmation, a high-entropy 32-byte cryptographic token (`crypto.randomBytes(32).toString('base64url')`) is generated.
+   - The raw token is returned **only once** upon creation and sent via WhatsApp/SMS in the `{manageLink}` placeholder (`/booking/manage?ref=...&token=...`).
+   - The server stores only the timing-safe SHA-256 hash (`manageTokenHash`) with an automatic TTL expiring 24 hours after the appointment end time.
+   - Customers can view masked appointment details (`91******3210`), cancel with notice policy checks, or reschedule up to a maximum of 2 times without logging in.
+
+3. **Server Security & Session Hardening**:
+   - **Tokens in `httpOnly` Cookies**: Short-lived Access JWT (15 minutes) and Refresh Token (7 days) are issued strictly via `httpOnly`, `SameSite=Lax/Strict` cookies. The refresh cookie is path-scoped to `/api/auth/refresh`. Tokens are **never** returned in JSON response bodies or stored in `localStorage`/`sessionStorage`.
+   - **Refresh Token Rotation & Family Revocation**: Refresh tokens are stored hashed in MongoDB. Each refresh operation revokes the old token and issues a new one. If a previously-used token is replayed, the entire token family is immediately revoked, terminating all descendant sessions.
+   - **Anti-Enumeration Protection**: All authentication failures return the identical generic error message: *"Invalid email or password"*. When an unknown email is supplied, the server performs a constant-time bcrypt comparison against a dummy cost-12 hash to prevent timing attacks.
+   - **Account Lockout & Brute-Force Defense**: Staff accounts are locked for 15 minutes after 5 consecutive failed login attempts.
+   - **CSRF Defense**: Dual defense combining `SameSite` cookie policies and mandatory custom request headers (`X-Requested-With`) on all state-changing endpoints.
+   - **Immutable Security Audit Log**: All logins, failed attempts, account lockouts, token replay detections, password changes, and staff administration events are recorded in `AuditLog` collection, accessible to the owner.
+
+### Environment Variables
+| Variable | Description | Production Requirement |
+| :--- | :--- | :--- |
+| `JWT_ACCESS_SECRET` | Secret key used to sign 15-minute access JWTs | Required, $\ge 32$ characters, non-default |
+| `JWT_REFRESH_SECRET` | Secret key used to sign 7-day refresh tokens | Required, $\ge 32$ characters, non-default |
+| `ADMIN_EMAIL` | Initial shop owner email address | Required (e.g. `owner@modernmane.com`) |
+| `ADMIN_PASSWORD` | Initial shop owner password for database seeder | Required, $\ge 10$ characters |
+| `CLIENT_ORIGIN` | Allowed client URL for CORS and credentials | Required (e.g. `https://modernmane.com`) |
+
+### How to Reset an Owner Password
+1. **Via Admin Console (Active Owner)**:
+   - Navigate to `/admin/staff`.
+   - Click **Reset** next to any staff member, or navigate to `/admin/change-password` to update your own credential.
+2. **Via Emergency CLI Script**:
+   - If locked out of the only owner account, run the database seed script with updated environment variables:
+   ```bash
+   ADMIN_EMAIL="owner@modernmane.com" ADMIN_PASSWORD="NewSecurePassword123!" npm run seed
+   ```
+   Or execute via MongoDB shell / Node repl:
+   ```bash
+   node -e "
+     import('bcryptjs').then(async (bcrypt) => {
+       const hash = await bcrypt.hash('NewEmergencyPassword123!', 12);
+       console.log('Use this bcrypt hash for Admin collection:', hash);
+     });
+   "
+   ```
+
+### Manual Security Checklist
+- [x] **No Customer Login**: Verify `/login`, `/signup`, `/register`, `/account` return 404 or redirect away.
+- [x] **No Browser Storage Tokens**: Verify `localStorage` and `sessionStorage` have 0 authentication tokens.
+- [x] **Cookie Security**: Verify `modernmane_access_token` and `modernmane_refresh_token` have `HttpOnly` and `SameSite` flags.
+- [x] **Account Enumeration Check**: Try logging in with a non-existent email; verify error message and response timing match valid user with wrong password.
+- [x] **Brute-Force Lockout**: Attempt 5 invalid logins; verify account is locked with a 15-minute cooldown.
+- [x] **CSRF Header Enforcement**: Send a state-changing POST/PATCH request without `X-Requested-With` header; verify 403 `CSRF_DETECTED`.
+- [x] **Barber Scoping**: Log in as a barber and verify `/api/admin/users`, `/api/admin/audit-logs`, and other barbers' bookings cannot be accessed.
+- [x] **Manage Token Timing Safety**: Confirm manage token hashes are compared in constant time (`crypto.timingSafeEqual`).
+

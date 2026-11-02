@@ -1,7 +1,18 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth.js';
-import { requireRole } from '../middleware/rbac.js';
+import { requireAuth, requireRole, scopeBarberAccess, csrfProtection } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
+import {
+  listStaffUsers,
+  createStaffUser,
+  updateStaffUser,
+  resetStaffPassword,
+  getAuditLogs,
+} from '../controllers/staffManagementController.js';
+import {
+  createStaffSchema,
+  updateStaffSchema,
+  resetStaffPasswordSchema,
+} from '../schemas/auth.schema.js';
 import {
   createService,
   updateService,
@@ -61,6 +72,30 @@ import {
   getOffersReport,
   getWalletReport,
 } from '../controllers/reportController.js';
+import {
+  getAdminAreas,
+  createArea,
+  updateArea,
+  deleteArea,
+  getAdminPosts,
+  createPost,
+  updatePost,
+  deletePost,
+  getAdminRedirects,
+  createRedirect,
+  updateRedirect,
+  deleteRedirect,
+  getSeoHealthReport,
+  getGbpHelpers,
+} from '../controllers/seoController.js';
+import {
+  createAreaSchema,
+  updateAreaSchema,
+  createPostSchema,
+  updatePostSchema,
+  createRedirectSchema,
+  updateRedirectSchema,
+} from '../schemas/seo.schema.js';
 import {
   listPackages,
   createPackage,
@@ -158,18 +193,19 @@ import {
 const router = Router();
 
 // Protect all admin routes
-router.use(authenticate, requireRole('owner', 'barber'));
+router.use(requireAuth, requireRole('owner', 'barber'), csrfProtection);
 
-// Bookings management
-router.get('/bookings', adminListBookings);
-router.patch('/bookings/:id', validate(updateBookingSchema), adminUpdateBooking);
-router.patch('/bookings/:id/status', adminUpdateBooking);
+// Bookings management (scoped for barbers)
+router.get('/bookings', scopeBarberAccess, adminListBookings);
+router.patch('/bookings/:id', scopeBarberAccess, validate(updateBookingSchema), adminUpdateBooking);
+router.patch('/bookings/:id/status', scopeBarberAccess, adminUpdateBooking);
 router.patch(
   '/bookings/:id/notifications',
+  scopeBarberAccess,
   validate(recordNotificationSchema),
   recordNotification
 );
-router.delete('/bookings/:id', adminCancelBooking);
+router.delete('/bookings/:id', scopeBarberAccess, adminCancelBooking);
 
 // Reminders (Today / Tomorrow upcoming sessions)
 router.get('/reminders', validate(getRemindersQuerySchema), getReminders);
@@ -295,5 +331,41 @@ router.delete('/customers/:id/wallet-token', revokeWalletToken);
 // Expiring wallet items & Wallet Reports
 router.get('/wallet/expiring', getExpiringWalletItemsList);
 router.get('/reports/wallet', requireRole('owner'), getWalletReport);
+
+// SEO: Local Landing Pages (Areas)
+router.get('/areas', getAdminAreas);
+router.post('/areas', requireRole('owner'), validate(createAreaSchema), createArea);
+router.put('/areas/:id', requireRole('owner'), validate(updateAreaSchema), updateArea);
+router.delete('/areas/:id', requireRole('owner'), deleteArea);
+
+// Blog Management
+router.get('/posts', getAdminPosts);
+router.post('/posts', validate(createPostSchema), createPost);
+router.put('/posts/:id', validate(updatePostSchema), updatePost);
+router.delete('/posts/:id', requireRole('owner'), deletePost);
+
+// Technical SEO: Redirects
+router.get('/redirects', getAdminRedirects);
+router.post('/redirects', requireRole('owner'), validate(createRedirectSchema), createRedirect);
+router.put('/redirects/:id', requireRole('owner'), validate(updateRedirectSchema), updateRedirect);
+router.delete('/redirects/:id', requireRole('owner'), deleteRedirect);
+
+// SEO Health Audit & GBP Optimization Helpers
+router.get('/seo/health', getSeoHealthReport);
+router.get('/seo/gbp', getGbpHelpers);
+
+// Staff Users & Accounts (Owner Only)
+router.get('/users', requireRole('owner'), listStaffUsers);
+router.post('/users', requireRole('owner'), validate(createStaffSchema), createStaffUser);
+router.patch('/users/:id', requireRole('owner'), validate(updateStaffSchema), updateStaffUser);
+router.post(
+  '/users/:id/reset-password',
+  requireRole('owner'),
+  validate(resetStaffPasswordSchema),
+  resetStaffPassword
+);
+
+// Audit Logs (Owner Only)
+router.get('/audit-logs', requireRole('owner'), getAuditLogs);
 
 export default router;

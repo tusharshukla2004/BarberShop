@@ -4,6 +4,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import uiReducer from '@/features/ui/uiSlice';
+import authReducer from '@/features/auth/authSlice';
+import { baseApi } from '@/app/baseApi';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { PageShell } from './PageShell';
@@ -12,8 +14,12 @@ import { siteConfig } from '@/config/site';
 function renderWithProviders(ui, { route = '/' } = {}) {
   const store = configureStore({
     reducer: {
+      [baseApi.reducerPath]: baseApi.reducer,
       ui: uiReducer,
+      auth: authReducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(baseApi.middleware),
   });
 
   return render(

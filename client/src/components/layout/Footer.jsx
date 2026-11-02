@@ -12,8 +12,11 @@ import {
   Youtube,
   Clock,
   MessageSquare,
+  Navigation,
 } from 'lucide-react';
 import { normalizeIndianPhone, buildWhatsAppLink } from '@/lib/whatsapp';
+import { useGetPublicAreasQuery } from '@/features/seo/seoApi';
+import { trackEvent } from '@/lib/analytics';
 
 /**
  * Global site footer matching reference architecture
@@ -21,6 +24,7 @@ import { normalizeIndianPhone, buildWhatsAppLink } from '@/lib/whatsapp';
  */
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const { data: areas = [] } = useGetPublicAreasQuery();
 
   const menuLinks = [
     { label: 'Home', href: '/' },
@@ -29,11 +33,12 @@ export function Footer() {
     { label: 'Shop', href: '/shop' },
     { label: 'Gallery', href: '/gallery' },
     { label: 'FAQ', href: '/faq' },
+    { label: 'Grooming Journal', href: '/blog' },
   ];
 
   const quickLinks = [
     { label: 'Services', href: '/services' },
-    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Editorial Blog', href: '/blog' },
     { label: 'Location & Contact', href: '/contact' },
     { label: 'Design System', href: '/design-system' },
   ];
@@ -45,14 +50,7 @@ export function Footer() {
   );
 
   const handleWhatsAppClick = () => {
-    if (typeof window !== 'undefined' && window.dataLayer && Array.isArray(window.dataLayer)) {
-      window.dataLayer.push({ event: 'whatsapp_click', channel: 'footer' });
-    } else if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-      window.gtag('event', 'whatsapp_click', {
-        event_category: 'engagement',
-        event_label: 'footer',
-      });
-    }
+    trackEvent('whatsapp_click', { channel: 'footer' });
   };
 
   return (
@@ -82,6 +80,7 @@ export function Footer() {
                 <Phone className="h-4 w-4 text-accent shrink-0" />
                 <a
                   href={`tel:${siteConfig.phone.replace(/\s+/g, '')}`}
+                  onClick={() => trackEvent('call_click', { channel: 'footer' })}
                   className="hover:text-accent transition-colors"
                 >
                   {siteConfig.phone}
@@ -169,8 +168,31 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Areas We Serve (Internal Linking) */}
+        {areas.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-border-light">
+            <div className="flex items-center gap-2 mb-3">
+              <Navigation className="w-4 h-4 text-accent" />
+              <h4 className="font-display text-base uppercase tracking-wider text-ink">
+                Neighborhood Areas We Serve
+              </h4>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs">
+              {areas.map((area) => (
+                <Link
+                  key={area.slug}
+                  to={`/locations/${area.slug}`}
+                  className="px-3 py-1 rounded bg-surface border border-border-light text-muted hover:text-accent hover:border-accent transition-colors"
+                >
+                  Haircut in {area.name?.en}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border-light flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 pt-8 border-t border-border-light flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <IconButton
               aria-label="Visit Instagram page"

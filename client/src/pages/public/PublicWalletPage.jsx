@@ -61,7 +61,7 @@ export default function PublicWalletPage() {
 
   const studioWhatsAppLink = buildWhatsAppLink(
     shop.phone || '919876543210',
-    `Namaste Modern Mane! I am viewing my digital wallet pass and would like to book a slot.`
+    `Hello Modern Mane! I am viewing my digital wallet pass and would like to book a slot.`
   );
 
   return (
@@ -78,7 +78,7 @@ export default function PublicWalletPage() {
                   Modern Mane Barber Studio · Member Pass
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-white">
-                  Namaste, {customerName}!
+                  Welcome, {customerName}!
                 </h1>
                 <p className="text-xs text-sand/70 mt-1">
                   Your live prepaid haircut packages, VIP status & loyalty stamps.

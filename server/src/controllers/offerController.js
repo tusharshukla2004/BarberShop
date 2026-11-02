@@ -224,7 +224,7 @@ export async function duplicateOffer(req, res, next) {
 
     doc.title = {
       en: `Copy of ${doc.title.en}`,
-      hi: doc.title.hi ? `प्रतिलिपि: ${doc.title.hi}` : '',
+      hi: doc.title.hi ? `Copy of ${doc.title.hi}` : `Copy of ${doc.title.en}`,
     };
 
     if (doc.promoCode) {

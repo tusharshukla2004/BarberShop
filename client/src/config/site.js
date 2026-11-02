@@ -70,6 +70,7 @@ export const siteConfig = {
     { label: 'Offers', href: '/offers' },
     { label: 'Shop', href: '/shop' },
     { label: 'Gallery', href: '/gallery' },
+    { label: 'Blog', href: '/blog' },
     { label: 'FAQ', href: '/faq' },
     { label: 'About us', href: '/about' },
   ],

@@ -18,8 +18,8 @@ const mockOffersList = [
   {
     id: 'off-1',
     _id: 'off-1',
-    title: { en: 'Festival Grooming 20% Off', hi: 'त्योहार ग्रूमिंग 20% छूट' },
-    description: { en: 'Get 20% off on premium haircuts', hi: 'प्रीमियम हेयरकट पर 20% छूट' },
+    title: { en: 'Festival Grooming 20% Off', hi: 'Special Special 20% Special' },
+    description: { en: 'Get 20% off on premium haircuts', hi: 'Special Special Special 20% Special' },
     type: 'percent',
     value: 20,
     isActive: true,
@@ -31,8 +31,8 @@ const mockOffersList = [
   {
     id: 'off-2',
     _id: 'off-2',
-    title: { en: 'Welcome Flat ₹100 Off', hi: '₹100 छूट' },
-    description: { en: 'Flat discount', hi: 'फ्लैट छूट' },
+    title: { en: 'Welcome Flat ₹100 Off', hi: '₹100 Special' },
+    description: { en: 'Flat discount', hi: 'Special Special' },
     type: 'flat',
     value: 100,
     isActive: true,

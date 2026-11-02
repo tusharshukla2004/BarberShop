@@ -27,7 +27,7 @@ describe('Offers & FAQs Integration Tests', () => {
       const mockOffers = [
         {
           _id: 'off-1',
-          title: { en: 'Diwali Special', hi: 'दिवाली स्पेशल' },
+          title: { en: 'Diwali Special', hi: 'Special Special' },
           promoCode: 'DIWALI20',
           isActive: true,
           startsAt: new Date(Date.now() - 86400000),
@@ -51,7 +51,7 @@ describe('Offers & FAQs Integration Tests', () => {
     it('POST /api/offers/validate validates code case-insensitively and returns discount calculation', async () => {
       const mockOffer = {
         _id: 'off-1',
-        title: { en: 'Flat 100 Off', hi: '₹100 की छूट' },
+        title: { en: 'Flat 100 Off', hi: '₹100 Special Special' },
         promoCode: 'FLAT100',
         type: 'flat',
         value: 100,
@@ -109,16 +109,16 @@ describe('Offers & FAQs Integration Tests', () => {
       const mockFaqs = [
         {
           _id: 'faq-1',
-          question: { en: 'Do you take walk-ins?', hi: 'क्या आप बिना अपॉइंटमेंट स्वीकार करते हैं?' },
-          answer: { en: 'Yes', hi: 'हाँ' },
+          question: { en: 'Do you take walk-ins?', hi: 'Special Special Special Special Special Special Special?' },
+          answer: { en: 'Yes', hi: 'Special' },
           category: 'Booking',
           order: 1,
           isPublished: true,
         },
         {
           _id: 'faq-2',
-          question: { en: 'What payments are accepted?', hi: 'कौन से भुगतान स्वीकार किए जाते हैं?' },
-          answer: { en: 'Cash and UPI', hi: 'नकद और यूपीआई' },
+          question: { en: 'What payments are accepted?', hi: 'Special Special Special Special Special Special Special?' },
+          answer: { en: 'Cash and UPI', hi: 'Special Special Special' },
           category: 'Pricing',
           order: 1,
           isPublished: true,
@@ -143,8 +143,8 @@ describe('Offers & FAQs Integration Tests', () => {
   describe('Admin Offers CRUD & Duplicate', () => {
     it('POST /api/admin/offers creates a new offer', async () => {
       const newOfferData = {
-        title: { en: 'Festival Cut', hi: 'त्योहार कट' },
-        description: { en: '20% off all haircuts', hi: 'सभी हेयरकट पर 20% की छूट' },
+        title: { en: 'Festival Cut', hi: 'Special Special' },
+        description: { en: '20% off all haircuts', hi: 'Special Special Special 20% Special Special' },
         type: 'percent',
         value: 20,
         promoCode: 'FESTIVAL20',
@@ -175,8 +175,8 @@ describe('Offers & FAQs Integration Tests', () => {
     it('POST /api/admin/offers/:id/duplicate duplicates an existing offer as inactive draft', async () => {
       const originalOffer = {
         _id: '507f1f77bcf86cd799439011',
-        title: { en: 'Weekend Deal', hi: 'वीकेंड डील' },
-        description: { en: 'Weekend discount', hi: 'वीकेंड छूट' },
+        title: { en: 'Weekend Deal', hi: 'Special Special' },
+        description: { en: 'Weekend discount', hi: 'Special Special' },
         type: 'flat',
         value: 150,
         promoCode: 'WEEKEND150',
@@ -184,8 +184,8 @@ describe('Offers & FAQs Integration Tests', () => {
         endsAt: new Date('2026-10-31'),
         isActive: true,
         toObject: () => ({
-          title: { en: 'Weekend Deal', hi: 'वीकेंड डील' },
-          description: { en: 'Weekend discount', hi: 'वीकेंड छूट' },
+          title: { en: 'Weekend Deal', hi: 'Special Special' },
+          description: { en: 'Weekend discount', hi: 'Special Special' },
           type: 'flat',
           value: 150,
           promoCode: 'WEEKEND150',
@@ -246,7 +246,7 @@ describe('Offers & FAQs Integration Tests', () => {
         lean: vi.fn().mockResolvedValue([
           {
             _id: '507f1f77bcf86cd799439011',
-            title: { en: 'Diwali Special', hi: 'दिवाली स्पेशल' },
+            title: { en: 'Diwali Special', hi: 'Special Special' },
             promoCode: 'DIWALI20',
             type: 'percent',
             value: 20,
@@ -283,7 +283,7 @@ describe('Offers & FAQs Integration Tests', () => {
     it('applies promo discount atomically and increments usedCount', async () => {
       const mockOffer = {
         _id: '507f191e810c19729de860ea',
-        title: { en: 'Flat 100', hi: '₹100 छूट' },
+        title: { en: 'Flat 100', hi: '₹100 Special' },
         promoCode: 'SAVE100',
         type: 'flat',
         value: 100,

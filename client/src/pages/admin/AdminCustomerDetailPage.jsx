@@ -142,9 +142,9 @@ export default function AdminCustomerDetailPage() {
     const shopName = settings?.shopName || 'Modern Mane';
 
     if (type === 'rebooking') {
-      message = `Namaste ${customer.name}! Kafi din ho gaye aapka visit karein ${shopName} par. Kya hum aapka fresh haircut ya grooming session schedule karein? Website par slots check karein ya hume yahan reply karein!`;
+      message = `Hello ${customer.name}! It's been a while since your last visit to ${shopName}. Would you like to schedule your next haircut or grooming session? Check available slots on our website or reply right here!`;
     } else {
-      message = `Namaste ${customer.name}! ${shopName} se greetings. Hum aapki kya sahayata kar sakte hain?`;
+      message = `Hello ${customer.name}! Greetings from ${shopName}. How may we assist you today?`;
     }
 
     const link = buildWhatsAppLink(customer.phone, message);
@@ -202,7 +202,7 @@ export default function AdminCustomerDetailPage() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2.5 flex-wrap">
-                      <h1 className="text-xl sm:text-2xl font-bold font-heading text-ink tracking-tight">
+                      <h1 className="text-xl sm:text-2xl font-medium font-heading text-ink/85 tracking-tight">
                         {customer.name}
                       </h1>
                       {customer.whatsappConsent ? (
@@ -267,28 +267,28 @@ export default function AdminCustomerDetailPage() {
               {/* Stats Counters Header */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 pt-6">
                 <div className="p-3 rounded-lg bg-surface border border-border-light">
-                  <span className="block text-[11px] uppercase font-bold text-ink/50 tracking-wider">
+                  <span className="block text-[11px] uppercase font-medium text-muted tracking-wider">
                     Total Visits
                   </span>
-                  <span className="text-xl font-bold font-mono text-ink mt-0.5 block">
+                  <span className="text-xl font-medium font-mono text-ink/85 mt-0.5 block">
                     {stats.totalVisits || 0}
                   </span>
                 </div>
 
                 <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-                  <span className="block text-[11px] uppercase font-bold text-emerald-700 tracking-wider">
+                  <span className="block text-[11px] uppercase font-medium text-emerald-700 tracking-wider">
                     Completed
                   </span>
-                  <span className="text-xl font-bold font-mono text-emerald-600 mt-0.5 block">
+                  <span className="text-xl font-medium font-mono text-emerald-600 mt-0.5 block">
                     {stats.completedVisits || 0}
                   </span>
                 </div>
 
                 <div className="p-3 rounded-lg bg-neutral-100 border border-border-light">
-                  <span className="block text-[11px] uppercase font-bold text-neutral-600 tracking-wider">
+                  <span className="block text-[11px] uppercase font-medium text-neutral-600 tracking-wider">
                     Cancelled
                   </span>
-                  <span className="text-xl font-bold font-mono text-neutral-700 mt-0.5 block">
+                  <span className="text-xl font-medium font-mono text-neutral-700 mt-0.5 block">
                     {stats.cancelledCount || 0}
                   </span>
                 </div>
@@ -297,22 +297,22 @@ export default function AdminCustomerDetailPage() {
                   className={`p-3 rounded-lg border ${
                     isHighNoShow
                       ? 'bg-red-500/10 border-red-500/30 text-red-700'
-                      : 'bg-surface border border-border-light text-ink'
+                      : 'bg-surface border border-border-light text-ink/80'
                   }`}
                 >
-                  <span className="block text-[11px] uppercase font-bold tracking-wider">
+                  <span className="block text-[11px] uppercase font-medium tracking-wider">
                     No-Shows
                   </span>
-                  <span className="text-xl font-bold font-mono mt-0.5 block">
+                  <span className="text-xl font-medium font-mono mt-0.5 block">
                     {stats.noShowCount || 0}
                   </span>
                 </div>
 
                 <div className="p-3 rounded-lg bg-surface border border-border-light">
-                  <span className="block text-[11px] uppercase font-bold text-ink/50 tracking-wider">
+                  <span className="block text-[11px] uppercase font-medium text-muted tracking-wider">
                     Lifetime Spend
                   </span>
-                  <span className="text-xl font-bold font-mono text-accent mt-0.5 block">
+                  <span className="text-xl font-medium font-mono text-accent mt-0.5 block">
                     ₹{stats.totalSpent || 0}
                   </span>
                 </div>

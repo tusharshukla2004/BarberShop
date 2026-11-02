@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 import { Booking } from '../models/Booking.js';
 import { Barber } from '../models/Barber.js';
 import { Service } from '../models/Service.js';
@@ -177,8 +178,20 @@ export async function createBooking(req, res, next) {
       // Continue booking creation even if customer profile resolution hits an edge
     }
 
-    // 3. Create booking
+    // 3. Create booking with unique reference and secret self-service manage token
+    const bookingRef = Booking.generateBookingRef();
+    const rawManageToken = crypto.randomBytes(32).toString('base64url');
+    const manageTokenHash = Booking.hashManageToken(rawManageToken);
+
+    const apptEnd = new Date(`${date} ${endTime || startTime || '18:00'}`);
+    const manageTokenExpiresAt = !isNaN(apptEnd.getTime())
+      ? new Date(apptEnd.getTime() + 24 * 60 * 60 * 1000)
+      : new Date(Date.now() + 48 * 60 * 60 * 1000);
+
     const booking = await Booking.create({
+      bookingRef,
+      manageTokenHash,
+      manageTokenExpiresAt,
       customerName,
       phone,
       email: email || '',
@@ -202,7 +215,21 @@ export async function createBooking(req, res, next) {
       recalculateCustomerStats(customerId).catch(() => {});
     }
 
-    return sendSuccess(res, booking, 201, 'Booking confirmed successfully!');
+    const manageUrl = `/booking/manage?ref=${bookingRef}&token=${rawManageToken}`;
+    const bookingObj =
+      typeof booking.toJSON === 'function'
+        ? booking.toJSON()
+        : typeof booking.toObject === 'function'
+        ? booking.toObject()
+        : { ...booking };
+
+    const responsePayload = {
+      ...bookingObj,
+      manageToken: rawManageToken,
+      manageUrl,
+    };
+
+    return sendSuccess(res, responsePayload, 201, 'Booking confirmed successfully!');
   } catch (error) {
     return next(error);
   }
@@ -255,7 +282,19 @@ export async function createBookingRequest(req, res, next) {
       // Continue
     }
 
+    const bookingRef = Booking.generateBookingRef();
+    const rawManageToken = crypto.randomBytes(32).toString('base64url');
+    const manageTokenHash = Booking.hashManageToken(rawManageToken);
+
+    const apptEnd = new Date(`${parsedDate} ${parsedTime || '18:00'}`);
+    const manageTokenExpiresAt = !isNaN(apptEnd.getTime())
+      ? new Date(apptEnd.getTime() + 24 * 60 * 60 * 1000)
+      : new Date(Date.now() + 48 * 60 * 60 * 1000);
+
     const booking = await Booking.create({
+      bookingRef,
+      manageTokenHash,
+      manageTokenExpiresAt,
       customerName: name,
       phone,
       email: email || '',
@@ -275,9 +314,23 @@ export async function createBookingRequest(req, res, next) {
       recalculateCustomerStats(customerId).catch(() => {});
     }
 
+    const manageUrl = `/booking/manage?ref=${bookingRef}&token=${rawManageToken}`;
+    const bookingObj =
+      typeof booking.toJSON === 'function'
+        ? booking.toJSON()
+        : typeof booking.toObject === 'function'
+        ? booking.toObject()
+        : { ...booking };
+
+    const responsePayload = {
+      ...bookingObj,
+      manageToken: rawManageToken,
+      manageUrl,
+    };
+
     return sendSuccess(
       res,
-      booking,
+      responsePayload,
       201,
       'Your appointment request has been received. Our concierge will confirm your slot.'
     );
