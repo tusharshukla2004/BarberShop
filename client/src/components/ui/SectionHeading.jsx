@@ -43,7 +43,7 @@ export function SectionHeading({
       )}
       <HeadingTag
         className={cn(
-          'font-display text-4xl sm:text-5xl md:text-6xl tracking-wide uppercase leading-none',
+        'font-display text-3xl sm:text-4xl md:text-5xl tracking-wide uppercase leading-tight',
           tone === 'dark' ? 'text-white' : 'text-ink'
         )}
       >

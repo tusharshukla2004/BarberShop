@@ -256,8 +256,7 @@ const seedProducts = [
     ingredients: 'Bentonite Clay, Kaolin, Beeswax, Jojoba Seed Oil, Cedarwood Essential Oil.',
     howToUse:
       'Rub a dime-sized amount between palms and distribute evenly through towel-dried or dry hair. Style with comb or fingers.',
-    imageUrl:
-      'https://picsum.photos/seed/barber21/800/800',
+    imageUrl: '/images/products/matte-clay-pomade.jpg',
     rating: 4.9,
     reviewCount: 128,
     isBestSeller: true,
@@ -277,8 +276,7 @@ const seedProducts = [
       'Simmondsia Chinensis (Jojoba) Oil, Argania Spinosa (Argan) Kernel Oil, Sweet Almond Oil, Sandalwood Essential Oil.',
     howToUse:
       'Dispense 3–5 drops into palms and massage upward into beard hair and skin down to roots.',
-    imageUrl:
-      'https://picsum.photos/seed/barber22/800/800',
+    imageUrl: '/images/products/sandalwood-beard-oil.jpg',
     rating: 5.0,
     reviewCount: 214,
     isBestSeller: true,
@@ -298,8 +296,7 @@ const seedProducts = [
       'Japanese High-Carbon Steel Blade, Handcrafted Wood Scale, Vegan Badger-Style Fiber.',
     howToUse:
       'Whip hot water and shave soap into a rich lather in the bowl. Apply in circular motions before razor gliding at a 30-degree angle.',
-    imageUrl:
-      'https://picsum.photos/seed/barber23/800/800',
+    imageUrl: '/images/products/straight-razor-shave-set.jpg',
     rating: 4.9,
     reviewCount: 89,
     isBestSeller: true,
@@ -319,8 +316,7 @@ const seedProducts = [
       'Purified Aqua, Dead Sea Salt, Organic Kelp Extract, Witch Hazel, Aloe Vera Leaf Juice.',
     howToUse:
       'Spray 4–6 pumps onto damp hair before blow-drying, or onto dry hair for lived-in textured hold.',
-    imageUrl:
-      'https://picsum.photos/seed/barber24/800/800',
+    imageUrl: '/images/products/sea-salt-texturizing-spray.jpg',
     rating: 4.8,
     reviewCount: 96,
     isBestSeller: false,
@@ -340,8 +336,7 @@ const seedProducts = [
       'Butyrospermum Parkii (Shea Butter), Cera Alba (Beeswax), Cocos Nucifera (Coconut) Oil, Cedarwood Oil.',
     howToUse:
       'Scrape a thumbnail amount, warm between palms until melted, and work thoroughly through dry beard.',
-    imageUrl:
-      'https://picsum.photos/seed/barber25/800/800',
+    imageUrl: '/images/products/cedarwood-beard-balm.jpg',
     rating: 4.9,
     reviewCount: 142,
     isBestSeller: false,
@@ -360,8 +355,7 @@ const seedProducts = [
     ingredients:
       'Hamamelis Virginiana (Witch Hazel) Water, Menthol, Aloe Barbadensis Leaf Juice, Eucalyptus Globulus Oil.',
     howToUse: 'Splash onto freshly shaved skin with clean hands and gently pat dry.',
-    imageUrl:
-      'https://picsum.photos/seed/barber26/800/800',
+    imageUrl: '/images/products/post-shave-tonic.jpg',
     rating: 4.8,
     reviewCount: 78,
     isBestSeller: false,
@@ -380,8 +374,7 @@ const seedProducts = [
     ingredients: 'Solid Knurled Brass, Chrome Plating, Swedish Stainless Steel Blades.',
     howToUse:
       'Unscrew head, drop in double-edge blade, screw tight, and shave using light gliding strokes with zero downward pressure.',
-    imageUrl:
-      'https://picsum.photos/seed/barber27/800/800',
+    imageUrl: '/images/products/double-edge-safety-razor.jpg',
     rating: 4.9,
     reviewCount: 165,
     isBestSeller: true,
@@ -400,8 +393,7 @@ const seedProducts = [
     ingredients: 'Solid Walnut Wood, 100% Natural Boar Bristle.',
     howToUse:
       'Brush downward with gentle firm strokes daily, preferably after applying beard oil or balm.',
-    imageUrl:
-      'https://picsum.photos/seed/barber28/800/800',
+    imageUrl: '/images/products/boar-bristle-beard-brush.jpg',
     rating: 5.0,
     reviewCount: 154,
     isBestSeller: false,
@@ -420,8 +412,7 @@ const seedProducts = [
     ingredients:
       'Full-Grain Buffalo Hide, Water-Resistant Ballistic Nylon, Solid Brass Hardware.',
     howToUse: 'Pack your razor, pomade, beard oils, and personal travel essentials securely.',
-    imageUrl:
-      'https://picsum.photos/seed/barber29/800/800',
+    imageUrl: '/images/products/leather-dopp-kit.jpg',
     rating: 5.0,
     reviewCount: 72,
     isBestSeller: true,

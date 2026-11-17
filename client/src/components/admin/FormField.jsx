@@ -23,7 +23,7 @@ export default function FormField({
       {children}
 
       {error && <p className="text-xs text-rose-600 font-medium">{error}</p>}
-      {helpText && !error && <p className="text-[11px] text-muted">{helpText}</p>}
+      {helpText && !error && <p className="text-xs text-muted">{helpText}</p>}
     </div>
   );
 }

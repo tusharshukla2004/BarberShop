@@ -12,8 +12,11 @@ const redirectSchema = new mongoose.Schema(
     },
     toPath: {
       type: String,
-      required: [true, 'Destination path is required'],
+      required: function () {
+        return this.statusCode !== 410;
+      },
       trim: true,
+      default: '',
     },
     statusCode: {
       type: Number,

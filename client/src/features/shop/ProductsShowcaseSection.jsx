@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, ShoppingBag } from 'lucide-react';
 import Container from '@/components/ui/Container';
@@ -14,6 +15,7 @@ import { CartDrawer } from '@/features/shop/CartDrawer';
 /**
  * Curated Products Showcase Section
  * Displays top gentleman apothecary products with Quick View and Shop link
+ * Enhanced with Framer Motion scroll reveals
  */
 export function ProductsShowcaseSection({
   eyebrow = 'Artisanal Care',
@@ -69,10 +71,19 @@ export function ProductsShowcaseSection({
   };
 
   return (
-    <Section tone={tone} className="py-16 md:py-24 border-t border-border-light/60">
+    <Section
+      tone={tone}
+      className="py-16 sm:py-20 md:py-24 border-t border-border-light/60 overflow-hidden"
+    >
       <Container>
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        {/* Header with scroll reveal */}
+        <motion.div
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12"
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-accent mb-2">
               <Sparkles className="w-3.5 h-3.5" />
@@ -96,37 +107,68 @@ export function ProductsShowcaseSection({
               Explore Full Shop
             </Button>
           </Link>
-        </div>
+        </motion.div>
 
-        {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Product Cards Grid with staggered entrance */}
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+        >
           {displayedProducts.map((product) => (
-            <ProductCard
+            <motion.div
               key={product.id || product._id}
-              product={product}
-              onQuickView={() => setSelectedProduct(product)}
-              onAddToCart={() => handleAddToCart(product, 1)}
-            />
+              className="h-full"
+              variants={{
+                hidden: { opacity: 0, y: 25 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+            >
+              <ProductCard
+                product={product}
+                onQuickView={() => setSelectedProduct(product)}
+                onAddToCart={() => handleAddToCart(product, 1)}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Bottom Callout Bar */}
-        <div className="mt-12 p-6 rounded-2xl bg-white border border-border-light shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <motion.div
+          className="mt-12 p-6 rounded-2xl bg-white border border-border-light shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-accent/15 text-accent flex items-center justify-center shrink-0">
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-semibold text-sm text-ink">Free Studio Pickup & Orders Over ₹1,500</h4>
+              <h4 className="font-semibold text-sm text-ink">Free Studio Pickup &amp; Orders Over ₹1,500</h4>
               <p className="text-xs text-muted">All grooming products come with an authenticity certificate.</p>
             </div>
           </div>
           <Link to="/shop">
             <span className="text-xs font-bold text-accent hover:text-accent-hover uppercase tracking-wider inline-flex items-center gap-1">
-              View All 9 Essentials <ArrowRight className="w-3.5 h-3.5" />
+              View All 12 Essentials <ArrowRight className="w-3.5 h-3.5" />
             </span>
           </Link>
-        </div>
+        </motion.div>
       </Container>
 
       {/* Quick View Modal */}
@@ -150,4 +192,3 @@ export function ProductsShowcaseSection({
 }
 
 export default ProductsShowcaseSection;
-

@@ -26,6 +26,9 @@ import { buildWhatsAppLink, renderTemplate } from '@/lib/whatsapp';
 import { useAppDispatch } from '@/app/hooks';
 import { addToast } from '@/features/ui/uiSlice';
 
+const formatQueueLabel = (value) =>
+  value.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+
 export default function AdminQueuePage() {
   const dispatch = useAppDispatch();
   const nameId = useId();
@@ -170,10 +173,10 @@ export default function AdminQueuePage() {
   return (
     <div className="space-y-6">
       {/* Top Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-card border border-border shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-xl border border-border-light/90 shadow-2xs">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="font-display text-2xl sm:text-3xl tracking-wide uppercase text-ink/80 font-normal">
+            <h1 className="font-display text-2xl sm:text-3xl tracking-wide uppercase text-ink/85 font-normal">
               Walk-in Queue Board
             </h1>
             {isFetching && (
@@ -190,7 +193,7 @@ export default function AdminQueuePage() {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-3 py-2 border border-border rounded-base text-sm bg-white focus:outline-none focus:ring-1 focus:ring-accent"
+            className="px-3 py-2 border border-border-light rounded-lg text-xs bg-card/60 text-ink focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
           />
 
           <Button
@@ -198,9 +201,9 @@ export default function AdminQueuePage() {
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider rounded-lg"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-3.5 h-3.5" />
             <span>Refresh</span>
           </Button>
 
@@ -209,9 +212,9 @@ export default function AdminQueuePage() {
             variant="primary"
             size="sm"
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 bg-accent text-white"
+            className="flex items-center gap-1.5 bg-accent text-white text-xs font-semibold uppercase tracking-wider rounded-lg shadow-sm"
           >
-            <UserPlus className="w-4 h-4" />
+            <UserPlus className="w-3.5 h-3.5" />
             <span>Add Walk-in</span>
           </Button>
         </div>
@@ -219,50 +222,50 @@ export default function AdminQueuePage() {
 
       {/* KPI Stats Ribbon */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs">
-          <div className="text-xs uppercase tracking-wider font-medium text-muted">
+        <div className="bg-amber-50/35 p-4 sm:p-5 rounded-xl border border-amber-200 shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="text-[11px] uppercase tracking-wider font-bold text-amber-900/80">
             Waiting in Lounge
           </div>
-          <div className="text-2xl sm:text-3xl font-display text-ink/80 font-normal mt-1">
+          <div className="text-2xl sm:text-3xl font-display text-amber-800 mt-2 tracking-tight">
             {waitingEntries.length}
           </div>
-          <div className="text-xs text-muted mt-0.5">
-            Est. wait: ~{prospectEst?.estimatedWaitMinutes || 0} mins
+          <div className="text-xs text-muted mt-1">
+            Est. wait: <span className="font-semibold text-ink">~{prospectEst?.estimatedWaitMinutes || 0} mins</span>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs">
-          <div className="text-xs uppercase tracking-wider font-medium text-muted">
+        <div className="bg-sky-50/35 p-4 sm:p-5 rounded-xl border border-sky-200 shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="text-[11px] uppercase tracking-wider font-bold text-sky-900/80">
             In Service Chairs
           </div>
-          <div className="text-2xl sm:text-3xl font-display text-accent mt-1">
+          <div className="text-2xl sm:text-3xl font-display text-sky-800 mt-2 tracking-tight">
             {inServiceEntries.length}
           </div>
-          <div className="text-xs text-muted mt-0.5">
+          <div className="text-xs text-muted mt-1">
             Active cuts in progress
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs">
-          <div className="text-xs uppercase tracking-wider font-medium text-muted">
+        <div className="bg-purple-50/35 p-4 sm:p-5 rounded-xl border border-purple-200 shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="text-[11px] uppercase tracking-wider font-bold text-purple-900/80">
             Working Barbers
           </div>
-          <div className="text-2xl sm:text-3xl font-display text-ink/80 font-normal mt-1">
+          <div className="text-2xl sm:text-3xl font-display text-purple-800 mt-2 tracking-tight">
             {queueData?.workingBarbersCount || activeBarbers.length}
           </div>
-          <div className="text-xs text-muted mt-0.5">
+          <div className="text-xs text-muted mt-1">
             On shift today
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs">
-          <div className="text-xs uppercase tracking-wider font-semibold text-muted">
+        <div className="bg-emerald-50/35 p-4 sm:p-5 rounded-xl border border-emerald-200 shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="text-[11px] uppercase tracking-wider font-bold text-emerald-900/80">
             Next Available Slot
           </div>
-          <div className="text-2xl sm:text-3xl font-display text-success mt-1">
+          <div className="text-2xl sm:text-3xl font-display text-emerald-600 mt-2 tracking-tight">
             {prospectEst?.estimatedStartTime || 'Now Free'}
           </div>
-          <div className="text-xs text-muted mt-0.5">
+          <div className="text-xs text-muted mt-1">
             {prospectEst?.canBeServedBeforeClosing ? 'Open for walk-ins' : 'Near closing'}
           </div>
         </div>
@@ -270,7 +273,7 @@ export default function AdminQueuePage() {
 
       {/* Barber Chairs Board (1 Column Per Barber) */}
       <div className="space-y-3">
-        <h2 className="text-base font-medium uppercase tracking-wider text-ink/80 flex items-center gap-2">
+        <h2 className="font-body text-base font-semibold normal-case tracking-normal text-ink flex items-center gap-2">
           <Scissors className="w-4 h-4 text-accent" />
           <span>Barber Stations</span>
         </h2>
@@ -293,16 +296,18 @@ export default function AdminQueuePage() {
             return (
               <div
                 key={barberIdStr}
-                className={`bg-white rounded-card border transition-all ${
+                className={`rounded-card border transition-all ${
                   isFree
-                    ? 'border-emerald-300 ring-2 ring-emerald-50 bg-emerald-50/10'
-                    : 'border-border'
+                    ? 'border-emerald-200 bg-emerald-50/35'
+                    : 'border-amber-200 bg-amber-50/35'
                 }`}
               >
                 {/* Barber Header */}
                 <div className="p-4 border-b border-border/80 flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium text-base text-ink/85">{barber.name}</h3>
+                    <h3 className="font-body font-semibold text-base normal-case tracking-normal leading-snug text-ink/85">
+                      {barber.name}
+                    </h3>
                     <p className="text-xs text-muted">
                       {barber.specialties?.slice(0, 2).join(', ') || 'Master Stylist'}
                     </p>
@@ -313,7 +318,7 @@ export default function AdminQueuePage() {
                       Chair Free
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-pill bg-accent/15 text-accent text-xs font-semibold">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-pill bg-amber-100 text-amber-800 text-xs font-semibold">
                       In Service
                     </span>
                   )}
@@ -323,17 +328,17 @@ export default function AdminQueuePage() {
                 <div className="p-4 space-y-4">
                   {/* Current Active Service */}
                   <div>
-                    <div className="text-xs uppercase tracking-wider font-medium text-muted mb-1.5">
+                    <div className="text-xs font-semibold text-muted mb-1.5">
                       Current Chair Client
                     </div>
                     {currentServing ? (
                       <div className="bg-sand/30 p-3 rounded-base border border-border/60 space-y-2">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
                           <span className="font-medium text-ink/85">
                             #{currentServing.tokenNumber} {currentServing.customerName}
                           </span>
-                          <span className="text-xs bg-ink/5 px-2 py-0.5 rounded text-ink/75 font-mono">
-                            {serviceName || 'Grooming'}
+                          <span className="text-xs bg-ink/5 px-2 py-0.5 rounded text-ink/75 font-medium">
+                            {formatQueueLabel(serviceName || 'Grooming')}
                           </span>
                         </div>
                         {currentServing.phone && (
@@ -395,7 +400,7 @@ export default function AdminQueuePage() {
                   {/* Next Up Preview */}
                   {nextInLine && currentServing && (
                     <div className="border-t border-border pt-3">
-                      <div className="text-xs uppercase tracking-wider font-semibold text-muted mb-1">
+                      <div className="text-xs font-semibold text-muted mb-1">
                         Next Up In Line
                       </div>
                       <div className="flex items-center justify-between text-xs bg-card/60 p-2 rounded">
@@ -417,9 +422,9 @@ export default function AdminQueuePage() {
 
       {/* Waiting List Section */}
       <div className="bg-white rounded-card border border-border shadow-xs overflow-hidden">
-        <div className="p-4 sm:p-5 border-b border-border flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-border flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-base font-medium uppercase tracking-wider text-ink/80 flex items-center gap-2">
+            <h2 className="font-body text-base font-semibold normal-case tracking-normal text-ink flex items-center gap-2">
               <Clock className="w-4 h-4 text-accent" />
               <span>Waiting Lounge List ({waitingEntries.length})</span>
             </h2>
@@ -427,7 +432,7 @@ export default function AdminQueuePage() {
               Live ordered queue with touch-friendly controls
             </p>
           </div>
-          <span className="text-xs bg-card px-2.5 py-1 rounded font-mono text-muted">
+          <span className="self-start whitespace-nowrap text-xs bg-card px-2.5 py-1 rounded font-body text-muted">
             Auto-refreshes every 15s
           </span>
         </div>
@@ -451,21 +456,21 @@ export default function AdminQueuePage() {
                   className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-card/30 transition-colors"
                 >
                   {/* Left: Token & Details */}
-                  <div className="flex items-start gap-3.5">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-ink/80 text-white font-display font-normal text-lg sm:text-xl flex items-center justify-center shrink-0 shadow-xs">
+                  <div className="flex min-w-0 items-start gap-3.5">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-ink/80 text-white font-body font-bold text-lg sm:text-xl flex items-center justify-center shrink-0 shadow-xs">
                       #{entry.tokenNumber}
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="min-w-0 flex-1 space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-medium text-base text-ink/85">
                           {entry.customerName}
                         </span>
-                        <span className="text-xs font-mono px-2 py-0.5 rounded bg-sand/60 text-ink/75">
-                          {srv?.name || 'Standard Cut'} ({srv?.durationMinutes || 30}m)
+                        <span className="text-xs font-body font-medium px-2 py-0.5 rounded bg-sand/60 text-ink/75">
+                          {formatQueueLabel(srv?.name || 'Standard Cut')} ({srv?.durationMinutes || 30}m)
                         </span>
                         {entry.source === 'public' && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
                             Online
                           </span>
                         )}
@@ -482,7 +487,7 @@ export default function AdminQueuePage() {
                           Barber: <span className="font-medium text-ink/80">{barb?.name || 'Any Barber'}</span>
                         </span>
                         <span>
-                          Est. Wait: <span className="font-medium text-accent font-mono">~{entry.estimatedWaitMinutes || 0}m</span> ({entry.estimatedStart || 'Soon'})
+                          Est. Wait:                           <span className="font-medium text-accent">~{entry.estimatedWaitMinutes || 0}m</span> ({entry.estimatedStart || 'Soon'})
                         </span>
                       </div>
 
@@ -562,8 +567,8 @@ export default function AdminQueuePage() {
 
       {/* Add Walk-In Dialog Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/70 backdrop-blur-xs">
-          <div className="bg-white w-full max-w-lg rounded-card shadow-xl border border-border overflow-hidden animate-in fade-in zoom-in-95 duration-fast">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 bg-ink/70 backdrop-blur-xs">
+          <div className="bg-white w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-card shadow-xl border border-border animate-in fade-in zoom-in-95 duration-fast">
             <div className="p-5 border-b border-border flex items-center justify-between bg-card/40">
               <div className="flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-accent" />
@@ -674,11 +679,12 @@ export default function AdminQueuePage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <div className="flex flex-col-reverse items-stretch gap-2 pt-3 border-t border-border sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setIsAddModalOpen(false)}
+                  className="w-full justify-center sm:w-auto"
                 >
                   Cancel
                 </Button>
@@ -686,7 +692,7 @@ export default function AdminQueuePage() {
                   type="submit"
                   variant="primary"
                   disabled={isAdding}
-                  className="bg-accent text-white"
+                  className="w-full justify-center bg-accent text-white sm:w-auto"
                 >
                   {isAdding ? 'Adding...' : 'Confirm & Add Walk-in'}
                 </Button>

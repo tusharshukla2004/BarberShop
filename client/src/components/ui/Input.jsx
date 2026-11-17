@@ -60,12 +60,13 @@ export const Input = forwardRef(function Input(
         ref={ref}
         id={inputId}
         type={type}
+        data-tone={tone}
         required={required}
         disabled={disabled}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : helperText ? helperId : undefined}
         className={cn(
-          'w-full px-3.5 py-2.5 rounded-sm text-sm transition-colors duration-fast outline-none',
+          'w-full h-11 px-3.5 rounded-sm text-sm transition-colors duration-fast outline-none',
           'focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1',
           isDark
             ? 'bg-ink/60 text-white placeholder:text-white/40 border border-border-dark focus-visible:border-accent'

@@ -32,11 +32,11 @@ export function Navbar() {
             : 'fixed bg-ink/95 text-white backdrop-blur-md shadow-md py-3.5 sm:py-4 border-b border-border-dark'
         )}
       >
-        <Container className="flex items-center justify-between">
+        <Container className="flex items-center justify-between gap-3">
           {/* Left: Brand Logo */}
           <NavLink
             to="/"
-            className="flex items-center gap-2 group text-white transition-opacity hover:opacity-90"
+            className="flex shrink-0 items-center gap-2 group text-white transition-opacity hover:opacity-90"
             aria-label={`${siteConfig.name} Home`}
           >
             <div className="h-9 w-9 rounded-pill bg-accent/15 border border-accent/40 flex items-center justify-center text-accent group-hover:scale-105 transition-transform">
@@ -49,7 +49,7 @@ export function Navbar() {
 
           {/* Center (Desktop): Pill container for NavLinks */}
           <nav
-            className="hidden lg:flex items-center gap-1 p-1 rounded-pill border border-white/20 bg-ink/60 backdrop-blur-md shadow-lg"
+            className="hidden lg:flex shrink-0 items-center gap-0.5 p-1 rounded-pill border border-white/20 bg-ink/70 backdrop-blur-md shadow-md"
             aria-label="Main Navigation"
           >
             {siteConfig.navLinks.map((item) => (
@@ -59,7 +59,7 @@ export function Navbar() {
                 end={item.href === '/'}
                 className={({ isActive }) =>
                   cn(
-                    'text-xs uppercase tracking-wider font-semibold px-4 py-1.5 rounded-pill transition-all duration-fast select-none',
+                    'whitespace-nowrap text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1.5 rounded-pill transition-all duration-fast select-none',
                     isActive
                       ? 'bg-white text-ink shadow-sm'
                       : 'text-white/85 hover:text-white hover:bg-white/10'
@@ -72,12 +72,12 @@ export function Navbar() {
           </nav>
 
           {/* Right (Desktop): Admin Dashboard & Contact Us Buttons */}
-          <div className="hidden lg:flex items-center gap-2.5">
+          <div className="hidden shrink-0 lg:flex items-center gap-2">
             <Button
               to="/admin"
               variant="outline"
               size="sm"
-              className="border-white/30 text-white hover:bg-white/10 hover:border-white font-medium text-xs tracking-wider uppercase px-3.5"
+              className="whitespace-nowrap border-white/30 text-white hover:bg-white/10 hover:border-white font-medium text-[10px] tracking-wider uppercase px-3"
             >
               Admin Dashboard
             </Button>
@@ -85,7 +85,7 @@ export function Navbar() {
               to="/contact"
               variant="secondary"
               size="sm"
-              className="bg-white text-ink border-white hover:bg-white/90 text-xs tracking-wider uppercase px-4"
+              className="whitespace-nowrap bg-white text-ink border-white hover:bg-white/90 text-[10px] tracking-wider uppercase px-3.5"
             >
               Contact us
             </Button>

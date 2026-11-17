@@ -268,7 +268,7 @@ export default function AdminPackagesPlansPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-border-light gap-6 text-sm font-medium">
+      <div className="flex flex-wrap border-b border-border-light gap-x-6 gap-y-2 text-sm font-medium">
         <button
           onClick={() => setActiveTab('packages')}
           className={`pb-3 border-b-2 flex items-center gap-2 transition-colors ${
@@ -312,7 +312,15 @@ export default function AdminPackagesPlansPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {packages.map((pkg) => (
-              <Card key={pkg.id || pkg._id} tone="white" className="relative p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <Card
+                key={pkg.id || pkg._id}
+                tone="white"
+                className={`relative p-6 flex flex-col justify-between border transition-all duration-200 hover:shadow-md ${
+                  pkg.isActive
+                    ? 'bg-emerald-50/25 border-emerald-200 hover:border-emerald-300'
+                    : 'bg-white border-border-light'
+                }`}
+              >
                 <div>
                   <div className="flex justify-between items-start mb-2">
                     <span
@@ -386,7 +394,15 @@ export default function AdminPackagesPlansPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {plans.map((plan) => (
-              <Card key={plan.id || plan._id} tone="white" className="relative p-6 flex flex-col justify-between hover:shadow-md transition-shadow border-amber-200/80">
+              <Card
+                key={plan.id || plan._id}
+                tone="white"
+                className={`relative p-6 flex flex-col justify-between border transition-all duration-200 hover:shadow-md ${
+                  plan.isActive
+                    ? 'bg-amber-50/30 border-amber-200 hover:border-amber-300'
+                    : 'bg-white border-border-light'
+                }`}
+              >
                 <div>
                   <div className="flex justify-between items-start mb-2">
                     <span

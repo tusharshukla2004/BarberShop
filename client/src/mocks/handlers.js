@@ -544,10 +544,24 @@ export const handlers = [
     const body = await request.json();
     await delay(50);
     const bookingId = `req_${Date.now()}`;
+    const newRequest = {
+      id: bookingId,
+      customerName: body.name || body.customerName,
+      phone: body.phone,
+      email: body.email || '',
+      serviceId: body.serviceId || 'srv-1',
+      barberId: body.barberId || 'barb-1',
+      date: body.dateTime ? body.dateTime.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      startTime: body.dateTime ? body.dateTime.slice(11, 16) || '10:00 AM' : '10:00 AM',
+      endTime: '10:45 AM',
+      status: 'pending',
+      notes: body.notes || 'Created via Quick Appointment Form',
+    };
+    dynamicBookings.unshift(newRequest);
     return HttpResponse.json(
       {
         success: true,
-        data: { id: bookingId, ...body, status: 'pending' },
+        data: newRequest,
         message: 'Your appointment request has been received.',
       },
       { status: 201 }
@@ -883,6 +897,45 @@ export const handlers = [
           limit: 50,
           totalPages: 1,
         },
+      },
+    });
+  }),
+
+  http.get('*/api/admin/customers/due-for-visit', async () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        thresholdDays: 28,
+        customers: [
+          {
+            id: 'cust-due-1',
+            name: 'Vikram Mehta',
+            phone: '9876543210',
+            lastVisitAgo: '4 weeks ago',
+            daysSinceVisit: 32,
+            stats: { completedVisits: 4 },
+          },
+        ],
+        total: 1,
+      },
+    });
+  }),
+
+  http.get('*/api/admin/customers/upcoming-birthdays', async () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        upcomingBirthdays: [
+          {
+            id: 'cust-bday-1',
+            name: 'Karan Johar',
+            phone: '9812345678',
+            birthdayFormatted: 'Nov 05',
+            daysUntilBirthday: 5,
+            alreadySentThisYear: false,
+          },
+        ],
+        total: 1,
       },
     });
   }),
@@ -1950,45 +2003,6 @@ export const handlers = [
           },
         ],
         expiringMemberships: [],
-      },
-    });
-  }),
-
-  http.get('*/api/admin/customers/due-for-visit', async () => {
-    return HttpResponse.json({
-      success: true,
-      data: {
-        thresholdDays: 28,
-        customers: [
-          {
-            id: 'cust-due-1',
-            name: 'Vikram Mehta',
-            phone: '9876543210',
-            lastVisitAgo: '4 weeks ago',
-            daysSinceVisit: 32,
-            stats: { completedVisits: 4 },
-          },
-        ],
-        total: 1,
-      },
-    });
-  }),
-
-  http.get('*/api/admin/customers/upcoming-birthdays', async () => {
-    return HttpResponse.json({
-      success: true,
-      data: {
-        upcomingBirthdays: [
-          {
-            id: 'cust-bday-1',
-            name: 'Karan Johar',
-            phone: '9812345678',
-            birthdayFormatted: 'Nov 05',
-            daysUntilBirthday: 5,
-            alreadySentThisYear: false,
-          },
-        ],
-        total: 1,
       },
     });
   }),

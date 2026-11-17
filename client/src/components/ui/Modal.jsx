@@ -2,7 +2,9 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 
-export default function Modal({ isOpen, onClose, title, children }) {
+export default function Modal({ isOpen, onClose, title, children, tone = 'light' }) {
+  const isDark = tone === 'dark';
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -38,16 +40,31 @@ export default function Modal({ isOpen, onClose, title, children }) {
       />
 
       {/* Modal Dialog Content */}
-      <div className="w-full max-w-lg bg-white rounded-xl p-6 shadow-2xl border border-border my-8 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto relative">
-        <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
-          <h2 id="modal-headline" className="font-display text-lg uppercase tracking-wider text-ink">
+      <div
+        className={`w-full max-w-lg rounded-xl p-6 shadow-2xl my-8 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto relative ${
+          isDark ? 'bg-ink text-white border border-white/15' : 'bg-white border border-border'
+        }`}
+      >
+        <div
+          className={`flex items-center justify-between pb-3 border-b mb-4 ${
+            isDark ? 'border-white/15' : 'border-border'
+          }`}
+        >
+          <h2
+            id="modal-headline"
+            className={`font-display text-lg uppercase tracking-wider ${isDark ? 'text-white' : 'text-ink'}`}
+          >
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-1 rounded-md text-muted hover:text-ink hover:bg-muted/10 transition-colors"
+            className={`p-1 rounded-md transition-colors ${
+              isDark
+                ? 'text-white/65 hover:text-white hover:bg-white/10'
+                : 'text-muted hover:text-ink hover:bg-muted/10'
+            }`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -64,5 +81,5 @@ Modal.propTypes = {
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string,
   children: PropTypes.node,
+  tone: PropTypes.oneOf(['light', 'dark']),
 };
-

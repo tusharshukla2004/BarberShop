@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button';
 import FormField from '@/components/admin/FormField';
 import ImageUploader from '@/components/admin/ImageUploader';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
+import EmptyState from '@/components/admin/EmptyState';
 import QueryState from '@/components/common/QueryState';
 import {
   useGetGalleryQuery,
@@ -82,56 +83,72 @@ export default function AdminGalleryPage() {
       </div>
 
       <QueryState isLoading={isLoading} isError={isError} error={error} onRetry={refetch}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {gallery.map((item, index) => (
-            <div
-              key={item.id || index}
-              className="rounded-lg bg-white border border-border-light overflow-hidden shadow-sm flex flex-col justify-between"
-            >
-              <div className="relative aspect-[4/5] bg-card overflow-hidden">
-                <img
-                  src={item.imageUrl}
-                  alt={item.caption || 'Gallery item'}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <span className="absolute top-2 left-2 bg-ink/80 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded backdrop-blur-sm">
-                  {item.category}
-                </span>
-              </div>
+        {gallery.length === 0 ? (
+          <EmptyState
+            title="Your gallery is ready to grow"
+            message="Add the first image to curate the work shown on your public gallery."
+            actionLabel="Add image"
+            onAction={() =>
+              setModalItem({
+                imageUrl: '',
+                category: 'Haircut',
+                caption: '',
+                order: gallery.length + 1,
+              })
+            }
+          />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {gallery.map((item, index) => (
+              <div
+                key={item.id || index}
+                className="rounded-xl bg-white border border-border-light overflow-hidden shadow-sm flex flex-col justify-between transition-shadow hover:shadow-md"
+              >
+                <div className="relative aspect-[4/5] bg-card overflow-hidden">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.caption || 'Gallery item'}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <span className="absolute top-3 left-3 bg-ink/85 text-white text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full backdrop-blur-sm">
+                    {item.category}
+                  </span>
+                </div>
 
-              <div className="p-4 flex flex-col justify-between flex-1">
-                <p className="text-xs text-ink line-clamp-2 mb-3">
-                  {item.caption || 'No caption provided'}
-                </p>
+                <div className="p-4 flex flex-col justify-between flex-1">
+                  <p className="text-sm text-ink line-clamp-2 mb-3">
+                    {item.caption || 'No caption provided'}
+                  </p>
 
-                <div className="flex items-center justify-between pt-2 border-t border-border-light/60">
-                  <span className="text-[10px] text-muted font-mono">Order: {item.order || index + 1}</span>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      title="Edit"
-                      onClick={() => setModalItem(item)}
-                      aria-label="Edit gallery item"
-                      className="p-1 rounded text-muted hover:text-ink hover:bg-card"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      title="Delete"
-                      onClick={() => setDeleteId(item.id)}
-                      aria-label="Delete gallery item"
-                      className="p-1 rounded text-muted hover:text-rose-600 hover:bg-card"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="flex items-center justify-between pt-3 border-t border-border-light/60">
+                    <span className="text-[11px] text-muted">Order {item.order || index + 1}</span>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        title="Edit"
+                        onClick={() => setModalItem(item)}
+                        aria-label={`Edit ${item.caption || 'gallery item'}`}
+                        className="p-2 rounded-lg text-muted hover:text-ink hover:bg-card transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Delete"
+                        onClick={() => setDeleteId(item.id)}
+                        aria-label={`Delete ${item.caption || 'gallery item'}`}
+                        className="p-2 rounded-lg text-muted hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </QueryState>
 
       {modalItem && (

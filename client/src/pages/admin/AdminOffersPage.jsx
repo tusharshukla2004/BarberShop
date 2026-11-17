@@ -238,8 +238,7 @@ export default function AdminOffersPage() {
         isOpen={Boolean(deleteTargetId)}
         title="Delete Offer"
         message="Are you sure you want to permanently delete this promotional offer? Customers will no longer be able to use this promo code."
-        confirmText="Delete"
-        isDestructive
+        confirmLabel="Delete offer"
         isLoading={isDeleting}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTargetId(null)}

@@ -18,6 +18,7 @@ import Seo from '@/components/common/Seo';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import QueryState from '@/components/common/QueryState';
 import { useGetPublicPostsQuery } from '@/features/seo/seoApi';
+import { getShopImageDetailsForContent } from '@/features/shop/productImages';
 
 export default function BlogListPage() {
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -149,14 +150,10 @@ export default function BlogListPage() {
                 <div>
                   <div className="relative h-48 overflow-hidden bg-muted/20">
                     <img
-                      src={post.coverImage}
-                      alt={post.title?.en}
+                      src={getShopImageDetailsForContent(post.category, post.slug).src}
+                      alt={getShopImageDetailsForContent(post.category, post.slug).alt}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = 'https://placehold.co/1200x800/1a1a1a/d4a843?text=Modern+Mane+Journal';
-                      }}
                     />
                     <span className="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider font-bold bg-primary/90 text-accent">
                       {post.category}
@@ -257,4 +254,3 @@ export default function BlogListPage() {
     </div>
   );
 }
-

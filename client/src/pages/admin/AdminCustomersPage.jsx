@@ -429,10 +429,10 @@ export default function AdminCustomersPage() {
               return (
                 <div
                   key={custId}
-                  className={`p-4 rounded-xl border transition-all ${
+                  className={`p-4 sm:p-5 rounded-xl border transition-all duration-200 ${
                     c.isFlagged || isHighNoShow
                       ? 'bg-amber-500/5 border-amber-500/30'
-                      : 'bg-card border-border-light hover:border-accent/40 shadow-sm'
+                      : 'bg-white border-border-light/90 hover:border-accent/40 shadow-2xs hover:shadow-sm'
                   }`}
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 items-center">
@@ -441,13 +441,13 @@ export default function AdminCustomersPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <Link
                           to={`/admin/customers/${custId}`}
-                          className="font-medium text-sm text-ink/85 hover:text-accent transition-colors"
+                          className="font-semibold text-sm text-ink hover:text-accent transition-colors"
                         >
                           {c.name}
                         </Link>
                         {c.whatsappConsent ? (
                           <span
-                            className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 font-medium"
+                            className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-bold uppercase tracking-wider"
                             title="WhatsApp Updates Opted-in"
                           >
                             WA Opt-in
@@ -455,14 +455,14 @@ export default function AdminCustomersPage() {
                         ) : null}
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-muted mt-1">
+                      <div className="flex items-center gap-3 text-xs text-muted mt-1.5">
                         <span className="flex items-center gap-1 font-mono">
-                          <Phone className="w-3 h-3 text-muted/60" />
+                          <Phone className="w-3.5 h-3.5 text-accent" />
                           {c.phone}
                         </span>
                         {c.email ? (
                           <span className="flex items-center gap-1 truncate max-w-[150px]">
-                            <Mail className="w-3 h-3 text-muted/60" />
+                            <Mail className="w-3.5 h-3.5 text-muted" />
                             {c.email}
                           </span>
                         ) : null}
@@ -474,7 +474,7 @@ export default function AdminCustomersPage() {
                           {c.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="text-[10px] px-1.5 py-0.2 rounded bg-surface border border-border-light text-muted"
+                              className="text-[10px] px-2 py-0.5 rounded-full bg-sand/40 border border-border-light text-muted font-medium"
                             >
                               #{tag}
                             </span>
@@ -485,19 +485,19 @@ export default function AdminCustomersPage() {
 
                     {/* Visits */}
                     <div className="lg:col-span-2 text-left lg:text-center">
-                      <span className="inline-block px-2.5 py-1 rounded bg-surface border border-border-light text-xs font-mono font-medium text-ink/80">
+                      <span className="inline-block px-2.5 py-1 rounded-md bg-card/70 border border-border-light text-xs font-mono font-bold text-ink">
                         {stats.completedVisits || 0} / {stats.totalVisits || 0}
                       </span>
-                      <div className="text-[10px] text-muted mt-0.5">
-                        Spent: ₹{stats.totalSpent || 0}
+                      <div className="text-[11px] text-muted font-medium mt-1">
+                        Spent: <span className="font-semibold text-ink">₹{stats.totalSpent || 0}</span>
                       </div>
                     </div>
 
                     {/* Last Visit */}
                     <div className="lg:col-span-2 text-xs text-muted">
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-muted/60" />
-                        <span>{formatDate(stats.lastVisitAt)}</span>
+                        <Calendar className="w-3.5 h-3.5 text-accent" />
+                        <span className="font-medium text-ink/80">{formatDate(stats.lastVisitAt)}</span>
                       </div>
                     </div>
 
@@ -505,19 +505,19 @@ export default function AdminCustomersPage() {
                     <div className="lg:col-span-2 space-y-1">
                       {c.isFlagged ? (
                         <span
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-red-500/10 text-red-600 border border-red-500/30"
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200"
                           title={c.flagReason || 'Flagged for staff attention'}
                         >
                           <AlertTriangle className="w-3 h-3 shrink-0" />
                           {c.flagReason || 'Flagged'}
                         </span>
                       ) : isHighNoShow ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/10 text-amber-600 border border-amber-500/30">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
                           <Clock className="w-3 h-3" />
                           {noShowCount} No-Shows
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
                           <CheckCircle2 className="w-3 h-3" /> Good Standing
                         </span>
                       )}
@@ -530,7 +530,7 @@ export default function AdminCustomersPage() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="text-xs h-8 px-3"
+                          className="text-xs h-8 px-3 rounded-lg text-ink hover:text-accent font-semibold uppercase tracking-wider"
                         >
                           <Eye className="w-3.5 h-3.5 mr-1" />
                           Profile

@@ -14,6 +14,8 @@
 
   body {
     font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.6;
     color: var(--color-ink);
     background-color: var(--color-white);
     -webkit-font-smoothing: antialiased;
@@ -28,8 +30,55 @@
   h6 {
     font-family: var(--font-display);
     text-transform: uppercase;
-    line-height: 0.95;
+    line-height: 1.05;
     letter-spacing: 0.025em;
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+  }
+
+  h2 {
+    font-size: var(--text-h2);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+  }
+
+  h4 {
+    font-size: var(--text-h4);
+  }
+
+  .admin-content h1 {
+    color: var(--color-ink) !important;
+    font-family: var(--font-body) !important;
+    font-size: clamp(1.5rem, 2.4vw, 1.875rem) !important;
+    font-weight: 650 !important;
+    letter-spacing: -0.035em !important;
+    line-height: 1.25 !important;
+    text-transform: none !important;
+  }
+
+  button,
+  [role='button'] {
+    font-family: var(--font-body);
+  }
+
+  button {
+    min-height: 2.5rem;
+  }
+
+  input:not([type='checkbox']):not([type='radio']),
+  select {
+    min-height: 2.75rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+  }
+
+  textarea {
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
   }
 
   *:focus-visible {
@@ -42,13 +91,21 @@
     filter: sepia(0.65) hue-rotate(330deg) saturate(0.65) contrast(0.95);
   }
 
-  /* Prevent browser autofill from forcing solid white background on dark inputs */
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-    -webkit-text-fill-color: #ffffff;
-    -webkit-box-shadow: 0 0 0 1000px #1e1815 inset !important;
+  input[data-tone='dark']:-webkit-autofill,
+  input[data-tone='dark']:-webkit-autofill:hover,
+  input[data-tone='dark']:-webkit-autofill:focus,
+  input[data-tone='dark']:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-white);
+    -webkit-box-shadow: 0 0 0 1000px var(--color-ink) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  input:not([data-tone='dark']):-webkit-autofill,
+  input:not([data-tone='dark']):-webkit-autofill:hover,
+  input:not([data-tone='dark']):-webkit-autofill:focus,
+  input:not([data-tone='dark']):-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-ink);
+    -webkit-box-shadow: 0 0 0 1000px var(--color-white) inset !important;
     transition: background-color 5000s ease-in-out 0s;
   }
 
@@ -61,12 +118,123 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(120, 113, 108, 0.25);
+    background: rgb(var(--color-muted-rgb) / 0.25);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(120, 113, 108, 0.45);
+    background: rgb(var(--color-muted-rgb) / 0.45);
   }
+}
+
+@layer components {
+  .admin-shell {
+    background-color: var(--color-admin-bg);
+  }
+
+  .admin-mobile-bar {
+    color: var(--color-white);
+    background-color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border-dark);
+  }
+
+  .admin-topbar {
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-admin-border);
+    backdrop-filter: blur(12px);
+  }
+
+  .admin-content input:not([type='checkbox']):not([type='radio']),
+  .admin-content select,
+  .admin-content textarea {
+    border-color: var(--color-admin-border);
+  }
+
+  .admin-content table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .admin-content table thead th {
+    padding-block: 0.875rem;
+    color: var(--color-admin-muted);
+    background-color: var(--color-admin-surface-subtle);
+    font-size: 0.6875rem;
+    letter-spacing: 0.075em;
+    white-space: nowrap;
+  }
+
+  .admin-content table tbody td {
+    padding-block: 0.875rem;
+    vertical-align: middle;
+  }
+
+  .admin-content table tbody tr {
+    transition: background-color var(--transition-fast);
+  }
+}
+
+/* Luxury Card & Button Polish */
+.luxury-card-hover {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+.luxury-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 28px -14px rgb(var(--color-ink-rgb) / 0.16),
+    0 0 12px -6px rgb(var(--color-accent-rgb) / 0.12);
+}
+
+.luxury-shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+.luxury-shimmer-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(30deg) translateY(-100%);
+  transition: transform 0.75s ease;
+}
+.luxury-shimmer-btn:hover::after {
+  transform: rotate(30deg) translateY(100%);
+}
+
+/* Floating animation for barbershop chair / emblems */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.08);
+  }
+}
+
+.animate-float-chair {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
 }
 
 /* Accessibility: Respect user motion preferences */

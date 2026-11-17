@@ -38,6 +38,8 @@ export default {
         'on-light-muted': 'var(--color-on-light-muted)',
         'border-light': 'var(--color-border-light)',
         'border-dark': 'var(--color-border-dark)',
+        border: 'var(--color-border-light)',
+        sand: 'rgb(var(--color-cream-rgb, 235 224 200) / <alpha-value>)',
       },
       fontFamily: {
         display: ['var(--font-display)', 'sans-serif'],
@@ -49,6 +51,12 @@ export default {
         lg: 'var(--radius-lg)',
         xl: 'var(--radius-xl)',
         pill: 'var(--radius-pill)',
+        base: 'var(--radius-sm)',
+        card: 'var(--radius-lg)',
+      },
+      boxShadow: {
+        '2xs': '0 1px 2px rgb(var(--color-ink-rgb) / 0.04)',
+        xs: '0 1px 3px rgb(var(--color-ink-rgb) / 0.06)',
       },
       maxWidth: {
         container: 'var(--container-max-width)',

@@ -313,7 +313,7 @@ export default function AdminSeoPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-border-light flex gap-4 text-xs font-semibold">
+      <div className="border-b border-border-light flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold">
         <button
           onClick={() => setActiveTab('health')}
           className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition-colors ${

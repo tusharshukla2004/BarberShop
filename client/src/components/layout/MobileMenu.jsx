@@ -20,10 +20,8 @@ export function MobileMenu() {
 
   // Auto-close on route change
   useEffect(() => {
-    if (isOpen) {
-      dispatch(closeMobileMenu());
-    }
-  }, [location.pathname, dispatch, isOpen]);
+    dispatch(closeMobileMenu());
+  }, [location.pathname, dispatch]);
 
   // Lock body scroll when drawer is open
   useEffect(() => {
@@ -84,17 +82,17 @@ export function MobileMenu() {
       aria-modal="true"
       aria-label="Navigation Menu"
       ref={drawerRef}
-      className="fixed inset-0 z-50 flex flex-col bg-ink text-white animate-in fade-in duration-base overflow-y-auto"
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-ink text-white animate-in fade-in duration-base"
     >
       {/* Top Bar with Brand & Close */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-border-dark">
+      <div className="flex items-center justify-between border-b border-border-dark px-4 py-2.5 sm:px-6">
         <NavLink
           to="/"
           onClick={() => dispatch(closeMobileMenu())}
           className="flex items-center gap-2 text-white"
         >
-          <Scissors className="h-6 w-6 text-accent" />
-          <span className="font-display text-2xl tracking-wide uppercase">{siteConfig.name}</span>
+          <Scissors className="h-5 w-5 text-accent" />
+          <span className="font-display text-xl tracking-wide uppercase">{siteConfig.name}</span>
         </NavLink>
         <IconButton
           ref={closeBtnRef}
@@ -109,8 +107,8 @@ export function MobileMenu() {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 px-6 py-8 flex flex-col justify-between">
-        <nav className="flex flex-col gap-4" aria-label="Mobile Navigation">
+      <div className="flex flex-1 flex-col justify-between px-4 py-2 sm:px-6 sm:py-5">
+        <nav className="flex flex-col gap-0.5" aria-label="Mobile Navigation">
           {siteConfig.navLinks.map((link) => (
             <NavLink
               key={link.label}
@@ -118,7 +116,7 @@ export function MobileMenu() {
               onClick={() => dispatch(closeMobileMenu())}
               className={({ isActive }) =>
                 cn(
-                  'font-display text-3xl sm:text-4xl tracking-wider uppercase py-2 transition-colors duration-fast',
+                  'font-display text-base leading-5 tracking-wider uppercase py-1 transition-colors duration-fast sm:text-lg',
                   isActive
                     ? 'text-accent border-b border-accent/30'
                     : 'text-white/80 hover:text-white'
@@ -133,7 +131,7 @@ export function MobileMenu() {
             onClick={() => dispatch(closeMobileMenu())}
             className={({ isActive }) =>
               cn(
-                'font-display text-3xl sm:text-4xl tracking-wider uppercase py-2 transition-colors duration-fast',
+                'font-display text-base leading-5 tracking-wider uppercase py-1 transition-colors duration-fast sm:text-lg',
                 isActive
                   ? 'text-accent border-b border-accent/30'
                   : 'text-white/80 hover:text-white'
@@ -145,7 +143,7 @@ export function MobileMenu() {
         </nav>
 
         {/* Contact info & CTA */}
-        <div className="mt-8 pt-8 border-t border-border-dark flex flex-col gap-4">
+        <div className="mt-2 flex flex-col gap-2 border-t border-border-dark pt-2">
           <Button
             to="/admin"
             variant="outline"
@@ -166,7 +164,7 @@ export function MobileMenu() {
             {siteConfig.cta.label}
           </Button>
 
-          <div className="flex flex-col gap-3 text-xs text-on-dark-muted">
+          <div className="flex flex-col gap-1 text-[10px] leading-tight text-on-dark-muted">
             <div className="flex items-center gap-2.5">
               <Phone className="h-4 w-4 text-accent shrink-0" />
               <span>{siteConfig.phone}</span>

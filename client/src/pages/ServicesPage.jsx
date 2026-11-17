@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { Clock } from 'lucide-react';
 import Seo from '@/components/common/Seo';
 import PageBanner from '@/components/common/PageBanner';
@@ -18,6 +19,7 @@ import { useAppDispatch } from '@/app/hooks';
 import { selectService, setBookingStep } from '@/features/booking/bookingDraftSlice';
 import { formatPrice } from '@/lib/formatters';
 import { ProductsShowcaseSection } from '@/features/shop/ProductsShowcaseSection';
+import { getShopImageForServiceCategory } from '@/features/shop/productImages';
 
 export default function ServicesPage() {
   const navigate = useNavigate();
@@ -44,17 +46,6 @@ export default function ServicesPage() {
     if (activeCategory === 'All') return services;
     return services.filter((s) => s.category.toLowerCase() === activeCategory.toLowerCase());
   }, [services, activeCategory]);
-
-  // Grouped by category for structured display
-  const groupedServices = useMemo(() => {
-    const groups = {};
-    services.forEach((s) => {
-      const cat = s.category || 'Other';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(s);
-    });
-    return groups;
-  }, [services]);
 
   const handleBookService = (serviceId) => {
     dispatch(selectService(serviceId));
@@ -108,45 +99,15 @@ export default function ServicesPage() {
             isEmpty={!isLoading && filteredServices.length === 0}
             emptyMessage="No grooming services found for the selected category."
           >
-            {activeCategory === 'All' ? (
-              // Structured display by category groups
-              <div className="space-y-16">
-                {Object.entries(groupedServices).map(([categoryName, items]) => (
-                  <div key={categoryName} className="space-y-6">
-                    <div className="border-b border-border-light pb-3">
-                      <SectionHeading
-                        level={2}
-                        tone="dark"
-                        className="text-2xl sm:text-3xl text-ink"
-                      >
-                        {categoryName === 'Combo' ? 'PACKAGES & COMBOS' : categoryName}
-                      </SectionHeading>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {items.map((service) => (
-                        <ServiceItemCard
-                          key={service.id}
-                          service={service}
-                          onBook={() => handleBookService(service.id)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              // Filtered list display
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredServices.map((service) => (
-                  <ServiceItemCard
-                    key={service.id}
-                    service={service}
-                    onBook={() => handleBookService(service.id)}
-                  />
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredServices.map((service) => (
+                <ServiceItemCard
+                  key={service.id}
+                  service={service}
+                  onBook={() => handleBookService(service.id)}
+                />
+              ))}
+            </div>
           </QueryState>
         </Container>
       </Section>
@@ -217,41 +178,79 @@ export default function ServicesPage() {
 }
 
 function ServiceItemCard({ service, onBook }) {
+  const imageUrl = getShopImageForServiceCategory(service.category);
+
   return (
     <Card
       tone="light"
-      className="p-6 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300 border border-border-light/60"
+      className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-border-light/80 hover:border-accent/40 shadow-xs hover:shadow-xl transition-all duration-300 bg-white"
     >
       <div>
-        <div className="flex items-start justify-between gap-3 mb-2">
-          <h3 className="font-display text-xl sm:text-2xl text-ink tracking-wide leading-tight">
-            {service.name}
-          </h3>
-          <span className="font-display text-xl sm:text-2xl text-ink whitespace-nowrap">
-            {formatPrice(service.price)}
+        {/* Service Visual Header */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-sand/30">
+          <img
+            src={imageUrl}
+            alt={service.name}
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+
+          {/* Category Chip */}
+          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-ink/80 backdrop-blur-md text-white border border-white/10 shadow-xs">
+            {service.category || 'Grooming'}
           </span>
+
+          {/* Price Badge */}
+          <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-accent text-white font-display text-lg tracking-wide shadow-md">
+            {formatPrice(service.price)}
+          </div>
         </div>
 
-        <p className="text-muted text-sm leading-relaxed mb-6 font-normal">
-          {service.description}
-        </p>
+        {/* Content Body */}
+        <div className="p-5 sm:p-6">
+          <h3 className="font-display text-xl sm:text-2xl text-ink tracking-wide leading-tight uppercase group-hover:text-accent transition-colors mb-2">
+            {service.name}
+          </h3>
+
+          <p className="text-muted text-xs sm:text-sm leading-relaxed font-normal min-h-[3rem]">
+            {service.description}
+          </p>
+        </div>
       </div>
 
-      <div className="pt-4 border-t border-border-light/40 flex items-center justify-between gap-4">
-        <span className="inline-flex items-center gap-1.5 text-xs text-muted font-medium">
-          <Clock className="w-3.5 h-3.5 text-accent" />
-          {service.durationMinutes} mins
-        </span>
+      {/* Card Footer */}
+      <div className="px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
+        <div className="pt-3.5 border-t border-border-light/60 flex items-center justify-between gap-4">
+          <span className="inline-flex items-center gap-1.5 text-xs text-muted font-medium">
+            <Clock className="w-3.5 h-3.5 text-accent" />
+            <span>{service.durationMinutes} mins</span>
+          </span>
 
-        <Button
-          variant="accent"
-          size="sm"
-          onClick={onBook}
-          aria-label={`Book ${service.name}`}
-        >
-          Book now
-        </Button>
+          <Button
+            variant="accent"
+            size="sm"
+            onClick={onBook}
+            className="rounded-full px-5 text-xs uppercase tracking-wider font-semibold shadow-sm"
+            aria-label={`Book ${service.name}`}
+          >
+            Book now
+          </Button>
+        </div>
       </div>
     </Card>
   );
 }
+
+ServiceItemCard.propTypes = {
+  service: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    category: PropTypes.string,
+    description: PropTypes.string,
+    price: PropTypes.number.isRequired,
+    durationMinutes: PropTypes.number,
+    imageUrl: PropTypes.string,
+  }).isRequired,
+  onBook: PropTypes.func.isRequired,
+};

@@ -34,7 +34,7 @@ export const createBookingRequestSchema = z.object({
         /^(?:(?:\+|0{0,2})91(\s*[- ]\s*)?|[0]?)?[6789]\d{9}$/,
         'Please enter a valid 10-digit Indian mobile number'
       ),
-    dateTime: z.string().min(1, 'Appointment date and time are required'),
+    dateTime: z.string().optional().or(z.literal('')),
     email: z.string().email().optional().or(z.literal('')),
     service: z.string().optional(),
     notes: z.string().max(500).optional(),

@@ -69,6 +69,7 @@ import {
   useGetGbpHelpersQuery,
 } from '@/features/seo/seoApi';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
+import { getShopImageDetailsForContent } from '@/features/shop/productImages';
 
 const mockPosts = [
   {
@@ -257,6 +258,11 @@ describe('Prompt 20: Local SEO & Blog Client Suite', () => {
     expect(screen.getByText('The Classic Taper Fade Guide')).toBeInTheDocument();
     expect(screen.getByText(/Learn about modern precision tapers/i)).toBeInTheDocument();
     expect(screen.getByText(/4 min read/i)).toBeInTheDocument();
+    const coverImage = getShopImageDetailsForContent(mockPosts[0].category, mockPosts[0].slug);
+    expect(screen.getByRole('img', { name: coverImage.alt })).toHaveAttribute(
+      'src',
+      coverImage.src
+    );
   });
 
   it('renders BlogPostDetailPage with TOC, reading time and markdown body', () => {
@@ -272,6 +278,11 @@ describe('Prompt 20: Local SEO & Blog Client Suite', () => {
     expect(screen.getByText(/In This Article/i)).toBeInTheDocument();
     expect(screen.getAllByText('Introduction').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Styling Tips').length).toBeGreaterThan(0);
+    const coverImage = getShopImageDetailsForContent(mockPosts[0].category, mockPosts[0].slug);
+    expect(screen.getByRole('img', { name: coverImage.alt })).toHaveAttribute(
+      'src',
+      coverImage.src
+    );
   });
 
   it('renders AreaLandingPage with landmarks, transit directions, and service cards', () => {

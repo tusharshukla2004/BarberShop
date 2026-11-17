@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { Download } from 'lucide-react';
 import { Button, Container, Section, SectionHeading, Input, IconButton, Card } from './index';
 
 describe('Design System UI Primitives', () => {
@@ -30,11 +31,35 @@ describe('Design System UI Primitives', () => {
     render(<Button variant="primary">Book Now</Button>);
     const btn = screen.getByRole('button', { name: /book now/i });
     expect(btn).toHaveClass('bg-accent');
+    expect(btn).toHaveClass('h-11');
+  });
+
+  it('renders outline and accent button variants with their intended styles', () => {
+    const { rerender } = render(<Button variant="outline">Cancel</Button>);
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveClass('border-border-light');
+
+    rerender(<Button variant="accent">Continue</Button>);
+    expect(screen.getByRole('button', { name: 'Continue' })).toHaveClass('bg-accent');
+  });
+
+  it('keeps button icons and labels aligned on one line', () => {
+    render(
+      <Button variant="outline">
+        <Download className="mr-1.5 h-4 w-4" />
+        Export CSV
+      </Button>
+    );
+
+    const button = screen.getByRole('button', { name: 'Export CSV' });
+    const content = button.querySelector('span');
+    expect(content).toHaveClass('inline-flex', 'items-center', 'gap-1.5', 'whitespace-nowrap');
+    expect(content).toHaveClass('[&>svg]:mr-0', '[&>svg]:shrink-0');
+    expect(content.firstElementChild).toHaveClass('h-4', 'w-4');
   });
 
   it('renders Input with accessible label and error role', () => {
     render(<Input label="Full Name" error="Name is required" />);
-    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/full name/i)).toHaveClass('h-11');
     expect(screen.getByRole('alert')).toHaveTextContent('Name is required');
   });
 

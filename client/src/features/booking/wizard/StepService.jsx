@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import QueryState from '@/components/common/QueryState';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { formatPrice } from '@/lib/formatters';
+import { getShopImageForServiceCategory } from '@/features/shop/productImages';
 
 export default function StepService({ selectedServiceId, onSelect, onNext }) {
   const { data: services = [], isLoading, isError, error, refetch } = useGetServicesQuery();
@@ -42,10 +43,19 @@ export default function StepService({ selectedServiceId, onSelect, onNext }) {
               >
                 <Card
                   tone="light"
-                  className={`p-5 h-full flex flex-col justify-between border ${
+                  className={`h-full flex flex-col justify-between overflow-hidden border ${
                     isSelected ? 'border-accent bg-accent/5' : 'border-border-light bg-card'
                   }`}
                 >
+                  <img
+                    src={getShopImageForServiceCategory(service.category)}
+                    alt={`${service.category || 'Barbershop'} grooming products`}
+                    className="aspect-[16/9] w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+
+                  <div className="flex flex-1 flex-col justify-between p-5">
                   <div>
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <h3 className="font-display text-xl text-ink tracking-wide leading-tight">
@@ -73,6 +83,7 @@ export default function StepService({ selectedServiceId, onSelect, onNext }) {
                     <span className="font-display text-lg text-ink">
                       {formatPrice(service.price)}
                     </span>
+                  </div>
                   </div>
                 </Card>
               </button>

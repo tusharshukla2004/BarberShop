@@ -35,12 +35,13 @@ export const appointmentRequestSchema = z.object({
     }, 'Enter a valid 10-digit Indian mobile number (e.g. 98765 43210)'),
   dateTime: z
     .string()
-    .min(1, 'Please select your preferred date & time')
+    .optional()
+    .or(z.literal(''))
     .refine((val) => {
+      if (!val) return true;
       const selected = new Date(val);
       if (Number.isNaN(selected.getTime())) return false;
       const now = new Date();
-      // Allow buffer of 2 minutes to prevent immediate clock drift validation failures
       return selected.getTime() >= now.getTime() - 2 * 60 * 1000;
     }, 'Appointment time cannot be in the past'),
   serviceId: z.string().optional(),

@@ -167,7 +167,7 @@ export default function AdminCustomerDetailPage() {
   return (
     <div className="space-y-6">
       {/* Top Breadcrumb & Nav */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap">
         <Link
           to="/admin/customers"
           className="inline-flex items-center gap-1.5 text-xs text-ink/70 hover:text-ink font-medium transition-colors"
@@ -266,11 +266,11 @@ export default function AdminCustomerDetailPage() {
 
               {/* Stats Counters Header */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 pt-6">
-                <div className="p-3 rounded-lg bg-surface border border-border-light">
-                  <span className="block text-[11px] uppercase font-medium text-muted tracking-wider">
+                <div className="p-3 rounded-lg bg-sky-50/40 border border-sky-200">
+                  <span className="block text-[11px] uppercase font-medium text-sky-800 tracking-wider">
                     Total Visits
                   </span>
-                  <span className="text-xl font-medium font-mono text-ink/85 mt-0.5 block">
+                  <span className="text-xl font-medium font-mono text-sky-800 mt-0.5 block">
                     {stats.totalVisits || 0}
                   </span>
                 </div>
@@ -284,11 +284,11 @@ export default function AdminCustomerDetailPage() {
                   </span>
                 </div>
 
-                <div className="p-3 rounded-lg bg-neutral-100 border border-border-light">
-                  <span className="block text-[11px] uppercase font-medium text-neutral-600 tracking-wider">
+                <div className="p-3 rounded-lg bg-rose-50/40 border border-rose-200">
+                  <span className="block text-[11px] uppercase font-medium text-rose-800 tracking-wider">
                     Cancelled
                   </span>
-                  <span className="text-xl font-medium font-mono text-neutral-700 mt-0.5 block">
+                  <span className="text-xl font-medium font-mono text-rose-800 mt-0.5 block">
                     {stats.cancelledCount || 0}
                   </span>
                 </div>
@@ -296,8 +296,10 @@ export default function AdminCustomerDetailPage() {
                 <div
                   className={`p-3 rounded-lg border ${
                     isHighNoShow
-                      ? 'bg-red-500/10 border-red-500/30 text-red-700'
-                      : 'bg-surface border border-border-light text-ink/80'
+                      ? 'bg-rose-50 border-rose-200 text-rose-800'
+                      : noShowCount > 0
+                        ? 'bg-amber-50/40 border-amber-200 text-amber-800'
+                        : 'bg-slate-50 border-slate-200 text-slate-700'
                   }`}
                 >
                   <span className="block text-[11px] uppercase font-medium tracking-wider">
@@ -308,20 +310,20 @@ export default function AdminCustomerDetailPage() {
                   </span>
                 </div>
 
-                <div className="p-3 rounded-lg bg-surface border border-border-light">
-                  <span className="block text-[11px] uppercase font-medium text-muted tracking-wider">
+                <div className="p-3 rounded-lg bg-emerald-50/40 border border-emerald-200">
+                  <span className="block text-[11px] uppercase font-medium text-emerald-800 tracking-wider">
                     Lifetime Spend
                   </span>
-                  <span className="text-xl font-medium font-mono text-accent mt-0.5 block">
+                  <span className="text-xl font-medium font-mono text-emerald-800 mt-0.5 block">
                     ₹{stats.totalSpent || 0}
                   </span>
                 </div>
 
-                <div className="p-3 rounded-lg bg-surface border border-border-light">
-                  <span className="block text-[11px] uppercase font-bold text-ink/50 tracking-wider">
+                <div className="p-3 rounded-lg bg-purple-50/40 border border-purple-200">
+                  <span className="block text-[11px] uppercase font-bold text-purple-800 tracking-wider">
                     Last Visit
                   </span>
-                  <span className="text-xs font-semibold text-ink mt-1.5 block">
+                  <span className="text-xs font-semibold text-purple-800 mt-1.5 block">
                     {formatDate(stats.lastVisitAt)}
                   </span>
                 </div>
@@ -584,12 +586,13 @@ export default function AdminCustomerDetailPage() {
               <br />
               <strong>This action cannot be undone.</strong>
             </p>
-            <div className="flex justify-end gap-2 text-xs">
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-2 text-xs">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setShowDeleteConfirm(false)}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
@@ -598,7 +601,7 @@ export default function AdminCustomerDetailPage() {
                 size="sm"
                 disabled={isDeleting}
                 onClick={handleAnonymize}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold shadow-sm"
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow-sm sm:w-auto"
               >
                 {isDeleting ? 'Anonymizing...' : 'Yes, Delete Customer Data'}
               </Button>

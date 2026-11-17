@@ -143,6 +143,27 @@ describe('Admin Feature Components & Guards', () => {
       expect(screen.getByText('Arbaaz')).toBeInTheDocument();
       expect(screen.queryByText('Devraj')).not.toBeInTheDocument();
     });
+
+    it('renders accessor columns and searches translated record fields', () => {
+      render(
+        <DataTable
+          columns={[
+            { header: 'Question', accessor: (row) => row.question.en },
+            { header: 'Category', accessor: (row) => row.category },
+          ]}
+          data={[{ id: 'faq-1', question: { en: 'How do I book?', hi: 'कैसे बुक करें?' }, category: 'Booking' }]}
+          searchKey="question"
+          searchPlaceholder="Search questions..."
+        />
+      );
+
+      expect(screen.getByRole('columnheader', { name: 'Question' })).toBeInTheDocument();
+      expect(screen.getByText('How do I book?')).toBeInTheDocument();
+      fireEvent.change(screen.getByPlaceholderText('Search questions...'), {
+        target: { value: 'book' },
+      });
+      expect(screen.getByText('How do I book?')).toBeInTheDocument();
+    });
   });
 
   describe('ProtectedRoute Route Guard', () => {

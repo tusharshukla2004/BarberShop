@@ -1,8 +1,23 @@
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Clock, Users, ArrowRight } from 'lucide-react';
 import { useGetPublicQueueStatusQuery } from './queueApi';
+import { JoinQueueModal } from './JoinQueueModal';
 
 export function LiveQueueCard({ className = '' }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Clear any previously saved walk-in tokens from localStorage so the card never gets stuck
+  useEffect(() => {
+    try {
+      localStorage.removeItem('sovereign_active_queue_token');
+    } catch {
+      // Ignore
+    }
+  }, []);
+
   const { data: statusData, isLoading, isError } = useGetPublicQueueStatusQuery(undefined, {
     pollingInterval: 30000,
   });
@@ -39,74 +54,91 @@ export function LiveQueueCard({ className = '' }) {
   } = statusData;
 
   return (
-    <div
-      className={`p-4 sm:p-5 rounded-card border shadow-xs transition-all ${
-        isOpen
-          ? 'bg-ink text-white border-white/10'
-          : 'bg-card text-ink border-border'
-      } ${className}`}
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        {/* Left: Status Indicator & Details */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span
-              className={`h-2.5 w-2.5 rounded-full ${
-                isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-muted'
-              }`}
-            />
-            <span className="text-xs uppercase font-bold tracking-wider">
-              {isOpen ? 'Live Walk-in Queue' : 'Queue Closed Today'}
-            </span>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        className={`p-4 sm:p-5 rounded-card border shadow-xs transition-all ${
+          isOpen
+            ? 'bg-ink text-white border-white/10'
+            : 'bg-card text-ink border-border'
+        } ${className}`}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Left: Status Indicator & Details */}
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${
+                  isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-muted'
+                }`}
+              />
+              <span className="text-xs uppercase font-bold tracking-wider">
+                {isOpen ? 'Live Walk-in Queue' : 'Queue Closed Today'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-semibold">
+                {isOpen ? (
+                  <>
+                    Open now, about{' '}
+                    <span className="text-accent font-bold">
+                      {estimatedWaitMinutes === 0 ? '10' : estimatedWaitMinutes} minutes
+                    </span>{' '}
+                    wait
+                  </>
+                ) : (
+                  'Currently closed for direct walk-ins'
+                )}
+              </p>
+
+              {isOpen && (
+                <span className="text-xs text-white/70 font-mono flex items-center gap-1">
+                  <Users className="w-3 h-3" />
+                  {peopleWaiting} waiting
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <p className="text-sm font-semibold">
-              {isOpen ? (
-                <>
-                  Open now, about{' '}
-                  <span className="text-accent font-bold">
-                    {estimatedWaitMinutes === 0 ? '0' : estimatedWaitMinutes} minutes
-                  </span>{' '}
-                  wait
-                </>
-              ) : (
-                'Currently closed for direct walk-ins'
-              )}
-            </p>
-
-            {isOpen && (
-              <span className="text-xs text-white/70 font-mono flex items-center gap-1">
-                <Users className="w-3 h-3" />
-                {peopleWaiting} waiting
-              </span>
+          {/* Right: Action CTA */}
+          <div className="flex items-center gap-2 pt-1 sm:pt-0">
+            {isOpen && publicQueueEnabled ? (
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill bg-accent hover:bg-accent-hover text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-xs hover:shadow-md cursor-pointer"
+              >
+                <span>Join Live Queue</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <Link
+                to="/book"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill bg-white text-ink hover:bg-white/90 text-xs font-semibold uppercase tracking-wider transition-all shadow-xs"
+              >
+                <span>Book Appointment</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             )}
           </div>
         </div>
+      </motion.div>
 
-        {/* Right: Action link */}
-        <div className="flex items-center gap-2 pt-1 sm:pt-0">
-          {isOpen && publicQueueEnabled ? (
-            <Link
-              to="/queue"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill bg-accent hover:bg-accent-hover text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-xs"
-            >
-              <span>Join Live Queue</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          ) : (
-            <Link
-              to="/book"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-pill bg-white text-ink hover:bg-white/90 text-xs font-semibold uppercase tracking-wider transition-all shadow-xs"
-            >
-              <span>Book Appointment</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          )}
-        </div>
-      </div>
-    </div>
+      {/* Quick Walk-in Modal */}
+      <JoinQueueModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        queueStatus={statusData}
+      />
+    </>
   );
 }
+
+LiveQueueCard.propTypes = {
+  className: PropTypes.string,
+};
 
 export default LiveQueueCard;

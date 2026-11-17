@@ -1,4 +1,5 @@
 import { assets } from '@/assets';
+import { products as catalogProducts } from '@/features/shop/productsData';
 
 /**
  * Mock data fixtures conforming strictly to src/types/index.js shapes
@@ -8,39 +9,43 @@ import { assets } from '@/assets';
 export const mockServices = [
   {
     id: 'srv-1',
-    name: 'HAIRCUT',
+    name: 'CLASSIC HAIRCUT & STYLING',
     category: 'Hair',
-    description: 'Precision haircut customized to your head shape and personal style.',
+    description: 'Precision haircut customized to your head shape and personal style with hot-towel refresh.',
     price: 40,
     durationMinutes: 45,
     isActive: true,
+    imageUrl: 'https://picsum.photos/seed/fadehaircut/800/600',
   },
   {
     id: 'srv-2',
-    name: 'SHAVE',
+    name: 'TRADITIONAL HOT TOWEL SHAVE',
     category: 'Shave',
-    description: 'Traditional hot lather straight razor shave with cooling post-shave balm.',
+    description: 'Traditional hot lather straight razor shave with calming herbal balms and cool post-shave compress.',
     price: 35,
     durationMinutes: 30,
     isActive: true,
+    imageUrl: 'https://picsum.photos/seed/hottowelshave/800/600',
   },
   {
     id: 'srv-3',
-    name: 'HAIRCUT + SHAVE',
+    name: 'THE EXECUTIVE COMBO',
     category: 'Combo',
-    description: 'The ultimate signature gentleman grooming package.',
+    description: 'The ultimate signature gentleman grooming package: tailored haircut, hot-lather shave, and facial steam.',
     price: 70,
     durationMinutes: 75,
     isActive: true,
+    imageUrl: 'https://picsum.photos/seed/barber12/800/600',
   },
   {
     id: 'srv-4',
-    name: 'BEARD TRIM',
+    name: 'BEARD SCULPT & LINEUP',
     category: 'Beard',
-    description: 'Artisanal beard shaping, foil detailing, and razor neckline finish.',
+    description: 'Artisanal beard shaping, foil detailing, razor neckline finish, and organic beard butter.',
     price: 15,
     durationMinutes: 20,
     isActive: true,
+    imageUrl: 'https://picsum.photos/seed/beardcare/800/600',
   },
   {
     id: 'srv-5',
@@ -50,15 +55,57 @@ export const mockServices = [
     price: 45,
     durationMinutes: 40,
     isActive: true,
+    imageUrl: 'https://picsum.photos/seed/barber14/800/600',
   },
   {
     id: 'srv-6',
     name: 'DETOX SCALP & CHARCOAL FACIAL',
     category: 'Treatment',
-    description: 'Deep cleansing steam treatment, clay mask, and pressure-point massage.',
+    description: 'Deep cleansing steam treatment, clay mask, and invigorating pressure-point scalp massage.',
     price: 60,
     durationMinutes: 45,
     isActive: true,
+    imageUrl: 'https://picsum.photos/seed/scalphealth/800/600',
+  },
+  {
+    id: 'srv-7',
+    name: 'SKIN FADE & TEXTURED CROP',
+    category: 'Hair',
+    description: 'Zero foil transition, scissor texturing, matte clay finish, and razor perimeter alignment.',
+    price: 45,
+    durationMinutes: 50,
+    isActive: true,
+    imageUrl: 'https://picsum.photos/seed/barber10/800/600',
+  },
+  {
+    id: 'srv-8',
+    name: 'ROYAL MUSTACHE & BEARD RITUAL',
+    category: 'Beard',
+    description: 'Hot cedarwood steam, botanical growth serum massage, shaping, and mustache waxing.',
+    price: 25,
+    durationMinutes: 30,
+    isActive: true,
+    imageUrl: 'https://picsum.photos/seed/barber13/800/600',
+  },
+  {
+    id: 'srv-9',
+    name: 'GENTLEMAN RESTORATIVE FACIAL',
+    category: 'Treatment',
+    description: 'Deep pore exfoliation, cooling aloe-vera compress, and antioxidant face tonic treatment.',
+    price: 55,
+    durationMinutes: 40,
+    isActive: true,
+    imageUrl: 'https://picsum.photos/seed/barber16/800/600',
+  },
+  {
+    id: 'srv-10',
+    name: 'THE SOVEREIGN MASTER RITUAL',
+    category: 'Combo',
+    description: 'Signature haircut, beard trim & hot-towel shave, organic clay mask, and scalp massage.',
+    price: 90,
+    durationMinutes: 90,
+    isActive: true,
+    imageUrl: 'https://picsum.photos/seed/quiffhaircut/800/600',
   },
 ];
 
@@ -1058,8 +1105,7 @@ export const mockProducts = [
     ingredients: 'Bentonite Clay, Kaolin, Beeswax, Jojoba Seed Oil, Cedarwood Essential Oil.',
     howToUse:
       'Rub a dime-sized amount between palms and distribute evenly through towel-dried or dry hair. Style with comb or fingers.',
-    imageUrl:
-      'https://picsum.photos/seed/claypomade/800/800',
+    imageUrl: '/images/products/matte-clay-pomade.jpg',
     rating: 4.9,
     reviewCount: 128,
     isBestSeller: true,
@@ -1080,8 +1126,7 @@ export const mockProducts = [
       'Simmondsia Chinensis (Jojoba) Oil, Argania Spinosa (Argan) Kernel Oil, Sweet Almond Oil, Sandalwood Essential Oil.',
     howToUse:
       'Dispense 3–5 drops into palms and massage upward into beard hair and skin down to roots.',
-    imageUrl:
-      'https://picsum.photos/seed/beardoil/800/800',
+    imageUrl: '/images/products/sandalwood-beard-oil.jpg',
     rating: 5.0,
     reviewCount: 214,
     isBestSeller: true,
@@ -1102,8 +1147,7 @@ export const mockProducts = [
       'Japanese High-Carbon Steel Blade, Handcrafted Wood Scale, Vegan Badger-Style Fiber.',
     howToUse:
       'Whip hot water and shave soap into a rich lather in the bowl. Apply in circular motions before razor gliding at a 30-degree angle.',
-    imageUrl:
-      'https://picsum.photos/seed/straightrazor/800/800',
+    imageUrl: '/images/products/straight-razor-shave-set.jpg',
     rating: 4.9,
     reviewCount: 89,
     isBestSeller: true,
@@ -1124,8 +1168,7 @@ export const mockProducts = [
       'Purified Aqua, Dead Sea Salt, Organic Kelp Extract, Witch Kane, Aloe Vera Leaf Juice.',
     howToUse:
       'Spray 4–6 pumps onto damp hair before blow-drying, or onto dry hair for lived-in textured hold.',
-    imageUrl:
-      'https://picsum.photos/seed/saltspray/800/800',
+    imageUrl: '/images/products/sea-salt-texturizing-spray.jpg',
     rating: 4.8,
     reviewCount: 96,
     isBestSeller: false,
@@ -1146,8 +1189,7 @@ export const mockProducts = [
       'Butyrospermum Parkii (Shea) Butter, Cera Alba, Cocos Nucifera Oil, Cedarwood Essential Oil.',
     howToUse:
       'Warm a thumbnail-sized amount between fingers and brush through beard with thumbs and fingers to shape.',
-    imageUrl:
-      'https://picsum.photos/seed/beardbalm/800/800',
+    imageUrl: '/images/products/cedarwood-beard-balm.jpg',
     rating: 4.9,
     reviewCount: 142,
     isBestSeller: false,
@@ -1168,8 +1210,7 @@ export const mockProducts = [
       'Aqua, Cocamidopropyl Betaine, Melaleuca Alternifolia (Tea Tree) Oil, Mentha Piperita Oil.',
     howToUse:
       'Lather generously onto wet hair and massage deeply into scalp for 60 seconds before rinsing thoroughly.',
-    imageUrl:
-      'https://picsum.photos/seed/teashampoo/800/800',
+    imageUrl: '/images/products/tea-tree-scalp-shampoo.jpg',
     rating: 4.7,
     reviewCount: 68,
     isBestSeller: false,
@@ -1189,8 +1230,7 @@ export const mockProducts = [
     ingredients: 'Solid Knurled Brass, Chrome Plating, Swedish Stainless Steel Blades.',
     howToUse:
       'Unscrew head, drop in double-edge blade, screw tight, and shave using light gliding strokes with zero downward pressure.',
-    imageUrl:
-      'https://picsum.photos/seed/safetyrazor/800/800',
+    imageUrl: '/images/products/double-edge-safety-razor.jpg',
     rating: 4.9,
     reviewCount: 165,
     isBestSeller: true,
@@ -1210,8 +1250,7 @@ export const mockProducts = [
     ingredients: 'Solid Walnut Wood, 100% Natural Boar Bristle.',
     howToUse:
       'Brush downward with gentle firm strokes daily, preferably after applying beard oil or balm.',
-    imageUrl:
-      'https://picsum.photos/seed/beardbrush/800/800',
+    imageUrl: '/images/products/boar-bristle-beard-brush.jpg',
     rating: 5.0,
     reviewCount: 154,
     isBestSeller: false,
@@ -1231,11 +1270,11 @@ export const mockProducts = [
     ingredients:
       'Full-Grain Buffalo Hide, Water-Resistant Ballistic Nylon, Solid Brass Hardware.',
     howToUse: 'Pack your razor, pomade, beard oils, and personal travel essentials securely.',
-    imageUrl:
-      'https://picsum.photos/seed/doppkit/800/800',
+    imageUrl: '/images/products/leather-dopp-kit.jpg',
     rating: 5.0,
     reviewCount: 72,
     isBestSeller: true,
     inStock: true,
   },
+  ...catalogProducts.slice(9),
 ];

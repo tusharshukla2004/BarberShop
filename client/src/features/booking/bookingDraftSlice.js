@@ -88,6 +88,11 @@ export const bookingDraftSlice = createSlice({
       state.appliedOffer = offer || null;
       state.promoCode = (promoCode || offer?.promoCode || '').toUpperCase();
       state.discountAmount = discountAmount || 0;
+      // Always reset to Step 1 (Service Selection) and clear pre-selected barber/slot
+      state.currentStep = 1;
+      state.barberId = '';
+      state.startTime = '';
+      state.endTime = '';
     },
     removeOffer: (state) => {
       state.appliedOffer = null;

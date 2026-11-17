@@ -2,6 +2,7 @@ import { Star, Eye, ShoppingBag } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { formatPrice } from '@/lib/formatters';
+import { getProductFallbackImageUrl, getProductImageUrl } from './productImages';
 
 /**
  * Product Card for the Grooming Shop
@@ -13,23 +14,24 @@ import { formatPrice } from '@/lib/formatters';
  * @returns {JSX.Element}
  */
 export function ProductCard({ product, onQuickView, onAddToCart }) {
-  const { name, category, tagline, price, size, imageUrl, rating, reviewCount, isBestSeller } =
+  const { name, category, tagline, price, size, rating, reviewCount, isBestSeller } =
     product;
+  const productImageUrl = getProductImageUrl(product);
 
   return (
     <Card
       padding="none"
-      className="group relative flex flex-col justify-between overflow-hidden bg-card border border-card-border/60 hover:-translate-y-1 hover:shadow-xl transition-all duration-base rounded-2xl"
+      className="group relative flex h-full flex-col justify-between overflow-hidden bg-card border border-card-border/60 luxury-card-hover rounded-2xl"
     >
       {/* Product Image & Badges */}
       <div className="relative aspect-square w-full overflow-hidden bg-white/50">
         <img
-          src={imageUrl}
+          src={productImageUrl}
           alt={name}
           loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = 'https://placehold.co/800x800/1a1a1a/d4a843?text=Product';
+            e.currentTarget.src = getProductFallbackImageUrl(product);
           }}
           className="h-full w-full object-cover object-center transition-transform duration-slow group-hover:scale-105"
         />
@@ -71,12 +73,12 @@ export function ProductCard({ product, onQuickView, onAddToCart }) {
           </div>
 
           {/* Product Name */}
-          <h3 className="font-display text-xl sm:text-2xl text-ink uppercase tracking-wide leading-tight group-hover:text-accent transition-colors">
+          <h3 className="min-h-[3.5rem] line-clamp-2 font-display text-xl sm:text-2xl text-ink uppercase tracking-wide leading-tight group-hover:text-accent transition-colors">
             {name}
           </h3>
 
           {/* Tagline */}
-          <p className="text-xs text-ink/70 font-body line-clamp-1 mt-1">{tagline}</p>
+          <p className="mt-1 min-h-4 line-clamp-1 text-xs text-ink/70 font-body">{tagline}</p>
         </div>
 
         {/* Price & Add to Cart */}
@@ -89,7 +91,7 @@ export function ProductCard({ product, onQuickView, onAddToCart }) {
             size="sm"
             onClick={onAddToCart}
             leftIcon={<ShoppingBag className="h-3.5 w-3.5" />}
-            className="rounded-full px-3.5 py-1.5 text-xs uppercase tracking-wider font-semibold"
+            className="rounded-full px-3.5 py-1.5 text-xs uppercase tracking-wider font-semibold luxury-shimmer-btn"
           >
             Add to Bag
           </Button>

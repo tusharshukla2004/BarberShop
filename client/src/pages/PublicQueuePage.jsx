@@ -1,6 +1,15 @@
 import { useState, useId } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Users, CheckCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
+import {
+  Clock,
+  Users,
+  CheckCircle,
+  ArrowLeft,
+  ShieldCheck,
+  Scissors,
+  User,
+  Phone,
+} from 'lucide-react';
 import {
   useGetPublicQueueStatusQuery,
   useJoinPublicQueueMutation,
@@ -47,8 +56,8 @@ export default function PublicQueuePage() {
       dispatch(addToast({ type: 'error', message: 'Please enter your name' }));
       return;
     }
-    const chosenService = serviceId || services[0]?.id || services[0]?._id;
-    if (!chosenService) {
+    const chosenServiceId = serviceId || services[0]?.id || services[0]?._id;
+    if (!chosenServiceId) {
       dispatch(addToast({ type: 'error', message: 'Please select a service' }));
       return;
     }
@@ -57,14 +66,24 @@ export default function PublicQueuePage() {
       const res = await joinQueue({
         customerName: name.trim(),
         phone: phone.trim(),
-        serviceId: chosenService,
+        serviceId: chosenServiceId,
         barberId: barberId || '',
         notes: notes.trim(),
         hp_field: honeypot,
       }).unwrap();
 
-      setJoinedToken(res);
-      dispatch(addToast({ type: 'success', message: 'You have joined the queue!' }));
+      const chosenService = services.find((s) => (s.id || s._id) === chosenServiceId);
+      const chosenBarber = barbers.find((b) => (b.id || b._id) === barberId);
+
+      const tokenData = {
+        ...res,
+        serviceName: chosenService?.name || 'Standard Cut',
+        serviceDuration: chosenService?.durationMinutes || 30,
+        barberName: chosenBarber?.name || 'Any Available Barber',
+      };
+
+      setJoinedToken(tokenData);
+      dispatch(addToast({ type: 'success', message: `Token #${res.tokenNumber} issued successfully!` }));
     } catch (err) {
       dispatch(
         addToast({
@@ -73,6 +92,13 @@ export default function PublicQueuePage() {
         })
       );
     }
+  };
+
+  const handleReset = () => {
+    setJoinedToken(null);
+    setName('');
+    setPhone('');
+    setNotes('');
   };
 
   return (
@@ -96,54 +122,79 @@ export default function PublicQueuePage() {
           {joinedToken ? (
             /* Successful Queue Joined Card */
             <div className="bg-white rounded-card border border-border p-6 sm:p-8 text-center space-y-5 shadow-sm animate-in fade-in zoom-in-95 duration-fast">
-              <div className="h-16 w-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
+              <div className="h-16 w-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle className="w-10 h-10" />
               </div>
 
               <div>
                 <span className="text-xs uppercase font-bold tracking-widest text-muted">
-                  Your Queue Token
+                  Your Queue Token Number
                 </span>
-                <div className="font-display text-5xl sm:text-6xl text-ink mt-1">
+                <div className="font-display text-5xl sm:text-6xl text-accent font-semibold mt-1">
                   #{joinedToken.tokenNumber}
                 </div>
               </div>
 
-              <div className="bg-sand/30 p-4 rounded-base border border-border/80 space-y-1.5 max-w-sm mx-auto">
-                <div className="text-sm font-bold text-ink">
-                  Hello {joinedToken.customerName}!
+              <div className="bg-sand/30 p-4 rounded-base border border-border/80 space-y-2 max-w-sm mx-auto text-left">
+                <div className="flex items-center justify-between text-xs pb-1.5 border-b border-border/50">
+                  <span className="text-muted flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-accent" />
+                    Customer
+                  </span>
+                  <span className="font-bold text-ink">{joinedToken.customerName}</span>
                 </div>
-                <div className="text-xs text-muted">
-                  Estimated Wait:{' '}
-                  <strong className="text-accent text-sm">
-                    ~{joinedToken.estimatedWaitMinutes || 0} mins
-                  </strong>
+
+                <div className="flex items-center justify-between text-xs pb-1.5 border-b border-border/50">
+                  <span className="text-muted flex items-center gap-1.5">
+                    <Scissors className="w-3.5 h-3.5 text-accent" />
+                    Service
+                  </span>
+                  <span className="font-semibold text-ink">
+                    {joinedToken.serviceName || 'Haircut'}
+                  </span>
                 </div>
-                {joinedToken.estimatedStart && (
-                  <div className="text-xs text-muted">
-                    Approx. Start Time: <strong>{joinedToken.estimatedStart}</strong>
+
+                <div className="flex items-center justify-between text-xs pb-1.5 border-b border-border/50">
+                  <span className="text-muted flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-accent" />
+                    Estimated Wait
+                  </span>
+                  <span className="text-accent font-bold font-mono text-sm">
+                    ~{joinedToken.estimatedWaitMinutes || queueStatus?.estimatedWaitMinutes || 15} mins
+                  </span>
+                </div>
+
+                {joinedToken.phone && (
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                      Phone / WhatsApp
+                    </span>
+                    <span className="font-mono text-ink font-medium">{joinedToken.phone}</span>
                   </div>
                 )}
               </div>
 
-              <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
-                Please arrive at the shop at least 5 minutes before your estimated time.
-                Show this token at the reception.
-              </p>
+              <div className="bg-emerald-50 text-emerald-900 border border-emerald-200/80 rounded-lg p-3 text-xs text-left max-w-sm mx-auto">
+                <p className="font-semibold mb-0.5">✓ Reserved in Live Salon Queue</p>
+                <p className="text-[11px] text-emerald-800">
+                  Please arrive at the shop at least 5 minutes before your estimated time. Show token #{joinedToken.tokenNumber} at the reception.
+                </p>
+              </div>
 
-              <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+              <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center max-w-sm mx-auto">
                 <Link
                   to="/"
-                  className="px-6 py-2.5 rounded-pill bg-ink text-white hover:bg-ink/90 text-xs uppercase font-bold tracking-wider"
+                  className="w-full sm:flex-1 py-2.5 rounded-pill bg-ink text-white hover:bg-ink/90 text-xs uppercase font-bold tracking-wider text-center"
                 >
                   Return to Home
                 </Link>
                 <button
                   type="button"
-                  onClick={() => setJoinedToken(null)}
-                  className="px-6 py-2.5 rounded-pill border border-border text-ink hover:bg-card text-xs uppercase font-bold tracking-wider"
+                  onClick={handleReset}
+                  className="w-full sm:flex-1 py-2.5 rounded-pill border border-border text-ink hover:bg-sand/40 text-xs uppercase font-bold tracking-wider"
                 >
-                  Join Another Token
+                  Join Another
                 </button>
               </div>
             </div>
@@ -170,7 +221,7 @@ export default function PublicQueuePage() {
                 <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-white/80">
                   <span className="flex items-center gap-1 font-semibold text-accent">
                     <Clock className="w-4 h-4" />
-                    Est. Wait: ~{queueStatus?.estimatedWaitMinutes || 0} mins
+                    Est. Wait: ~{queueStatus?.estimatedWaitMinutes || 15} mins
                   </span>
                   <span className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
@@ -207,7 +258,7 @@ export default function PublicQueuePage() {
 
                 <div>
                   <label htmlFor={phoneInputId} className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
-                    Mobile Phone (Optional for WhatsApp updates)
+                    Mobile Phone (For WhatsApp updates)
                   </label>
                   <Input
                     id={phoneInputId}
@@ -215,6 +266,9 @@ export default function PublicQueuePage() {
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="e.g. 9876543210"
                   />
+                  <p className="text-[11px] text-muted mt-1">
+                    We will send a notification on WhatsApp when 1 person is ahead of you.
+                  </p>
                 </div>
 
                 <div>
@@ -223,7 +277,7 @@ export default function PublicQueuePage() {
                   </label>
                   <select
                     id={serviceInputId}
-                    value={serviceId}
+                    value={serviceId || (services[0]?.id || services[0]?._id || '')}
                     onChange={(e) => setServiceId(e.target.value)}
                     className="w-full px-3 py-2.5 border border-border rounded-base text-sm bg-white focus:outline-none focus:ring-1 focus:ring-accent"
                   >

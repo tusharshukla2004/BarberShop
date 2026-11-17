@@ -19,6 +19,7 @@ import { useGetPostBySlugQuery } from '@/features/seo/seoApi';
 import { renderMarkdown, extractTableOfContents } from '@/lib/markdown';
 import { trackEvent } from '@/lib/analytics';
 import { siteConfig } from '@/config/site';
+import { getShopImageDetailsForContent } from '@/features/shop/productImages';
 
 export default function BlogPostDetailPage() {
   const { slug } = useParams();
@@ -33,6 +34,7 @@ export default function BlogPostDetailPage() {
 
   const post = data?.post;
   const relatedPosts = data?.relatedPosts || [];
+  const coverImage = post ? getShopImageDetailsForContent(post.category, post.slug) : null;
 
   const renderedContent = useMemo(() => {
     if (!post?.content?.en) return '';
@@ -51,7 +53,7 @@ export default function BlogPostDetailPage() {
       '@type': 'Article',
       headline: post.title?.en,
       description: post.excerpt?.en,
-      image: post.coverImage,
+      image: getShopImageDetailsForContent(post.category, post.slug).src,
       datePublished: post.publishedAt,
       dateModified: post.updatedAt || post.publishedAt,
       author: {
@@ -124,7 +126,7 @@ export default function BlogPostDetailPage() {
         title={metaTitle}
         description={metaDescription}
         canonical={`/blog/${post.slug}`}
-        image={post.coverImage}
+        image={coverImage?.src}
         type="article"
         schema={articleSchema}
       />
@@ -208,15 +210,13 @@ export default function BlogPostDetailPage() {
           {/* Main Content Body */}
           <main className="lg:col-span-8 space-y-8">
             {/* Cover Image */}
-            {post.coverImage && (
-              <div className="rounded-xl overflow-hidden shadow-sm border border-border-light max-h-[480px]">
-                <img
-                  src={post.coverImage}
-                  alt={post.title?.en}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
+            <div className="rounded-xl overflow-hidden shadow-sm border border-border-light max-h-[480px]">
+              <img
+                src={coverImage.src}
+                alt={coverImage.alt}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
             {/* Sanitized HTML Content */}
             <div
@@ -299,13 +299,11 @@ export default function BlogPostDetailPage() {
                       to={`/blog/${rel.slug}`}
                       className="group flex items-start gap-3 text-xs"
                     >
-                      {rel.coverImage && (
-                        <img
-                          src={rel.coverImage}
-                          alt={rel.title?.en}
-                          className="w-14 h-14 rounded object-cover flex-shrink-0 group-hover:opacity-80 transition-opacity"
-                        />
-                      )}
+                      <img
+                        src={getShopImageDetailsForContent(rel.category, rel.slug).src}
+                        alt={getShopImageDetailsForContent(rel.category, rel.slug).alt}
+                        className="w-14 h-14 rounded object-cover flex-shrink-0 group-hover:opacity-80 transition-opacity"
+                      />
                       <div>
                         <h5 className="font-serif font-bold text-ink group-hover:text-accent transition-colors line-clamp-2">
                           {rel.title?.en}

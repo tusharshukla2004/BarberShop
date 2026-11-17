@@ -7,6 +7,7 @@ import Section from '@/components/ui/Section';
 import QueryState from '@/components/common/QueryState';
 import Lightbox from '@/components/common/Lightbox';
 import { useGetGalleryQuery } from '@/features/gallery/galleryApi';
+import { getShopImageDetailsForIndex } from '@/features/shop/productImages';
 
 export default function GalleryPage() {
   const { data: galleryItems = [], isLoading, isError, error, refetch } = useGetGalleryQuery();
@@ -25,8 +26,13 @@ export default function GalleryPage() {
 
   // Filtered gallery items
   const filteredItems = useMemo(() => {
-    if (selectedCategory === 'All') return galleryItems;
-    return galleryItems.filter(
+    const itemsWithShopImages = galleryItems.map((item, index) => {
+      const image = getShopImageDetailsForIndex(index);
+      return { ...item, imageUrl: image.src, imageAlt: image.alt };
+    });
+
+    if (selectedCategory === 'All') return itemsWithShopImages;
+    return itemsWithShopImages.filter(
       (item) => item.category?.toLowerCase() === selectedCategory.toLowerCase()
     );
   }, [galleryItems, selectedCategory]);
@@ -89,7 +95,7 @@ export default function GalleryPage() {
                 >
                   <img
                     src={item.imageUrl}
-                    alt={item.caption || item.category || 'Barbershop gallery image'}
+                    alt={item.imageAlt}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />

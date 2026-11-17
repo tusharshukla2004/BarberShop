@@ -2,6 +2,7 @@
  * Curated Barbershop Apothecary & Grooming Products
  * Real artisanal products with rich descriptions, specs, and pricing
  */
+import { BARBER_GALLERY_IMAGES } from '@/assets';
 
 export const products = [
   {
@@ -17,8 +18,7 @@ export const products = [
     ingredients: 'Bentonite Clay, Kaolin, Beeswax, Jojoba Seed Oil, Cedarwood Essential Oil.',
     howToUse:
       'Rub a dime-sized amount between palms and distribute evenly through towel-dried or dry hair. Style with comb or fingers.',
-    imageUrl:
-      'https://picsum.photos/seed/claypomade/800/800',
+    imageUrl: '/images/products/matte-clay-pomade.jpg',
     rating: 4.9,
     reviewCount: 128,
     isBestSeller: true,
@@ -38,8 +38,7 @@ export const products = [
       'Simmondsia Chinensis (Jojoba) Oil, Argania Spinosa (Argan) Kernel Oil, Sweet Almond Oil, Sandalwood Essential Oil.',
     howToUse:
       'Dispense 3–5 drops into palms and massage upward into beard hair and skin down to roots.',
-    imageUrl:
-      'https://picsum.photos/seed/beardoil/800/800',
+    imageUrl: '/images/products/sandalwood-beard-oil.jpg',
     rating: 5.0,
     reviewCount: 214,
     isBestSeller: true,
@@ -59,8 +58,7 @@ export const products = [
       'Japanese High-Carbon Steel Blade, Handcrafted Wood Scale, Vegan Badger-Style Fiber.',
     howToUse:
       'Whip hot water and shave soap into a rich lather in the bowl. Apply in circular motions before razor gliding at a 30-degree angle.',
-    imageUrl:
-      'https://picsum.photos/seed/straightrazor/800/800',
+    imageUrl: '/images/products/straight-razor-shave-set.jpg',
     rating: 4.9,
     reviewCount: 89,
     isBestSeller: true,
@@ -80,8 +78,7 @@ export const products = [
       'Purified Aqua, Dead Sea Salt, Organic Kelp Extract, Witch Hazel, Aloe Vera Leaf Juice.',
     howToUse:
       'Spray 4–6 pumps onto damp hair before blow-drying, or onto dry hair for lived-in textured hold.',
-    imageUrl:
-      'https://picsum.photos/seed/saltspray/800/800',
+    imageUrl: '/images/products/sea-salt-texturizing-spray.jpg',
     rating: 4.8,
     reviewCount: 96,
     isBestSeller: false,
@@ -101,8 +98,7 @@ export const products = [
       'Butyrospermum Parkii (Shea Butter), Cera Alba (Beeswax), Cocos Nucifera (Coconut) Oil, Cedarwood Oil.',
     howToUse:
       'Scrape a thumbnail amount, warm between palms until melted, and work thoroughly through dry beard.',
-    imageUrl:
-      'https://picsum.photos/seed/beardbalm/800/800',
+    imageUrl: '/images/products/cedarwood-beard-balm.jpg',
     rating: 4.9,
     reviewCount: 142,
     isBestSeller: false,
@@ -121,8 +117,7 @@ export const products = [
     ingredients:
       'Hamamelis Virginiana (Witch Hazel) Water, Menthol, Aloe Barbadensis Leaf Juice, Eucalyptus Globulus Oil.',
     howToUse: 'Splash onto freshly shaved skin with clean hands and gently pat dry.',
-    imageUrl:
-      'https://picsum.photos/seed/shavetonic/800/800',
+    imageUrl: '/images/products/post-shave-tonic.jpg',
     rating: 4.8,
     reviewCount: 78,
     isBestSeller: false,
@@ -141,8 +136,7 @@ export const products = [
     ingredients: 'Solid Knurled Brass, Chrome Plating, Swedish Stainless Steel Blades.',
     howToUse:
       'Unscrew head, drop in double-edge blade, screw tight, and shave using light gliding strokes with zero downward pressure.',
-    imageUrl:
-      'https://picsum.photos/seed/safetyrazor/800/800',
+    imageUrl: '/images/products/double-edge-safety-razor.jpg',
     rating: 4.9,
     reviewCount: 165,
     isBestSeller: true,
@@ -161,8 +155,7 @@ export const products = [
     ingredients: 'Solid Walnut Wood, 100% Natural Boar Bristle.',
     howToUse:
       'Brush downward with gentle firm strokes daily, preferably after applying beard oil or balm.',
-    imageUrl:
-      'https://picsum.photos/seed/beardbrush/800/800',
+    imageUrl: '/images/products/boar-bristle-beard-brush.jpg',
     rating: 5.0,
     reviewCount: 154,
     isBestSeller: false,
@@ -181,11 +174,67 @@ export const products = [
     ingredients:
       'Full-Grain Buffalo Hide, Water-Resistant Ballistic Nylon, Solid Brass Hardware.',
     howToUse: 'Pack your razor, pomade, beard oils, and personal travel essentials securely.',
-    imageUrl:
-      'https://picsum.photos/seed/doppkit/800/800',
+    imageUrl: '/images/products/leather-dopp-kit.jpg',
     rating: 5.0,
     reviewCount: 72,
     isBestSeller: true,
+    inStock: true,
+  },
+  {
+    id: 'prod-10',
+    name: 'Classic Cut Styling Kit',
+    category: 'Hair',
+    tagline: 'Barber-finished texture • Everyday hold',
+    price: 1290,
+    size: '3-Piece Grooming Kit',
+    scent: 'Cedarwood & Citrus',
+    description:
+      'A daily styling set inspired by the clean finishes from our barber chairs, with flexible hold and a natural-looking finish.',
+    ingredients: 'Water-based styling clay, botanical shampoo, and a wide-tooth styling comb.',
+    howToUse:
+      'Cleanse hair, warm a small amount of clay between your palms, then shape and finish with the comb.',
+    imageUrl: BARBER_GALLERY_IMAGES[0].src,
+    rating: 4.8,
+    reviewCount: 43,
+    isBestSeller: false,
+    inStock: true,
+  },
+  {
+    id: 'prod-11',
+    name: 'Beard Shape & Condition Kit',
+    category: 'Beard',
+    tagline: 'Softens • Shapes • Adds natural sheen',
+    price: 1590,
+    size: '3-Piece Beard Kit',
+    scent: 'Sandalwood & Cedar',
+    description:
+      'A simple beard-care routine inspired by the shape and finish of a professional barber trim.',
+    ingredients: 'Sandalwood beard oil, conditioning balm, and a pocket beard comb.',
+    howToUse:
+      'Apply a few drops of oil to a clean beard, then use balm and comb to shape as desired.',
+    imageUrl: BARBER_GALLERY_IMAGES[5].src,
+    rating: 5.0,
+    reviewCount: 51,
+    isBestSeller: true,
+    inStock: true,
+  },
+  {
+    id: 'prod-12',
+    name: 'Gentleman’s Shave Ritual Kit',
+    category: 'Shave',
+    tagline: 'Comfortable lather • Smooth shave',
+    price: 2190,
+    size: '4-Piece Shave Kit',
+    scent: 'Warm Sandalwood',
+    description:
+      'A considered home-shave set inspired by the hot-towel shave ritual in our barbershop.',
+    ingredients: 'Shave soap, soft lather brush, skin-comfort balm, and a stainless-steel razor.',
+    howToUse:
+      'Build a warm lather with the brush, shave gently, and finish with the skin-comfort balm.',
+    imageUrl: BARBER_GALLERY_IMAGES[3].src,
+    rating: 4.9,
+    reviewCount: 29,
+    isBestSeller: false,
     inStock: true,
   },
 ];

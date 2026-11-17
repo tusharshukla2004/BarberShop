@@ -224,8 +224,7 @@ export default function AdminFaqsPage() {
         isOpen={Boolean(deleteTargetId)}
         title="Delete Question"
         message="Are you sure you want to delete this FAQ question? It will be immediately removed from the customer FAQ page."
-        confirmText="Delete"
-        isDestructive
+        confirmLabel="Delete question"
         isLoading={isDeleting}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTargetId(null)}

@@ -11,22 +11,7 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Calculates current local date-time string for min attribute in input[type="datetime-local"]
- * @returns {string} e.g. "2026-10-30T15:30"
- */
-function getMinDateTimeString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-
-/**
  * Quick appointment request form embedded inside Hero glass card
- * Matching the exact reference layout with side-by-side date & submit button
  *
  * @param {Object} props
  * @param {string} [props.className]
@@ -69,15 +54,43 @@ export function AppointmentForm({ className = '' }) {
 
   const onSubmit = async (data) => {
     try {
-      dispatch(saveBookingDraft(data));
+      // Parse chosen date and time from datetime-local input
+      let extractedDate = '';
+      let extractedTime = '';
+      if (data.dateTime) {
+        const dt = new Date(data.dateTime);
+        if (!isNaN(dt.getTime())) {
+          extractedDate = dt.toISOString().split('T')[0];
+          const hours = dt.getHours();
+          const mins = dt.getMinutes();
+          const period = hours >= 12 ? 'PM' : 'AM';
+          const formattedH = (hours % 12 || 12).toString().padStart(2, '0');
+          const formattedM = mins.toString().padStart(2, '0');
+          extractedTime = `${formattedH}:${formattedM} ${period}`;
+        }
+      }
+
+      dispatch(
+        saveBookingDraft({
+          ...data,
+          customerName: data.name,
+          date: extractedDate || draft.date,
+          startTime: extractedTime || draft.startTime,
+          currentStep: 1, // Start wizard at service/barber selection
+        })
+      );
+
       const res = await createBookingRequest(data).unwrap();
       dispatch(
         addToast({
-          message: res?.message || 'Appointment requested! Click to complete your reservation.',
+          message: res?.message || 'Appointment details saved! Redirecting to select your barber & service...',
           type: 'success',
-          duration: 6000,
+          duration: 3500,
         })
       );
+
+      // Seamlessly redirect to the full booking wizard to select service & barber
+      navigate('/book');
     } catch (err) {
       const errorMsg =
         err?.data?.error ||
@@ -186,49 +199,15 @@ export function AppointmentForm({ className = '' }) {
         )}
       </div>
 
-      {/* Row 4: Date & Time + Submit Button side-by-side matching screenshot */}
-      <div className="flex flex-col gap-1 w-full pt-1">
-        <label htmlFor="hero-datetime" className="sr-only">
-          Preferred Date and Time
-        </label>
-        <div className="grid grid-cols-12 gap-2 sm:gap-2.5 items-center">
-          <div className="col-span-7">
-            <input
-              id="hero-datetime"
-              type="datetime-local"
-              min={getMinDateTimeString()}
-              required
-              disabled={isLoading || isSubmitting}
-              aria-invalid={Boolean(errors.dateTime)}
-              aria-describedby={errors.dateTime ? 'hero-datetime-error' : undefined}
-              className={cn(
-                'w-full px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm transition-all duration-fast outline-none',
-                'bg-black/35 text-white placeholder:text-white/45 border border-white/20 [color-scheme:dark]',
-                'focus:bg-white focus:text-ink focus:border-white focus:ring-2 focus:ring-accent focus:[color-scheme:light]',
-                errors.dateTime && 'border-red-500'
-              )}
-              {...register('dateTime')}
-            />
-          </div>
-          <div className="col-span-5">
-            <button
-              type="submit"
-              disabled={isLoading || isSubmitting}
-              className="w-full py-2.5 sm:py-3 px-2 sm:px-3 rounded-md bg-[#f9a55a] hover:bg-[#e89243] text-ink font-semibold text-xs sm:text-sm tracking-wide transition-colors text-center whitespace-nowrap shadow-sm disabled:opacity-50"
-            >
-              {isLoading || isSubmitting ? 'Submitting...' : 'Submit request'}
-            </button>
-          </div>
-        </div>
-        {errors.dateTime && (
-          <span
-            id="hero-datetime-error"
-            role="alert"
-            className="text-[11px] font-medium text-red-400 tracking-wide"
-          >
-            {errors.dateTime.message}
-          </span>
-        )}
+      {/* Submit Action Button */}
+      <div className="pt-2">
+        <button
+          type="submit"
+          disabled={isLoading || isSubmitting}
+          className="w-full py-3 px-4 rounded-xl bg-[#f9a55a] hover:bg-[#e89243] text-ink font-semibold text-sm tracking-wider uppercase transition-all duration-200 text-center whitespace-nowrap shadow-md disabled:opacity-50 hover:shadow-lg active:scale-[0.99]"
+        >
+          {isLoading || isSubmitting ? 'Continuing to booking...' : 'Continue to Book Appointment'}
+        </button>
       </div>
 
       {/* WhatsApp Consent Checkbox & Privacy Notice */}

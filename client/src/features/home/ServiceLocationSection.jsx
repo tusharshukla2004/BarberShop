@@ -1,9 +1,9 @@
 import { lazy, Suspense } from 'react';
+import { motion } from 'framer-motion';
 import { Container, Section, SectionHeading, Button } from '@/components/ui';
 import { siteConfig } from '@/config/site';
 import { homeContent } from './content';
 import { ArrowRight, MapPin, Phone, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 // Lazy-load MapView to optimize bundle & ensure safe testing
 const MapView = lazy(() => import('@/components/common/MapView'));
@@ -28,7 +28,7 @@ function MapSkeleton() {
 /**
  * Service & Location Section directly beneath the Hero
  * Features 3-column layout on desktop: Heading & CTA | Tinted Map | Location & Contact Info
- * Mobile order: Heading block -> Map -> Info
+ * Powered by Framer Motion scroll reveals
  *
  * @returns {JSX.Element}
  */
@@ -36,11 +36,17 @@ export function ServiceLocationSection() {
   const { serviceSection } = homeContent;
 
   return (
-    <Section tone="brown" py="lg" id="service-location">
+    <Section tone="brown" py="lg" id="service-location" className="overflow-hidden">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr_1fr] gap-10 lg:gap-12 items-center">
           {/* Column 1: Heading Block (Mobile: 1st) */}
-          <div className="flex flex-col gap-6 text-left order-1">
+          <motion.div
+            className="flex flex-col gap-6 text-left order-1"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          >
             <SectionHeading
               subtitle={serviceSection.eyebrow}
               title={serviceSection.title}
@@ -61,21 +67,33 @@ export function ServiceLocationSection() {
                 {serviceSection.cta.label}
               </Button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Column 2: Tinted Map (Mobile: 2nd) */}
-          <div className="w-full flex justify-center order-2">
+          <motion.div
+            className="w-full flex justify-center order-2"
+            initial={{ opacity: 0, scale: 0.94 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          >
             <Suspense fallback={<MapSkeleton />}>
               <MapView directionsLabel={serviceSection.directions.label} />
             </Suspense>
-          </div>
+          </motion.div>
 
           {/* Column 3: Contact Info Rows (Mobile: 3rd) */}
-          <div className="flex flex-col gap-8 order-3">
+          <motion.div
+            className="flex flex-col gap-8 order-3"
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.75, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          >
             {/* Row 1: Location */}
-            <div className="flex items-start gap-4 pb-8 border-b border-border-dark">
+            <div className="flex items-start gap-4 pb-8 border-b border-border-dark group">
               {/* White rounded-lg icon tile */}
-              <div className="h-12 w-12 rounded-lg bg-white text-ink flex items-center justify-center shrink-0 shadow-md">
+              <div className="h-12 w-12 rounded-lg bg-white text-ink flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform duration-base">
                 <MapPin className="h-6 w-6 text-accent" />
               </div>
 
@@ -90,45 +108,42 @@ export function ServiceLocationSection() {
             </div>
 
             {/* Row 2: Phone & Operational Hours */}
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-4 group">
               {/* White rounded-lg icon tile */}
-              <div className="h-12 w-12 rounded-lg bg-white text-ink flex items-center justify-center shrink-0 shadow-md">
+              <div className="h-12 w-12 rounded-lg bg-white text-ink flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform duration-base">
                 <Phone className="h-6 w-6 text-accent" />
               </div>
 
               <div className="flex flex-col gap-2 text-left">
                 <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-wide text-white leading-tight">
-                  {serviceSection.info.contactTitle}
+                  {serviceSection.info.phoneTitle}
                 </h3>
-
-                {/* Telephone Link */}
                 <a
                   href={`tel:${siteConfig.phone.replace(/\s+/g, '')}`}
-                  className="text-accent hover:text-accent-hover font-semibold text-sm sm:text-base tracking-wide transition-colors"
+                  className="text-xs sm:text-sm text-on-dark-muted hover:text-accent transition-colors font-mono"
                 >
                   {siteConfig.phone}
                 </a>
 
-                {/* Hours List */}
-                <div className="flex flex-col gap-1.5 mt-2">
-                  {siteConfig.hours.map((schedule) => (
+                {/* Operating hours table */}
+                <div className="pt-2 flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 text-xs text-accent font-semibold uppercase tracking-wider mb-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    <span>Lounge Hours</span>
+                  </div>
+                  {siteConfig.hours.map((schedule, idx) => (
                     <div
-                      key={schedule.days}
-                      className={cn(
-                        'flex items-center justify-between gap-4 text-xs text-on-dark-muted py-0.5'
-                      )}
+                      key={idx}
+                      className="flex items-center justify-between gap-6 text-xs text-on-dark-muted font-mono"
                     >
-                      <span className="font-medium text-white/90">{schedule.days}</span>
-                      <span className="flex items-center gap-1 font-mono text-[11px]">
-                        <Clock className="h-3 w-3 text-accent" />
-                        {schedule.time}
-                      </span>
+                      <span className="font-body text-white/85">{schedule.days}</span>
+                      <span>{schedule.open} – {schedule.close}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </Container>
     </Section>

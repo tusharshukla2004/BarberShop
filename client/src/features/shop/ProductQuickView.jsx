@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Star, ShoppingBag, Check, ShieldCheck, Sparkles } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { formatPrice } from '@/lib/formatters';
+import { getProductFallbackImageUrl, getProductImageUrl } from './productImages';
 
 /**
  * Product Quick View Modal Dialog
@@ -31,6 +32,8 @@ export function ProductQuickView({ product, onClose, onAddToCart }) {
   }, [product, onClose]);
 
   if (!product) return null;
+
+  const productImageUrl = getProductImageUrl(product);
 
   const handleAdd = () => {
     onAddToCart(product, quantity);
@@ -64,11 +67,11 @@ export function ProductQuickView({ product, onClose, onAddToCart }) {
           {/* Product Image */}
           <div className="md:col-span-5 relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-border-light">
             <img
-              src={product.imageUrl}
+              src={productImageUrl}
               alt={product.name}
               onError={(e) => {
                 e.currentTarget.onerror = null;
-                e.currentTarget.src = 'https://placehold.co/800x800/1a1a1a/d4a843?text=Product';
+                e.currentTarget.src = getProductFallbackImageUrl(product);
               }}
               className="h-full w-full object-cover object-center"
             />

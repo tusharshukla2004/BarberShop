@@ -7,9 +7,8 @@ export const homeContent = {
     headlineLine1: 'WHERE TRADITION',
     headlineLine2: 'MEETS MODERN STYLE',
     headline: 'WHERE TRADITION MEETS MODERN STYLE',
-    mission:
-      "Our mission is to provide exceptional grooming services in a relaxed and friendly environment. Whether you're here for a classic haircut, a modern fade, or a clean shave, our skilled barbers are dedicated to ensuring you leave looking and feeling your best.",
-    formTitle: 'Make an appoitment',
+    mission: 'Expert cuts, modern fades, and clean shaves—crafted by skilled barbers just for you.',
+    formTitle: 'Make an appointment',
     formButtonText: 'Submit request',
   },
   serviceSection: {

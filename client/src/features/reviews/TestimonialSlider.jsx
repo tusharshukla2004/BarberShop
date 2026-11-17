@@ -3,6 +3,7 @@ import { useGetReviewsQuery } from './reviewsApi';
 import { cn } from '@/lib/utils';
 import { SlideControls } from '@/components/common/SlideControls';
 import { QueryState } from '@/components/common/QueryState';
+import { assets } from '@/assets';
 
 /**
  * Orange Testimonial Card with 7s auto-advance, hover/focus pause, and progress dashes
@@ -51,6 +52,7 @@ export function TestimonialSlider() {
     customerName: 'John D.',
     text: "I've been coming to this barbershop for over five years now, and I've never been disappointed. The barbers here are skilled, friendly, and always know the latest trends. Every visit is a great experience!",
   };
+  const customerImage = assets.barberGallery[activeIndex % assets.barberGallery.length];
 
   const skeleton = (
     <div className="w-full h-full min-h-[320px] rounded-3xl bg-[#f9a55a]/70 p-8 sm:p-10 flex items-center justify-center animate-pulse">
@@ -79,11 +81,11 @@ export function TestimonialSlider() {
         onMouseLeave={() => setIsPaused(false)}
         onFocusCapture={() => setIsPaused(true)}
         onBlurCapture={() => setIsPaused(false)}
-        className="relative w-full h-full min-h-[320px] sm:min-h-[350px] rounded-3xl bg-[#f9a55a] text-ink p-8 sm:p-10 flex flex-col justify-between shadow-lg"
+        className="relative flex h-[380px] w-full flex-col justify-between rounded-3xl bg-[#f9a55a] p-8 text-ink shadow-lg sm:h-[400px] sm:p-10"
       >
         {/* Quote Body */}
         <div className="relative z-10">
-          <blockquote className="font-body text-base sm:text-lg md:text-xl font-normal leading-relaxed text-ink">
+          <blockquote className="line-clamp-5 font-body text-base font-normal leading-relaxed text-ink sm:text-lg md:text-xl">
             &ldquo;{current.text}&rdquo;
           </blockquote>
 
@@ -109,9 +111,16 @@ export function TestimonialSlider() {
 
         {/* Bottom Bar: Author on Left | Circular Controls on Right */}
         <div className="relative z-10 pt-6 flex items-center justify-between gap-4 mt-4">
-          <cite className="font-serif italic font-bold text-base sm:text-lg not-italic text-ink">
-            {current.customerName}
-          </cite>
+          <div className="flex items-center gap-3 min-w-0">
+            <img
+              src={customerImage.src}
+              alt={customerImage.alt}
+              className="h-20 w-20 sm:h-24 sm:w-24 rounded-full object-cover shrink-0 ring-2 ring-ink/15"
+            />
+            <cite className="font-serif italic font-bold text-base sm:text-lg not-italic text-ink">
+              {current.customerName}
+            </cite>
+          </div>
 
           {/* Circular outline arrow controls */}
           <SlideControls

@@ -157,13 +157,13 @@ export default function AdminReportsPage() {
   return (
     <div className="space-y-6 print:space-y-4">
       {/* Top Header & Presets Bar */}
-      <div className="bg-white p-5 rounded-card border border-border shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
+      <div className="bg-white p-5 rounded-card border border-border shadow-xs flex flex-col min-[1600px]:flex-row min-[1600px]:items-center justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="font-display text-2xl sm:text-3xl tracking-wide uppercase text-ink">
               Reports & Analytics
             </h1>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-pill bg-card text-muted font-mono">
+            <span className="shrink-0 whitespace-nowrap text-xs font-semibold px-2.5 py-0.5 rounded-pill bg-card text-muted font-mono">
               {label}
             </span>
           </div>
@@ -173,9 +173,9 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Action Controls */}
-        <div className="flex flex-wrap items-center gap-2 print:hidden">
+        <div className="flex w-full flex-wrap items-center justify-between gap-2 print:hidden min-[1600px]:w-auto min-[1600px]:justify-end">
           {/* Preset Buttons */}
-          <div className="inline-flex rounded-base border border-border p-1 bg-card/60">
+          <div className="inline-flex flex-wrap max-w-full rounded-base border border-border p-1 bg-card/60">
             {[
               { id: 'today', label: 'Today' },
               { id: '7_days', label: '7 Days' },
@@ -222,40 +222,42 @@ export default function AdminReportsPage() {
           )}
 
           {/* CSV Export & Print */}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => handleExportCSV(activeTab === 'overview' ? 'summary' : activeTab)}
-            className="flex items-center gap-1.5 text-xs py-1.5"
-            title="Download Excel-compatible UTF-8 CSV"
-          >
-            <Download className="w-3.5 h-3.5 text-accent" />
-            <span>Export CSV</span>
-          </Button>
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleExportCSV(activeTab === 'overview' ? 'summary' : activeTab)}
+              className="flex items-center gap-1.5 text-xs py-1.5"
+              title="Download Excel-compatible UTF-8 CSV"
+            >
+              <Download className="w-3.5 h-3.5 text-accent" />
+              <span>Export CSV</span>
+            </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 text-xs py-1.5"
-            title="Print report"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print</span>
-          </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 text-xs py-1.5"
+              title="Print report"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print</span>
+            </Button>
 
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => refetchSummary()}
-            className="p-1.5"
-            title="Refresh metrics"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-          </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => refetchSummary()}
+              className="p-1.5"
+              title="Refresh metrics"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -309,14 +311,14 @@ export default function AdminReportsPage() {
       )}
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
         {/* Total Bookings */}
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-muted">
+        <div className="bg-sky-50/35 p-4 sm:p-5 rounded-xl border border-sky-200 shadow-2xs hover:shadow-xs transition-shadow space-y-1.5">
+          <div className="flex items-center justify-between text-sky-900/80">
             <span className="text-[11px] uppercase font-bold tracking-wider">Bookings</span>
-            <Calendar className="w-4 h-4 text-accent" />
+            <Calendar className="w-4 h-4 text-sky-700" />
           </div>
-          <div className="font-display text-2xl sm:text-3xl text-ink">
+          <div className="font-display text-2xl sm:text-3xl text-sky-800 tracking-tight">
             {summaryData?.totalBookings || 0}
           </div>
           <div className="flex items-center gap-1 text-[11px]">
@@ -334,12 +336,12 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Completed Services */}
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-muted">
+        <div className="bg-emerald-50/35 p-4 sm:p-5 rounded-xl border border-emerald-200 shadow-2xs hover:shadow-xs transition-shadow space-y-1.5">
+          <div className="flex items-center justify-between text-emerald-900/80">
             <span className="text-[11px] uppercase font-bold tracking-wider">Completed</span>
             <CheckCircle className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="font-display text-2xl sm:text-3xl text-emerald-700">
+          <div className="font-display text-2xl sm:text-3xl text-emerald-800 tracking-tight">
             {summaryData?.completedBookings || 0}
           </div>
           <div className="flex items-center gap-1 text-[11px]">
@@ -357,12 +359,12 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Realized Revenue */}
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-muted">
+        <div className="bg-green-50/35 p-4 sm:p-5 rounded-xl border border-green-200 shadow-2xs hover:shadow-xs transition-shadow space-y-1.5">
+          <div className="flex items-center justify-between text-green-900/80">
             <span className="text-[11px] uppercase font-bold tracking-wider">Gross Revenue</span>
-            <DollarSign className="w-4 h-4 text-accent" />
+            <DollarSign className="w-4 h-4 text-green-700" />
           </div>
-          <div className="font-display text-2xl sm:text-3xl text-ink">
+          <div className="font-display text-2xl sm:text-3xl text-green-800 tracking-tight">
             ₹{(summaryData?.revenue || 0).toLocaleString('en-IN')}
           </div>
           <div className="flex items-center gap-1 text-[11px]">
@@ -380,12 +382,12 @@ export default function AdminReportsPage() {
         </div>
 
         {/* No-Show Rate */}
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-muted">
+        <div className="bg-rose-50/35 p-4 sm:p-5 rounded-xl border border-rose-200 shadow-2xs hover:shadow-xs transition-shadow space-y-1.5">
+          <div className="flex items-center justify-between text-rose-900/80">
             <span className="text-[11px] uppercase font-bold tracking-wider">No-Show Rate</span>
-            <AlertTriangle className="w-4 h-4 text-danger" />
+            <AlertTriangle className="w-4 h-4 text-rose-700" />
           </div>
-          <div className="font-display text-2xl sm:text-3xl text-danger">
+          <div className="font-display text-2xl sm:text-3xl text-rose-800 tracking-tight">
             {summaryData?.noShowRate || 0}%
           </div>
           <div className="flex items-center gap-1 text-[11px]">
@@ -403,12 +405,12 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Distinct Customers */}
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-muted">
+        <div className="bg-purple-50/35 p-4 sm:p-5 rounded-xl border border-purple-200 shadow-2xs hover:shadow-xs transition-shadow space-y-1.5">
+          <div className="flex items-center justify-between text-purple-900/80">
             <span className="text-[11px] uppercase font-bold tracking-wider">Total Clients</span>
-            <Users className="w-4 h-4 text-accent" />
+            <Users className="w-4 h-4 text-purple-700" />
           </div>
-          <div className="font-display text-2xl sm:text-3xl text-ink">
+          <div className="font-display text-2xl sm:text-3xl text-purple-800 tracking-tight">
             {summaryData?.uniqueCustomers || 0}
           </div>
           <div className="flex items-center gap-1 text-[11px]">
@@ -417,12 +419,12 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Repeat Rate */}
-        <div className="bg-white p-4 rounded-card border border-border shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-muted">
+        <div className="bg-amber-50/35 p-4 sm:p-5 rounded-xl border border-amber-200 shadow-2xs hover:shadow-xs transition-shadow space-y-1.5">
+          <div className="flex items-center justify-between text-amber-900/80">
             <span className="text-[11px] uppercase font-bold tracking-wider">Repeat Rate</span>
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <TrendingUp className="w-4 h-4 text-amber-700" />
           </div>
-          <div className="font-display text-2xl sm:text-3xl text-accent">
+          <div className="font-display text-2xl sm:text-3xl text-amber-800 tracking-tight">
             {summaryData?.repeatRate || 0}%
           </div>
           <div className="flex items-center gap-1 text-[11px]">

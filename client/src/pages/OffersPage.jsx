@@ -12,6 +12,7 @@ import {
 import { applyOffer } from '@/features/booking/bookingDraftSlice';
 import { addToast } from '@/features/ui/uiSlice';
 import { formatPrice } from '@/lib/formatters';
+import { SHOP_PRODUCT_IMAGES } from '@/features/shop/productImages';
 
 export default function OffersPage() {
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ export default function OffersPage() {
     );
     dispatch(
       addToast({
-        message: `Offer "${offer.title?.en || 'Offer'}" applied to your booking!`,
+        message: `Offer "${offer.title?.en || 'Offer'}" applied! Please select your service & barber.`,
         type: 'success',
       })
     );
@@ -129,7 +130,7 @@ export default function OffersPage() {
           {/* Offers Grid */}
           {!isLoading && !isError && offers.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {offers.map((offer) => {
+              {offers.map((offer, index) => {
                 const endsDate = offer.endsAt ? new Date(offer.endsAt).toLocaleDateString('en-IN', {
                   day: 'numeric',
                   month: 'short',
@@ -156,10 +157,7 @@ export default function OffersPage() {
                     {/* Offer Image Header */}
                     <div className="relative h-48 w-full bg-neutral-900 overflow-hidden">
                       <img
-                        src={
-                          offer.imageUrl ||
-                          'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80'
-                        }
+                        src={SHOP_PRODUCT_IMAGES[index % SHOP_PRODUCT_IMAGES.length]}
                         alt={offer.title?.en || 'Offer'}
                         className="w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-500"
                       />
@@ -303,4 +301,3 @@ export default function OffersPage() {
     </>
   );
 }
-

@@ -4,23 +4,27 @@ import { cn } from '@/lib/utils';
 const VARIANTS = {
   primary:
     'bg-accent text-ink font-semibold hover:bg-accent-hover shadow-sm active:translate-y-px focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
+  accent:
+    'bg-accent text-ink font-semibold hover:bg-accent-hover shadow-sm active:translate-y-px focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
   secondary:
     'bg-brown text-white font-medium hover:bg-brown/90 border border-border-dark shadow-sm active:translate-y-px focus-visible:ring-2 focus-visible:ring-accent',
+  outline:
+    'bg-transparent text-ink border border-border-light font-semibold hover:bg-ink/5 active:translate-y-px focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
   ghost:
     'bg-transparent text-inherit hover:bg-ink/5 dark:hover:bg-white/10 active:translate-y-px focus-visible:ring-2 focus-visible:ring-accent',
 };
 
 const SIZES = {
-  sm: 'text-xs sm:text-sm px-3.5 py-2 rounded-sm gap-1.5',
-  md: 'text-sm sm:text-base px-5 py-2.5 rounded-sm gap-2',
-  lg: 'text-base sm:text-lg px-7 py-3.5 rounded-sm gap-2.5',
+  sm: 'h-9 text-xs px-3.5 rounded-sm gap-1.5',
+  md: 'h-11 text-sm px-5 rounded-sm gap-2',
+  lg: 'h-12 text-base px-7 rounded-sm gap-2.5',
 };
 
 /**
  * Versatile button component rendering as interactive button or router link
  *
  * @param {Object} props
- * @param {'primary' | 'secondary' | 'ghost'} [props.variant='primary'] - Style variant
+ * @param {'primary' | 'accent' | 'secondary' | 'outline' | 'ghost'} [props.variant='primary'] - Style variant
  * @param {'sm' | 'md' | 'lg'} [props.size='md'] - Sizing
  * @param {React.ReactNode} [props.leftIcon] - Icon placed before text
  * @param {React.ReactNode} [props.rightIcon] - Icon placed after text
@@ -63,7 +67,9 @@ export function Button({
       ) : (
         leftIcon && <span className="inline-flex shrink-0">{leftIcon}</span>
       )}
-      <span>{children}</span>
+      <span className="inline-flex items-center gap-1.5 whitespace-nowrap [&>svg]:mr-0 [&>svg]:shrink-0">
+        {children}
+      </span>
       {!isLoading && rightIcon && <span className="inline-flex shrink-0">{rightIcon}</span>}
     </>
   );

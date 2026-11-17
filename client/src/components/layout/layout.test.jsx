@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -37,10 +37,27 @@ describe('Layout Components', () => {
     expect(screen.getByRole('link', { name: /contact us/i })).toBeInTheDocument();
   });
 
+  it('keeps the mobile navigation open until the user closes it', () => {
+    renderWithProviders(<Navbar />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open navigation menu' }));
+    expect(screen.getByRole('dialog', { name: 'Navigation Menu' })).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'Navigation Menu' })).not.toBeInTheDocument();
+  });
+
   it('renders Footer with columns and operational hours', () => {
     renderWithProviders(<Footer />);
     expect(screen.getByText('Operational Hours')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /reserve now/i })).toBeInTheDocument();
+    expect(screen.getByText('Visit Us')).toBeInTheDocument();
+    expect(screen.getByText(siteConfig.address)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /get directions/i })).toHaveAttribute(
+      'href',
+      `https://www.google.com/maps/dir/?api=1&destination=${siteConfig.location.lat},${siteConfig.location.lng}`
+    );
+    expect(screen.queryByRole('link', { name: /reserve now/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /chat on whatsapp/i })).not.toBeInTheDocument();
   });
 
   it('renders PageShell with skip link and main landmark', () => {

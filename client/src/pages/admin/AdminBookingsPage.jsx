@@ -201,16 +201,16 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-4 rounded-lg bg-white border border-border-light flex flex-wrap items-center gap-3 shadow-sm">
-        <div className="flex-1 min-w-[140px]">
-          <label htmlFor="filter-barber-select" className="text-[10px] uppercase font-bold text-muted block mb-1">
-            Barber
+      <div className="p-4 sm:p-5 rounded-xl bg-white border border-border-light/90 flex flex-wrap items-center gap-4 shadow-xs">
+        <div className="flex-1 min-w-[150px]">
+          <label htmlFor="filter-barber-select" className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
+            Artisan Barber
           </label>
           <select
             id="filter-barber-select"
             value={selectedBarber}
             onChange={(e) => setSelectedBarber(e.target.value)}
-            className="w-full text-xs px-2.5 py-1.5 rounded bg-card border border-border-light text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full text-xs px-3 py-2 rounded-lg bg-card/60 border border-border-light text-ink focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
           >
             <option value="">All Barbers</option>
             {barbers.map((b) => (
@@ -221,15 +221,15 @@ export default function AdminBookingsPage() {
           </select>
         </div>
 
-        <div className="flex-1 min-w-[140px]">
-          <label htmlFor="filter-status-select" className="text-[10px] uppercase font-bold text-muted block mb-1">
-            Status
+        <div className="flex-1 min-w-[150px]">
+          <label htmlFor="filter-status-select" className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
+            Booking Status
           </label>
           <select
             id="filter-status-select"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full text-xs px-2.5 py-1.5 rounded bg-card border border-border-light text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full text-xs px-3 py-2 rounded-lg bg-card/60 border border-border-light text-ink focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
           >
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
@@ -240,21 +240,21 @@ export default function AdminBookingsPage() {
           </select>
         </div>
 
-        <div className="flex-1 min-w-[140px]">
-          <label htmlFor="filter-date-input" className="text-[10px] uppercase font-bold text-muted block mb-1">
-            Date
+        <div className="flex-1 min-w-[150px]">
+          <label htmlFor="filter-date-input" className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
+            Filter by Date
           </label>
           <input
             id="filter-date-input"
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full text-xs px-2.5 py-1.5 rounded bg-card border border-border-light text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full text-xs px-3 py-2 rounded-lg bg-card/60 border border-border-light text-ink focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
           />
         </div>
 
         {(selectedBarber || selectedStatus || selectedDate) && (
-          <div className="self-end">
+          <div className="self-end pb-1">
             <button
               type="button"
               onClick={() => {
@@ -262,7 +262,7 @@ export default function AdminBookingsPage() {
                 setSelectedStatus('');
                 setSelectedDate('');
               }}
-              className="text-xs text-accent hover:underline font-semibold pb-1.5"
+              className="text-xs text-accent hover:text-ink font-semibold transition-colors px-2 py-1 rounded bg-accent/10"
             >
               Clear Filters
             </button>

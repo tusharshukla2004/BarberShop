@@ -4,6 +4,7 @@ import { Carousel } from '@/components/common/Carousel';
 import { SlideControls } from '@/components/common/SlideControls';
 import { QueryState } from '@/components/common/QueryState';
 import { cn } from '@/lib/utils';
+import { getShopImageDetailsForIndex } from '@/features/shop/productImages';
 
 /**
  * Works Gallery Slider with 2-column layout and right viewport bleed
@@ -87,8 +88,8 @@ export function WorksSlider() {
                   )}
                 >
                   <img
-                    src={item.imageUrl}
-                    alt={item.caption || item.category || 'Barber work'}
+                    src={getShopImageDetailsForIndex(idx).src}
+                    alt={getShopImageDetailsForIndex(idx).alt}
                     loading={idx < 2 ? 'eager' : 'lazy'}
                     className="h-full w-full object-cover object-center transition-transform duration-slow group-hover:scale-105"
                   />

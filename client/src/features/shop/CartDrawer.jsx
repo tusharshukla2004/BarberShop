@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Trash2, ArrowRight, CheckCircle2, ShieldCheck, ShoppingBag } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { formatPrice } from '@/lib/formatters';
+import { getProductFallbackImageUrl, getProductImageUrl } from './productImages';
 
 /**
  * Slide-over Shopping Cart Drawer
@@ -152,8 +153,12 @@ export function CartDrawer({
               {cart.map(({ product, quantity }) => (
                 <div key={product.id} className="py-4 flex gap-4 items-center">
                   <img
-                    src={product.imageUrl}
+                    src={getProductImageUrl(product)}
                     alt={product.name}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = getProductFallbackImageUrl(product);
+                    }}
                     className="h-18 w-18 sm:h-20 sm:w-20 rounded-xl object-cover border border-border-light shrink-0"
                   />
                   <div className="flex-1 flex flex-col justify-between">

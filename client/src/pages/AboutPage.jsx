@@ -136,7 +136,7 @@ export default function AboutPage() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-6 -right-4 sm:-bottom-8 sm:-right-8 bg-ink p-6 rounded-lg shadow-xl text-white max-w-xs border border-border-dark hidden sm:block">
+              <div className="absolute -bottom-6 -right-4 lg:-bottom-8 lg:-right-8 bg-ink p-6 rounded-lg shadow-xl text-white max-w-xs border border-border-dark hidden sm:block">
                 <p className="font-display text-2xl text-accent">EST. 2018</p>
                 <p className="text-xs text-on-dark-muted mt-1">
                   Over 15,000 bespoke cuts & shaves delivered in Indiranagar.

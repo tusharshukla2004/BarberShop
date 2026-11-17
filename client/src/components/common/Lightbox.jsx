@@ -148,7 +148,7 @@ export default function Lightbox({ isOpen, onClose, items, currentIndex, onNavig
       <div className="relative max-w-4xl max-h-[85vh] flex flex-col items-center justify-center">
         <img
           src={currentItem.imageUrl}
-          alt={currentItem.caption || `Gallery showcase item ${currentIndex + 1}`}
+          alt={currentItem.imageAlt || currentItem.caption || `Gallery showcase item ${currentIndex + 1}`}
           className="max-h-[70vh] w-auto max-w-full rounded-md object-contain shadow-2xl"
         />
 
@@ -176,6 +176,7 @@ Lightbox.propTypes = {
     PropTypes.shape({
       id: PropTypes.string,
       imageUrl: PropTypes.string.isRequired,
+      imageAlt: PropTypes.string,
       category: PropTypes.string,
       caption: PropTypes.string,
     })

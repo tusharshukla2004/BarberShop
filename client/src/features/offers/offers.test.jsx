@@ -11,6 +11,7 @@ import bookingDraftReducer, {
   removeOffer,
 } from '@/features/booking/bookingDraftSlice';
 import OffersPage from '@/pages/OffersPage';
+import { SHOP_PRODUCT_IMAGES } from '@/features/shop/productImages';
 import { HomeOfferBanner } from './HomeOfferBanner';
 import * as offersApiModule from './offersApi';
 
@@ -115,6 +116,9 @@ describe('Offers Feature & Redux Integration', () => {
       expect(screen.getByText(/Festival Grooming 20% Off/i)).toBeInTheDocument();
       expect(screen.getByText(/FESTIVE20/i)).toBeInTheDocument();
       expect(screen.getByText(/WELCOME100/i)).toBeInTheDocument();
+      expect(screen.getAllByRole('img').map((image) => image.getAttribute('src'))).toEqual(
+        SHOP_PRODUCT_IMAGES.slice(0, mockOffersList.length)
+      );
     });
   });
 

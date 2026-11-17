@@ -16,7 +16,7 @@ export default function PageBanner({ eyebrow, title, description, children }) {
             {eyebrow}
           </p>
         )}
-        <h1 className="font-display text-4xl sm:text-5xl md:text-6xl tracking-wider text-white uppercase">
+        <h1 className="font-display text-4xl sm:text-5xl md:text-6xl tracking-wider text-white uppercase leading-tight">
           {title}
         </h1>
         {description && (

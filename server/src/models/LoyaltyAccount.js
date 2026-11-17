@@ -101,7 +101,5 @@ const loyaltyAccountSchema = new mongoose.Schema(
   }
 );
 
-loyaltyAccountSchema.index({ customerId: 1 });
-
 export const LoyaltyAccount = mongoose.model('LoyaltyAccount', loyaltyAccountSchema);
 

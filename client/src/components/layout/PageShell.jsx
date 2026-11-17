@@ -1,11 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { MobileQuickBar } from './MobileQuickBar';
 import { Toaster } from '@/components/common/Toaster';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 /**
- * Root Layout wrapper providing Navbar, Skip Link, Main slot, Footer, and Toast notifications
+ * Root Layout wrapper providing Navbar, Skip Link, Main slot, Footer, Mobile Quick Bar, and Toast notifications
  * @returns {JSX.Element}
  */
 export function PageShell() {
@@ -25,12 +26,15 @@ export function PageShell() {
       <Navbar />
 
       {/* Primary Main Content */}
-      <main id="main" className="flex-1 focus:outline-none" tabIndex={-1}>
+      <main id="main" className="flex-1 focus:outline-none pb-14 lg:pb-0" tabIndex={-1}>
         <Outlet />
       </main>
 
       {/* Global Site Footer */}
       <Footer />
+
+      {/* Mobile-Only Floating Bottom Quick Action Dock */}
+      <MobileQuickBar />
 
       {/* Global Toast Notification System */}
       <Toaster />
