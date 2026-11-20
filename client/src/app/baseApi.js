@@ -8,12 +8,19 @@ import { setCredentials, logout } from '@/features/auth/authSlice';
  */
 export const normalizeError = (response) => {
   const status = typeof response.status === 'number' ? response.status : 500;
-  const message =
-    response.data?.error ||
-    response.data?.message ||
-    response.error ||
-    'An unexpected error occurred. Please try again.';
-  const details = response.data?.details || response.data || null;
+  let message = 'An unexpected error occurred. Please try again.';
+
+  if (typeof response.data?.error === 'string') {
+    message = response.data.error;
+  } else if (typeof response.data?.error?.message === 'string') {
+    message = response.data.error.message;
+  } else if (typeof response.data?.message === 'string') {
+    message = response.data.message;
+  } else if (typeof response.error === 'string') {
+    message = response.error;
+  }
+
+  const details = response.data?.details || response.data?.error?.details || response.data || null;
 
   return { status, message, details };
 };

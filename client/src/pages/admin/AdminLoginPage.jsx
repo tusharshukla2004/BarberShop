@@ -68,13 +68,21 @@ export default function AdminLoginPage() {
         navigate(returnTo, { replace: true });
       }
     } catch (err) {
-      const message =
-        err.message ||
-        err.data?.message ||
+      const rawMessage =
+        err?.message?.message ||
+        err?.message ||
+        err?.data?.message ||
+        err?.data?.error?.message ||
         'Invalid email or password. Please verify your credentials.';
+      const message =
+        typeof rawMessage === 'string'
+          ? rawMessage
+          : typeof rawMessage === 'object' && rawMessage !== null && typeof rawMessage.message === 'string'
+          ? rawMessage.message
+          : 'Invalid email or password. Please verify your credentials.';
       const isLocked =
         message.toLowerCase().includes('locked') ||
-        err.data?.error?.code === 'ACCOUNT_LOCKED';
+        err?.data?.error?.code === 'ACCOUNT_LOCKED';
 
       setIsLockedOut(isLocked);
       setAuthError(message);
