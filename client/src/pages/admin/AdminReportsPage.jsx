@@ -42,6 +42,7 @@ import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { selectCurrentUser, selectIsOwner } from '@/features/auth/authSlice';
 import { addToast } from '@/features/ui/uiSlice';
 import { Button } from '@/components/ui';
+import { getBaseUrl } from '@/app/baseApi';
 
 // Design token hex equivalents for Recharts SVG rendering
 const TOKEN_COLORS = {
@@ -143,7 +144,7 @@ export default function AdminReportsPage() {
   // CSV Export trigger
   const handleExportCSV = (reportType = 'summary') => {
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || '/api';
+      const baseUrl = getBaseUrl();
       const url = `${baseUrl}/admin/reports/${reportType}?from=${effectiveFrom}&to=${effectiveTo}&barberId=${selectedBarberId}&format=csv&granularity=${granularity}`;
       window.open(url, '_blank');
       dispatch(addToast({ type: 'success', message: 'Downloading report CSV...' }));

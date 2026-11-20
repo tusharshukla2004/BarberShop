@@ -24,13 +24,43 @@ export const app = express();
 // Security headers
 app.use(helmet());
 
-// CORS configuration matching frontend client
+// Allowed origins parser (supports single origin or comma-separated list)
+const allowedOrigins = (env.CLIENT_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+// CORS configuration supporting dynamic frontend origins (Vercel, custom domain & local dev)
 app.use(
   cors({
-    origin: env.CLIENT_ORIGIN,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalized = origin.replace(/\/+$/, '');
+
+      if (
+        allowedOrigins.includes(normalized) ||
+        allowedOrigins.includes('*') ||
+        (env.NODE_ENV !== 'production' && /^https?:\/\/localhost(:\d+)?$/.test(normalized)) ||
+        /^https:\/\/([a-zA-Z0-9_-]+\.)*vercel\.app$/.test(normalized)
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(null, false);
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'x-csrf-protection',
+    ],
+    optionsSuccessStatus: 204,
   })
 );
 

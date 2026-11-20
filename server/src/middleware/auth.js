@@ -4,13 +4,15 @@ import { sendError } from '../utils/response.js';
 import { Admin } from '../models/Admin.js';
 import { Booking } from '../models/Booking.js';
 
+const isProduction = env.NODE_ENV === 'production';
+
 /**
- * Access token cookie options (15 minutes, httpOnly, Lax/Secure)
+ * Access token cookie options (15 minutes, httpOnly, None/Secure in prod for cross-origin SPA)
  */
 export const accessCookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
   maxAge: 15 * 60 * 1000, // 15 minutes
   path: '/',
 };
@@ -20,8 +22,8 @@ export const accessCookieOptions = {
  */
 export const refreshCookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   path: '/api/auth/refresh',
 };

@@ -18,9 +18,12 @@ export const normalizeError = (response) => {
   return { status, message, details };
 };
 
-const getBaseUrl = () => {
+export const getBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && envUrl.startsWith('http')) return envUrl;
+  if (envUrl && envUrl.startsWith('http')) {
+    const trimmed = envUrl.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  }
   if (typeof window !== 'undefined' && window.location?.origin && window.location.origin !== 'null') {
     return `${window.location.origin}/api`;
   }
