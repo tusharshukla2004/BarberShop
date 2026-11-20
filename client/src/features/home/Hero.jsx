@@ -50,7 +50,7 @@ export function Hero() {
       size="lg"
       leftIcon={<CalendarDays className="h-4 w-4" />}
       onClick={() => setIsBookingOpen(true)}
-      className="w-full self-center justify-center text-center sm:w-fit"
+      className="h-10 w-full max-w-[300px] self-center justify-center px-5 text-center text-sm sm:h-12 sm:w-fit sm:max-w-none sm:px-7 sm:text-base"
     >
       Book an appointment
     </Button>
@@ -84,8 +84,8 @@ export function Hero() {
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_24%_50%,rgba(249,165,90,0.08),transparent_58%)]"
           aria-hidden="true"
         />
-        <Container className="relative z-10 w-full py-6 sm:py-8 lg:py-10">
-          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
+        <Container className="relative z-10 w-full -translate-y-2 py-6 sm:translate-y-0 sm:py-8 lg:py-10">
+          <div className="grid grid-cols-1 items-center gap-5 sm:gap-8 lg:grid-cols-12 lg:gap-12">
             <motion.div
               className="order-2 mx-auto flex w-full max-w-[500px] flex-col gap-3 lg:order-1 lg:col-span-5 lg:mx-0 lg:max-w-[400px]"
               initial={{ opacity: 0, y: 24 }}
@@ -160,8 +160,8 @@ export function Hero() {
                   {appointmentButton}
                 </>
               ) : (
-                <div className="relative mt-8 flex w-full flex-col items-center justify-center gap-5 text-center sm:mt-10 lg:mt-12 lg:translate-y-7">
-                  <p className="max-w-[380px] text-sm leading-relaxed text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] sm:text-base uppercase">
+                <div className="relative mx-auto mt-8 flex w-full max-w-[300px] flex-col items-center justify-center gap-4 text-center sm:mt-10 sm:max-w-none sm:gap-5 lg:mt-12 lg:translate-y-7">
+                  <p className="max-w-full text-xs leading-snug text-left text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] sm:max-w-[380px] sm:text-center sm:text-base sm:leading-relaxed uppercase">
                     {hero.mission}
                   </p>
                   {appointmentButton}
@@ -169,9 +169,9 @@ export function Hero() {
               )}
             </motion.div>
 
-            <div className="order-1 flex translate-y-10 flex-col items-start pb-2 text-left lg:order-2 lg:col-span-7 lg:translate-y-20 lg:items-end lg:text-right">
+            <div className="order-1 mx-auto flex w-full max-w-[300px] translate-y-10 flex-col items-start pb-2 text-left sm:mx-0 sm:max-w-none lg:order-2 lg:col-span-7 lg:translate-y-20 lg:items-end lg:text-right">
               <motion.div
-                className="mb-4 inline-flex select-none items-center gap-2 rounded-full border border-white/15 bg-black/45 px-3.5 py-1.5 shadow-lg backdrop-blur-md"
+                className="mb-4 inline-flex select-none items-center gap-2 whitespace-nowrap rounded-full border border-white/15 bg-black/45 px-3.5 py-1.5 text-[10px] shadow-lg backdrop-blur-md sm:text-[11px]"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
@@ -180,7 +180,7 @@ export function Hero() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                 </span>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-white/90">
+                <span className="font-semibold uppercase tracking-wider text-white/90">
                   Salon Open · Master Barbers on Duty
                 </span>
               </motion.div>

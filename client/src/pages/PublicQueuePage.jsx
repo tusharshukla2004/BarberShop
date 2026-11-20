@@ -108,7 +108,7 @@ export default function PublicQueuePage() {
         description="Join our live salon walk-in queue online and avoid waiting in the lounge."
       />
 
-      <div className="py-12 sm:py-16 bg-cream/30 min-h-[70vh]">
+      <div className="pt-24 pb-12 sm:pt-28 sm:pb-16 md:pt-20 md:pb-16 bg-cream/30 min-h-[70vh]">
         <Container size="sm">
           {/* Back link */}
           <Link

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Seo from '@/components/common/Seo';
 import PageBanner from '@/components/common/PageBanner';
 import Container from '@/components/ui/Container';
@@ -28,10 +28,26 @@ export default function BookAppointmentPage() {
   const draft = useAppSelector(selectBookingDraft);
 
   const currentStep = draft.currentStep || 1;
+  const stepStartRef = useRef(null);
+  const previousStepRef = useRef(currentStep);
 
   useEffect(() => {
     trackEvent('booking_started');
   }, []);
+
+  useEffect(() => {
+    if (previousStepRef.current === currentStep) return;
+    previousStepRef.current = currentStep;
+
+    if (!window.matchMedia('(max-width: 767px)').matches) return;
+
+    stepStartRef.current?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+      block: 'start',
+    });
+  }, [currentStep]);
 
   const handleStepSelect = (step) => {
     dispatch(setBookingStep(step));
@@ -110,59 +126,61 @@ export default function BookAppointmentPage() {
 
       <Section tone="cream" className="py-12 md:py-20">
         <Container>
-          {/* Stepper Navigation */}
-          <Stepper currentStep={currentStep} onSelectStep={handleStepSelect} />
+          <div ref={stepStartRef} className="scroll-mt-24">
+            {/* Stepper Navigation */}
+            <Stepper currentStep={currentStep} onSelectStep={handleStepSelect} />
 
-          {/* Wizard Step Views */}
-          {currentStep === 1 && (
-            <StepService
-              selectedServiceId={draft.serviceId}
-              onSelect={handleServiceSelect}
-              onNext={() => dispatch(setBookingStep(2))}
-            />
-          )}
+            {/* Wizard Step Views */}
+            {currentStep === 1 && (
+              <StepService
+                selectedServiceId={draft.serviceId}
+                onSelect={handleServiceSelect}
+                onNext={() => dispatch(setBookingStep(2))}
+              />
+            )}
 
-          {currentStep === 2 && (
-            <StepBarber
-              selectedBarberId={draft.barberId}
-              onSelect={handleBarberSelect}
-              onNext={() => dispatch(setBookingStep(3))}
-              onBack={() => dispatch(setBookingStep(1))}
-            />
-          )}
+            {currentStep === 2 && (
+              <StepBarber
+                selectedBarberId={draft.barberId}
+                onSelect={handleBarberSelect}
+                onNext={() => dispatch(setBookingStep(3))}
+                onBack={() => dispatch(setBookingStep(1))}
+              />
+            )}
 
-          {currentStep === 3 && (
-            <StepDateTime
-              serviceId={draft.serviceId}
-              barberId={draft.barberId}
-              selectedDate={draft.date}
-              selectedSlot={{
-                date: draft.date,
-                startTime: draft.startTime,
-                endTime: draft.endTime,
-              }}
-              onSelectSlot={handleSlotSelect}
-              onNext={() => dispatch(setBookingStep(4))}
-              onBack={() => dispatch(setBookingStep(2))}
-            />
-          )}
+            {currentStep === 3 && (
+              <StepDateTime
+                serviceId={draft.serviceId}
+                barberId={draft.barberId}
+                selectedDate={draft.date}
+                selectedSlot={{
+                  date: draft.date,
+                  startTime: draft.startTime,
+                  endTime: draft.endTime,
+                }}
+                onSelectSlot={handleSlotSelect}
+                onNext={() => dispatch(setBookingStep(4))}
+                onBack={() => dispatch(setBookingStep(2))}
+              />
+            )}
 
-          {currentStep === 4 && (
-            <StepDetails
-              draft={draft}
-              onSaveDraft={handleSaveDetails}
-              onSuccess={handleBookingSuccess}
-              onConflict={handleBookingConflict}
-              onBack={() => dispatch(setBookingStep(3))}
-            />
-          )}
+            {currentStep === 4 && (
+              <StepDetails
+                draft={draft}
+                onSaveDraft={handleSaveDetails}
+                onSuccess={handleBookingSuccess}
+                onConflict={handleBookingConflict}
+                onBack={() => dispatch(setBookingStep(3))}
+              />
+            )}
 
-          {currentStep === 5 && draft.confirmedBooking && (
-            <StepConfirmation
-              booking={draft.confirmedBooking}
-              onReset={handleReset}
-            />
-          )}
+            {currentStep === 5 && draft.confirmedBooking && (
+              <StepConfirmation
+                booking={draft.confirmedBooking}
+                onReset={handleReset}
+              />
+            )}
+          </div>
         </Container>
       </Section>
     </>

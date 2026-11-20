@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
@@ -16,7 +16,19 @@ import Stepper from './wizard/Stepper';
 import StepService from './wizard/StepService';
 import StepBarber from './wizard/StepBarber';
 import StepDateTime from './wizard/StepDateTime';
+import useMobileScrollToContinue from './wizard/useMobileScrollToContinue';
 import { downloadCalendarEvent } from '@/lib/calendar';
+
+function ScrollToContinueHarness() {
+  const { targetRef, scrollToContinue } = useMobileScrollToContinue();
+
+  return (
+    <>
+      <button ref={targetRef}>Continue</button>
+      <button onClick={scrollToContinue}>Select</button>
+    </>
+  );
+}
 
 function renderWithStore(ui, initialDraft = {}) {
   const store = configureStore({
@@ -55,7 +67,41 @@ function renderWithStore(ui, initialDraft = {}) {
   };
 }
 
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe('Booking Wizard Flow', () => {
+  describe('Mobile step progression', () => {
+    it('scrolls the Continue action into view after a selection on mobile', () => {
+      vi.stubGlobal(
+        'matchMedia',
+        vi.fn((query) => ({ matches: query === '(max-width: 767px)' }))
+      );
+      const { getByRole } = render(<ScrollToContinueHarness />);
+      const continueButton = getByRole('button', { name: 'Continue' });
+      continueButton.scrollIntoView = vi.fn();
+
+      fireEvent.click(getByRole('button', { name: 'Select' }));
+
+      expect(continueButton.scrollIntoView).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    });
+
+    it('does not auto-scroll on desktop', () => {
+      vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })));
+      const { getByRole } = render(<ScrollToContinueHarness />);
+      const continueButton = getByRole('button', { name: 'Continue' });
+      continueButton.scrollIntoView = vi.fn();
+
+      fireEvent.click(getByRole('button', { name: 'Select' }));
+
+      expect(continueButton.scrollIntoView).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Stepper Navigation', () => {
     it('renders all 4 visible steps', () => {
       renderWithStore(<Stepper currentStep={1} onSelectStep={vi.fn()} />);

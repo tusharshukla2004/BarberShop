@@ -14,7 +14,7 @@ export function Providers({ children }) {
   return (
     <Provider store={store}>
       <HelmetProvider>
-        <BrowserRouter>{children}</BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true }}>{children}</BrowserRouter>
       </HelmetProvider>
     </Provider>
   );

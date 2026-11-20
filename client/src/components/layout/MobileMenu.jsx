@@ -107,7 +107,7 @@ export function MobileMenu() {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex flex-1 flex-col justify-between px-4 py-2 sm:px-6 sm:py-5">
+      <div className="flex flex-1 flex-col gap-4 px-4 py-2 sm:px-6 sm:py-5">
         <nav className="flex flex-col gap-0.5" aria-label="Mobile Navigation">
           {siteConfig.navLinks.map((link) => (
             <NavLink
@@ -143,15 +143,15 @@ export function MobileMenu() {
         </nav>
 
         {/* Contact info & CTA */}
-        <div className="mt-2 flex flex-col gap-2 border-t border-border-dark pt-2">
+        <div className="flex flex-col gap-2 border-t border-border-dark pt-2">
           <Button
-            to="/admin"
+            to="/admin/login"
             variant="outline"
             size="lg"
             className="w-full text-center border-white/30 text-white hover:bg-white/10 tracking-wider uppercase text-xs font-semibold"
             onClick={() => dispatch(closeMobileMenu())}
           >
-            Admin Dashboard
+            Admin Sign In
           </Button>
 
           <Button

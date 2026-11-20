@@ -159,9 +159,9 @@ export function CartDrawer({
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = getProductFallbackImageUrl(product);
                     }}
-                    className="h-18 w-18 sm:h-20 sm:w-20 rounded-xl object-cover border border-border-light shrink-0"
+                    className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl object-cover border border-border-light shrink-0"
                   />
-                  <div className="flex-1 flex flex-col justify-between">
+                  <div className="min-w-0 flex-1 flex flex-col justify-between">
                     <div className="flex items-start justify-between gap-2">
                       <h4 className="font-display text-base uppercase tracking-wide text-ink leading-tight">
                         {product.name}

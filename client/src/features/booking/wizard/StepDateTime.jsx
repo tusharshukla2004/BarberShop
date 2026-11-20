@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import QueryState from '@/components/common/QueryState';
 import { useGetSlotsQuery } from '@/features/booking/bookingApi';
 import { useGetSettingsQuery } from '@/features/settings/settingsApi';
+import useMobileScrollToContinue from './useMobileScrollToContinue';
 
 export default function StepDateTime({
   serviceId,
@@ -18,6 +19,7 @@ export default function StepDateTime({
 }) {
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
   const [currentDate, setCurrentDate] = useState(selectedDate || todayStr);
+  const { targetRef, scrollToContinue } = useMobileScrollToContinue();
 
   const { data: settings } = useGetSettingsQuery();
 
@@ -69,6 +71,7 @@ export default function StepDateTime({
       startTime: slot.startTime,
       endTime: slot.endTime,
     });
+    scrollToContinue();
   };
 
   const isSlotSelected = (slot) =>
@@ -208,7 +211,7 @@ export default function StepDateTime({
       )}
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between pt-4 max-w-3xl mx-auto">
+      <div ref={targetRef} className="flex items-center justify-between pt-4 max-w-3xl mx-auto">
         <Button variant="outline" size="md" onClick={onBack} className="text-xs uppercase font-semibold">
           Back
         </Button>

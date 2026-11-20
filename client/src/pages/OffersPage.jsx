@@ -76,7 +76,7 @@ export default function OffersPage() {
         schema={offersSchema}
       />
 
-      <section className="py-12 md:py-20 bg-neutral-50/50">
+      <section className="pt-24 pb-12 md:py-20 bg-neutral-50/50">
         <Container>
           {/* Header */}
           <div className="max-w-2xl mx-auto text-center mb-12 sm:mb-16">

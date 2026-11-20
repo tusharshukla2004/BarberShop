@@ -71,15 +71,15 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Right (Desktop): Admin Dashboard & Contact Us Buttons */}
+          {/* Right (Desktop): Admin Sign In & Contact Us Buttons */}
           <div className="hidden shrink-0 lg:flex items-center gap-2">
             <Button
-              to="/admin"
+              to="/admin/login"
               variant="outline"
               size="sm"
               className="whitespace-nowrap border-white/30 text-white hover:bg-white/10 hover:border-white font-medium text-[10px] tracking-wider uppercase px-3"
             >
-              Admin Dashboard
+              Admin Sign In
             </Button>
             <Button
               to="/contact"

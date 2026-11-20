@@ -4,9 +4,11 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import QueryState from '@/components/common/QueryState';
 import { useGetBarbersQuery } from '@/features/barbers/barbersApi';
+import useMobileScrollToContinue from './useMobileScrollToContinue';
 
 export default function StepBarber({ selectedBarberId, onSelect, onNext, onBack }) {
   const { data: barbers = [], isLoading, isError, error, refetch } = useGetBarbersQuery();
+  const { targetRef, scrollToContinue } = useMobileScrollToContinue();
 
   const isAnySelected = !selectedBarberId || selectedBarberId === 'any';
 
@@ -33,7 +35,10 @@ export default function StepBarber({ selectedBarberId, onSelect, onNext, onBack 
           {/* "Any Available Barber" Card */}
           <button
             type="button"
-            onClick={() => onSelect('any')}
+            onClick={() => {
+              onSelect('any');
+              scrollToContinue();
+            }}
             className={`text-left rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               isAnySelected ? 'ring-2 ring-accent shadow-md scale-[1.01]' : 'hover:shadow-md'
             }`}
@@ -87,7 +92,10 @@ export default function StepBarber({ selectedBarberId, onSelect, onNext, onBack 
               <button
                 key={barber.id}
                 type="button"
-                onClick={() => onSelect(barber.id)}
+                onClick={() => {
+                  onSelect(barber.id);
+                  scrollToContinue();
+                }}
                 className={`text-left rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   isSelected ? 'ring-2 ring-accent shadow-md scale-[1.01]' : 'hover:shadow-md'
                 }`}
@@ -152,7 +160,7 @@ export default function StepBarber({ selectedBarberId, onSelect, onNext, onBack 
         </div>
       </QueryState>
 
-      <div className="flex items-center justify-between pt-4">
+      <div ref={targetRef} className="flex items-center justify-between pt-4">
         <Button variant="outline" size="md" onClick={onBack} className="text-xs uppercase font-semibold">
           Back
         </Button>

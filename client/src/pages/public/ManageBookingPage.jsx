@@ -130,7 +130,7 @@ export default function ManageBookingPage() {
   // Invalid or missing parameters
   if (!ref || !token) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
+      <div className="min-h-[70vh] flex items-center justify-center px-4 pt-24 pb-16 md:py-16">
         <Seo title="Manage Booking | Modern Mane Barbershop" noindex />
         <meta name="referrer" content="no-referrer" />
         <Card className="max-w-md w-full p-8 text-center space-y-4 border border-border">
@@ -159,7 +159,7 @@ export default function ManageBookingPage() {
       <Seo title="Manage Appointment | Modern Mane Barbershop" noindex />
       <meta name="referrer" content="no-referrer" />
 
-      <div className="min-h-[75vh] py-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
+      <div className="min-h-[75vh] pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto md:py-12">
         {isLoading ? (
           <div className="py-20 text-center">
             <div className="w-8 h-8 rounded-pill border-2 border-accent border-t-transparent animate-spin mx-auto mb-3" />

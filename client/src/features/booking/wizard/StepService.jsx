@@ -6,9 +6,11 @@ import QueryState from '@/components/common/QueryState';
 import { useGetServicesQuery } from '@/features/services/servicesApi';
 import { formatPrice } from '@/lib/formatters';
 import { getShopImageForServiceCategory } from '@/features/shop/productImages';
+import useMobileScrollToContinue from './useMobileScrollToContinue';
 
 export default function StepService({ selectedServiceId, onSelect, onNext }) {
   const { data: services = [], isLoading, isError, error, refetch } = useGetServicesQuery();
+  const { targetRef, scrollToContinue } = useMobileScrollToContinue();
 
   return (
     <div className="space-y-8">
@@ -36,7 +38,10 @@ export default function StepService({ selectedServiceId, onSelect, onNext }) {
               <button
                 key={service.id}
                 type="button"
-                onClick={() => onSelect(service.id)}
+                onClick={() => {
+                  onSelect(service.id);
+                  scrollToContinue();
+                }}
                 className={`text-left rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   isSelected ? 'ring-2 ring-accent shadow-md scale-[1.01]' : 'hover:shadow-md'
                 }`}
@@ -92,7 +97,7 @@ export default function StepService({ selectedServiceId, onSelect, onNext }) {
         </div>
       </QueryState>
 
-      <div className="flex justify-end pt-4">
+      <div ref={targetRef} className="flex justify-end pt-4">
         <Button
           variant="accent"
           size="lg"

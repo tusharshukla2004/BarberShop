@@ -83,7 +83,7 @@ export function ProductQuickView({ product, onClose, onAddToCart }) {
           </div>
 
           {/* Product Info */}
-          <div className="md:col-span-7 flex flex-col justify-between">
+          <div className="min-w-0 md:col-span-7 flex flex-col justify-between">
             <div>
               {/* Category & Rating */}
               <div className="flex items-center justify-between text-xs text-muted mb-2">
@@ -137,8 +137,8 @@ export function ProductQuickView({ product, onClose, onAddToCart }) {
             </div>
 
             {/* Quantity Selector & Add Button */}
-            <div className="flex items-center gap-4 pt-4 border-t border-border-light">
-              <div className="flex items-center rounded-full border border-ink/20 bg-white px-2 py-1">
+            <div className="flex flex-col items-stretch gap-3 pt-4 border-t border-border-light sm:flex-row sm:items-center sm:gap-4">
+              <div className="self-start flex items-center rounded-full border border-ink/20 bg-white px-2 py-1 sm:self-auto">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -166,7 +166,7 @@ export function ProductQuickView({ product, onClose, onAddToCart }) {
                 leftIcon={
                   added ? <Check className="h-4 w-4" /> : <ShoppingBag className="h-4 w-4" />
                 }
-                className="flex-1 rounded-full uppercase tracking-wider font-semibold"
+                className="min-w-0 w-full flex-none rounded-full px-3 text-xs uppercase tracking-wider font-semibold sm:w-auto sm:flex-1 sm:px-5 sm:text-sm"
               >
                 {added ? 'Added to Bag!' : `Add to Bag • ${formatPrice(product.price * quantity)}`}
               </Button>

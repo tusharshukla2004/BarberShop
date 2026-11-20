@@ -35,6 +35,22 @@ describe('Layout Components', () => {
     expect(screen.getByLabelText(`${siteConfig.name} Home`)).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Main Navigation' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /contact us/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /admin sign in/i })).toHaveAttribute(
+      'href',
+      '/admin/login'
+    );
+  });
+
+  it('links the mobile Admin Sign In button to the authentication page', () => {
+    renderWithProviders(<Navbar />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open navigation menu' }));
+
+    expect(screen.getAllByRole('link', { name: /admin sign in/i })).toHaveLength(2);
+    expect(screen.getAllByRole('link', { name: /admin sign in/i })[1]).toHaveAttribute(
+      'href',
+      '/admin/login'
+    );
   });
 
   it('keeps the mobile navigation open until the user closes it', () => {

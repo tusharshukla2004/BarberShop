@@ -237,6 +237,19 @@
   animation: pulseGlow 4s ease-in-out infinite;
 }
 
+@keyframes pageRouteEnter {
+  from {
+    opacity: 0.97;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-route-transition {
+  animation: pageRouteEnter 220ms ease-out both;
+}
+
 /* Accessibility: Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,

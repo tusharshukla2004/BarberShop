@@ -100,7 +100,7 @@ export default function BlogPostDetailPage() {
 
   if (isLoading || isError || !post) {
     return (
-      <Container className="py-16">
+      <Container className="pt-24 pb-16 md:py-16">
         <QueryState
           isLoading={isLoading}
           isError={isError}

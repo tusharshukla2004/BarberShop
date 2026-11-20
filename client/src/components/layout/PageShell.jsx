@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { MobileQuickBar } from './MobileQuickBar';
@@ -10,6 +10,7 @@ import { useScrollToTop } from '@/hooks/useScrollToTop';
  * @returns {JSX.Element}
  */
 export function PageShell() {
+  const { pathname } = useLocation();
   useScrollToTop();
 
   return (
@@ -27,7 +28,9 @@ export function PageShell() {
 
       {/* Primary Main Content */}
       <main id="main" className="flex-1 focus:outline-none pb-14 lg:pb-0" tabIndex={-1}>
-        <Outlet />
+        <div key={pathname} className="page-route-transition">
+          <Outlet />
+        </div>
       </main>
 
       {/* Global Site Footer */}

@@ -33,7 +33,7 @@ export default function PublicWalletPage() {
 
   if (isError || !wallet) {
     return (
-      <Container className="py-16">
+      <Container className="pt-24 pb-16 md:py-16">
         <Card className="max-w-md mx-auto p-8 text-center space-y-4 border-red-200 bg-red-50/30">
           <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
             <ShieldCheck className="w-6 h-6" />
@@ -65,7 +65,7 @@ export default function PublicWalletPage() {
   );
 
   return (
-    <div className="min-h-screen bg-sand/20 py-10">
+    <div className="min-h-screen bg-sand/20 pt-24 pb-10 md:py-10">
       <Container>
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Header Pass Card */}
