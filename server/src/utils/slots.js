@@ -76,9 +76,13 @@ export function getKolkataCurrentDateAndMinutes(customNow = new Date()) {
   const hour = parseInt(timeParts.find((p) => p.type === 'hour')?.value || '0', 10);
   const minute = parseInt(timeParts.find((p) => p.type === 'minute')?.value || '0', 10);
 
+  const currentMinutes = hour * 60 + minute;
+
   return {
     todayDate,
-    currentMinutes: hour * 60 + minute,
+    dateStr: todayDate,
+    currentMinutes,
+    currentTimeMinutes: currentMinutes,
   };
 }
 

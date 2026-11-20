@@ -106,6 +106,13 @@ adminSchema.methods.isLocked = function () {
 };
 
 adminSchema.methods.recordFailedLogin = async function () {
+  // If previously locked and the lockout duration has expired, reset counter to 1
+  if (this.lockUntil && this.lockUntil.getTime() <= Date.now()) {
+    this.failedLoginAttempts = 1;
+    this.lockUntil = null;
+    return this.save();
+  }
+
   this.failedLoginAttempts = (this.failedLoginAttempts || 0) + 1;
   if (this.failedLoginAttempts >= 5) {
     // Lock for 15 minutes

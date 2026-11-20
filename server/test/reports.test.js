@@ -176,6 +176,44 @@ describe('Reports & Analytics Suite', () => {
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });
+
+    it('handles default dates and empty queries without crashing', async () => {
+      vi.spyOn(Booking, 'find').mockReturnValue({
+        lean: vi.fn().mockResolvedValue([]),
+        sort: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue([]) }),
+      });
+      vi.spyOn(Payment, 'find').mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
+      vi.spyOn(Customer, 'find').mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
+
+      const resSummary = await request(app)
+        .get('/api/admin/reports/summary')
+        .set('Cookie', [ownerAuthCookie]);
+
+      expect(resSummary.status).toBe(200);
+      expect(resSummary.body.success).toBe(true);
+
+      const resOverTime = await request(app)
+        .get('/api/admin/reports/bookings-over-time?granularity=day')
+        .set('Cookie', [ownerAuthCookie]);
+
+      expect(resOverTime.status).toBe(200);
+      expect(resOverTime.body.success).toBe(true);
+    });
+
+    it('gracefully handles empty string parameters without 400 validation error', async () => {
+      vi.spyOn(Booking, 'find').mockReturnValue({
+        lean: vi.fn().mockResolvedValue([]),
+      });
+      vi.spyOn(Payment, 'find').mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
+      vi.spyOn(Customer, 'find').mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
+
+      const res = await request(app)
+        .get('/api/admin/reports/summary?from=&to=&barberId=')
+        .set('Cookie', [ownerAuthCookie]);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
   });
 });
 

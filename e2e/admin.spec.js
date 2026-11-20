@@ -9,7 +9,7 @@ test.describe('Admin Authentication & Booking Management E2E', () => {
 
     // 2. Fill credentials
     await page.fill('#admin-email', 'owner@barbershop.com');
-    await page.fill('#admin-password', 'Secret123!');
+    await page.fill('#admin-password', 'Admin@123456');
     await page.click('button:has-text("Sign In to Console")');
 
     // 3. Redirected to Admin Dashboard

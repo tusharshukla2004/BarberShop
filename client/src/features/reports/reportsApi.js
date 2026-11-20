@@ -1,5 +1,15 @@
 import { baseApi } from '@/app/baseApi';
 
+const cleanParams = (params = {}) => {
+  const cleaned = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== '' && value !== null && value !== undefined) {
+      cleaned[key] = value;
+    }
+  }
+  return cleaned;
+};
+
 /**
  * Reports & Analytics RTK Query endpoints
  */
@@ -9,7 +19,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/summary',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,
@@ -19,7 +29,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/bookings-over-time',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,
@@ -29,7 +39,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/services',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,
@@ -39,7 +49,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/barbers',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,
@@ -49,7 +59,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/peak-hours',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,
@@ -59,7 +69,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/customers',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,
@@ -69,7 +79,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/no-shows',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,
@@ -79,7 +89,7 @@ export const reportsApi = baseApi.injectEndpoints({
       query: (params = {}) => ({
         url: '/admin/reports/sources',
         method: 'GET',
-        params,
+        params: cleanParams(params),
       }),
       providesTags: ['Reports'],
       transformResponse: (response) => response.data || response,

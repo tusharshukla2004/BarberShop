@@ -40,20 +40,28 @@ function setCached(key, data) {
  * Resolves date parameters and role security
  */
 function resolveReportParams(req) {
-  const { dateStr: todayStr } = getKolkataCurrentDateAndMinutes();
-  const to = req.query.to || todayStr;
+  const { dateStr, todayDate } = getKolkataCurrentDateAndMinutes();
+  const todayStr = dateStr || todayDate || new Date().toISOString().slice(0, 10);
+  let to = req.query.to || todayStr;
+  let toDate = new Date(`${to}T00:00:00Z`);
+  if (isNaN(toDate.getTime())) {
+    to = todayStr;
+    toDate = new Date(`${to}T00:00:00Z`);
+  }
 
   // Default: 30 days prior
   let from = req.query.from;
+  let fromDate;
   if (!from) {
-    const toDate = new Date(`${to}T00:00:00Z`);
-    const fromDate = new Date(toDate.getTime() - 29 * 86400000);
+    fromDate = new Date(toDate.getTime() - 29 * 86400000);
     from = fromDate.toISOString().slice(0, 10);
+  } else {
+    fromDate = new Date(`${from}T00:00:00Z`);
+    if (isNaN(fromDate.getTime())) {
+      fromDate = new Date(toDate.getTime() - 29 * 86400000);
+      from = fromDate.toISOString().slice(0, 10);
+    }
   }
-
-  // Calculate previous period of equal length
-  const toDate = new Date(`${to}T00:00:00Z`);
-  const fromDate = new Date(`${from}T00:00:00Z`);
   const diffDays = Math.max(1, Math.round((toDate - fromDate) / 86400000) + 1);
 
   const prevToDate = new Date(fromDate.getTime() - 86400000);
@@ -152,7 +160,7 @@ export async function getSummaryReport(req, res, next) {
     const prevFilter = { date: { $gte: prevFrom, $lte: prevTo } };
     if (barberId) prevFilter.barberId = barberId;
 
-    const [currentBookings, prevBookings, uniqueCustomers, periodPayments] = await Promise.all([
+    const [currentBookings, prevBookings, periodPayments, uniqueCustomers] = await Promise.all([
       Booking.find(baseFilter).lean(),
       Booking.find(prevFilter).lean(),
       Payment.find({}).lean(),

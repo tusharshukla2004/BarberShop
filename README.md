@@ -107,8 +107,8 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser. All boo
 
 | Role | Email | Password | Permissions |
 | :--- | :--- | :--- | :--- |
-| **Shop Owner** | `owner@barbershop.com` | `Secret123!` | Full business control: bookings, services, team, gallery, reviews, shop hours |
-| **Master Barber** | `barber@barbershop.com` | `Secret123!` | Stylist desk: view personal bookings roster, toggle status |
+| **Shop Owner** | `owner@barbershop.com` | `Admin@123456` | Full business control: bookings, services, team, gallery, reviews, shop hours |
+| **Master Barber** | `barber@barbershop.com` | `Admin@123456` | Stylist desk: view personal bookings roster, toggle status |
 
 ---
 

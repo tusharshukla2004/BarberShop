@@ -308,4 +308,64 @@ describe('Staff-Only Authentication & Security Hardening', () => {
       }
     });
   });
+
+  describe('Step 6: Account Lockout Logic & Expiration', () => {
+    it('resets failedLoginAttempts to 1 and clears lockUntil when previous lock has expired', async () => {
+      const adminDoc = new Admin({
+        name: 'Test Admin',
+        email: 'lockout-test@barbershop.com',
+        passwordHash: '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr',
+        role: 'owner',
+        failedLoginAttempts: 5,
+        lockUntil: new Date(Date.now() - 60 * 1000), // 1 minute in the past
+      });
+      adminDoc.save = vi.fn().mockResolvedValue(adminDoc);
+
+      expect(adminDoc.isLocked()).toBe(false);
+
+      await adminDoc.recordFailedLogin();
+
+      expect(adminDoc.failedLoginAttempts).toBe(1);
+      expect(adminDoc.lockUntil).toBeNull();
+      expect(adminDoc.isLocked()).toBe(false);
+      expect(adminDoc.save).toHaveBeenCalled();
+    });
+
+    it('locks account for 15 minutes when failedLoginAttempts reaches 5', async () => {
+      const adminDoc = new Admin({
+        name: 'Test Admin',
+        email: 'lockout-test2@barbershop.com',
+        passwordHash: '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr',
+        role: 'owner',
+        failedLoginAttempts: 4,
+        lockUntil: null,
+      });
+      adminDoc.save = vi.fn().mockResolvedValue(adminDoc);
+
+      await adminDoc.recordFailedLogin();
+
+      expect(adminDoc.failedLoginAttempts).toBe(5);
+      expect(adminDoc.lockUntil).toBeInstanceOf(Date);
+      expect(adminDoc.lockUntil.getTime()).toBeGreaterThan(Date.now());
+      expect(adminDoc.isLocked()).toBe(true);
+    });
+
+    it('resets failedLoginAttempts and lockUntil on successful login', async () => {
+      const adminDoc = new Admin({
+        name: 'Test Admin',
+        email: 'lockout-test3@barbershop.com',
+        passwordHash: '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr',
+        role: 'owner',
+        failedLoginAttempts: 3,
+        lockUntil: null,
+      });
+      adminDoc.save = vi.fn().mockResolvedValue(adminDoc);
+
+      await adminDoc.recordSuccessfulLogin();
+
+      expect(adminDoc.failedLoginAttempts).toBe(0);
+      expect(adminDoc.lockUntil).toBeNull();
+      expect(adminDoc.lastLoginAt).toBeInstanceOf(Date);
+    });
+  });
 });
